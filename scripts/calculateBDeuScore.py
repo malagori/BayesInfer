@@ -18,6 +18,8 @@ def getUpdatedQi(node):
     for i in itertools.product(*allParentValues):
         # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
         pConfig.append(i)
+        # HINT: you can directly access the data here for each value of var/node and populate the dictPaConfiguration dictionary
+        # instead of populating it explicitly
     dictPaConfiguration= dict.fromkeys(pConfig)
     # dictPaConfiguration is of the form {(0, 1, 1): None, (0, 2, 0): None,..,}
     node.setpConfiguration(dictPaConfiguration)
@@ -37,6 +39,7 @@ def getBDeu(node):
         # read from data basically. update the node.k_values dictionary
         # populating the pConfigurations of a node. its a dictionary of parent configuration whose values is again a dictionary of var values.
         # i.e. dict(dict(values_of_variable))
+        # HINT: population of data can be done in parallel in getUpdatedQi(). read HINT tag in getUpdatedQi() funciton..
         populateCounts(node)
             
         # get node parent configurations
