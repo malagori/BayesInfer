@@ -10,8 +10,10 @@ class Node(object):
 		# k_values is of the form {0:4, 1:2,...}
 		self.k_values= 	{}
 		self.r = 		0
+		self.parentUpdateFlag= True
 		self.parents= 	[]
 		self.pConfigurations={}
+		self.localBDeu=0
 		#self.k_counts= 	kCounts
 	# getters	
 	def getR(self):
@@ -24,8 +26,12 @@ class Node(object):
 		return self.parents
 	def getPaConfigurations(self):
 		return  self.pConfigurations
+	def getLocalBDeu(self):
+		return self.localBDeu
 	
 	# setters
+	def setLocalBDeu(self,bdeuScore):
+		self.localBDeu= bdeuScore
 	def setParents(self,pList):
 		self.parents=pList
 	def setName(self,name):
@@ -34,9 +40,8 @@ class Node(object):
 		self.k_values=dict.fromkeys(kdict)
 	def setR(self,r):
 		self.r= r
-	def setpConfiguration(self,pList):
-		for i,j in itertools.product(*pList):
-			self.pConfigurations["".join([str(i),str(j)])]=0
+	def setpConfiguration(self,pConfigDict):
+		self.pConfigurations=pConfigDict
 			
 
 		
