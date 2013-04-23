@@ -2,7 +2,7 @@ import sys
 
 from bayesInfer.node import Node
 
-def readGraph(infile):
+def readInitialStructure(infile):
     parents=[]
     var=''
     allNodeObjects={}

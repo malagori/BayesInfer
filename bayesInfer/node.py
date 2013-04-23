@@ -3,9 +3,11 @@ import itertools
 """ 
 	Node class contains information about the node in the network
 """
+
 class Node(object):
 	def __init__(self):
 		self.name= ''
+		# k_values is of the form {0:4, 1:2,...}
 		self.k_values= 	{}
 		self.r = 		0
 		self.parents= 	[]
