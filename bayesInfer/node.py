@@ -7,14 +7,25 @@ import itertools
 class Node(object):
 	def __init__(self):
 		self.name= ''
-		# k_values is of the form {0:4, 1:2,...}
+		# k_values is of the form {0:[(0,0,0),(0,0,1),..,(1,1,1)], 1:[(0,0,0),(0,0,1),..,(1,1,1)],...}
+		# or simply k_values: {0:{pconfigVarValueCount}, 1: {pconfigVarValueCount}, 2: {pconfigVarValueCount}, ...}
+		# keys= values of varaible, 
+		# while values corresponds to the dictionary whose keys are all parent configurations and whose values are data-counts for that particular parent configuration.
 		self.k_values= 	{}
+		self.valueUpdateFlag= False
 		self.r = 		0
 		self.parentUpdateFlag= True
 		self.parents= 	[]
-		self.pConfigurations={}
+		# pConfigurations: is a tuples-array whose values are different parent configuration of variable X 
+		#[(0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (0, 2, 0), (0, 2, 1), (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1), (1, 2, 0), (1, 2, 1), (0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (0, 2, 0), (0, 2, 1), (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1), (1, 2, 0), (1, 2, 1)]
+		self.pConfigurations=[]
+		# dictionary for parent:variable's_value_count
+		# keys= 	[(0,0,0),(0,0,1),...]
+		# values= 	[2, 6, ....]
+		self.pconfigVarValueCount={}
 		self.localBDeu=0
 		#self.k_counts= 	kCounts
+	
 	# getters	
 	def getR(self):
 		return self.r
@@ -28,6 +39,8 @@ class Node(object):
 		return  self.pConfigurations
 	def getLocalBDeu(self):
 		return self.localBDeu
+	def getsetpconfigVarValueCount(self):
+		return self.pconfigVarValueCount
 	
 	# setters
 	def setLocalBDeu(self,bdeuScore):
@@ -40,8 +53,10 @@ class Node(object):
 		self.k_values=dict.fromkeys(kdict)
 	def setR(self,r):
 		self.r= r
-	def setpConfiguration(self,pConfigDict):
-		self.pConfigurations=pConfigDict
+	def setpConfiguration(self,pConfigTupleArray):
+		self.pConfigurations=pConfigTupleArray
+	def setpconfigVarValueCount(self,pConfigDict):
+		self.pconfigVarValueCount= pConfigDict
 			
 
 		
