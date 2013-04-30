@@ -36,9 +36,18 @@ def getUpdatedQi(node):
 def populateCounts(node):
     print "populate the counts for this variable and its corresponding parent configurations"
     kValueDict= node.getKvalues()
+    # take care here if the variable have any parents or not.
+    #
     for k in kValueDict.keys():
+        pConfigDict={}
         # populate counts for different values of X for each parent configuration 
+        for j in node.getPaConfigurations():
+            pConfigDict[j]=getDataCount(k,j)
+        kValueDict[k]=pConfigDict
         
+def getDataCount(k, j):
+    # read from file
+    
 # calculate BDeu score for one variable
 def getBDeu(node):
     
