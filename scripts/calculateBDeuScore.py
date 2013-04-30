@@ -20,8 +20,7 @@ def getUpdatedQi(node):
     for i in itertools.product(*allParentValues):
         # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
         pConfig.append(i)
-        # HINT: you can directly access the data here for each value of var/node and populate the dictPaConfiguration dictionary
-        # instead of populating it explicitly
+        
     #dictPaConfiguration= dict.fromkeys(pConfig)
     # dictPaConfiguration is of the form {(0, 1, 1): None, (0, 2, 0): None,..,}
     #node.setpConfiguration(dictPaConfiguration)
@@ -100,13 +99,15 @@ def main():
     # you can update the structure here.
     
     # update the parent configurations for all variables
+    # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
         getUpdatedQi(n)
+        populateCounts(n)
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
         nodesBDeuScore.append(getBDeu(n))
-
-    print "hi"
+        
+    print "Final BDeu Score: %f" % sum(nodesBDeuScore)
       
 if __name__== "__main__":
     main()

@@ -14,7 +14,7 @@ class Node(object):
 		self.k_values= 	{}
 		self.valueUpdateFlag= False
 		self.r = 		0
-		self.parentUpdateFlag= True
+		self.parentUpdateFlag= False
 		self.parents= 	[]
 		# pConfigurations: is a tuples-array whose values are different parent configuration of variable X 
 		#[(0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (0, 2, 0), (0, 2, 1), (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1), (1, 2, 0), (1, 2, 1), (0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (0, 2, 0), (0, 2, 1), (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1), (1, 2, 0), (1, 2, 1)]
