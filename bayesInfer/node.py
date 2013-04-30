@@ -24,7 +24,9 @@ class Node(object):
 		# values= 	[2, 6, ....]
 		self.pconfigVarValueCount={}
 		self.localBDeu=0
-		#self.k_counts= 	kCounts
+		self.children=[]
+		# parent_k_counts is used when a node donot have any parent but it has children
+		self.parent_k_counts= 	[]
 	
 	# getters	
 	def getR(self):
