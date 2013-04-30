@@ -32,6 +32,7 @@ def getUpdatedQi(node):
     #node.setpConfiguration(dictPaConfiguration)
     
     node.setpConfiguration(pConfig)
+    node.valueUpdateFlag == True
     
 def populateCounts(node):
     print "populate the counts for this variable and its corresponding parent configurations"
@@ -42,42 +43,39 @@ def populateCounts(node):
         pConfigDict={}
         # populate counts for different values of X for each parent configuration 
         for j in node.getPaConfigurations():
-            pConfigDict[j]=getDataCount(k,j)
+            pConfigDict[j]=getDataCount(k,j, node.getParents())
         kValueDict[k]=pConfigDict
         
-def getDataCount(k, j):
-    # read from file
+def getDataCount(k, j, nodeParents):
+    # read from file of the form
+    # 0 1 1 1 
+    # 1 0 0 1
+    # 1 1 1 0
     
 # calculate BDeu score for one variable
-def getBDeu(node):
+def getBDeu(node, alpha):
     
     alpha=1
     bdeuScore=0
     a=0
     # if node.valueCountFlag is true, then do the following computation
     if node.parentUpdateFlag == True:
-        # get dictionary containing parent configurations of a node with count equal to None. i.e:
-        # qi is of the form {(0, 1, 1): None, (0, 2, 0): None,..,}
+        # set the array containing parent configurations of a node. i.e:
+        # qi is of the form [(0, 1, 1), (0, 2, 0),..,]
         getUpdatedQi(node)
-        # you can populate the counts of paraent configuration here
-        # read from data basically. update the node.k_values dictionary
-        # populating the pConfigurations of a node. its a dictionary of parent configuration whose values is again a dictionary of var values.
-        # i.e. dict(dict(values_of_variable))
-        # HINT: population of data can be done in parallel in getUpdatedQi(). read HINT tag in getUpdatedQi() funciton..
-        populateCounts(node)
-        
+    # you can populate the counts of node with corresponding paraent configuration if node.valueUpdateFlag == True
     if node.valueUpdateFlag == True:
         populateCounts(node)
     # get node parent configurations
     qi= node.pConfigurations
         
-    localBDeu= calculateLocalBDeu(qi, node)
+    localBDeu= calculateLocalBDeu(qi, node, alpha)
                 
     # set node localBDeu score there
     node.setLocalBDeu(localBDeu)
     return node.localBDeu
 
-def calculateLocalBDeu(qi, node):
+def calculateLocalBDeu(qi, node, alpha):
     # traverse all values of qi
     # compute the following
     # z= alpha/qi
@@ -99,12 +97,13 @@ def calculateLocalBDeu(qi, node):
             Nijk+=v[j]
             c += (math.lgamma(zri+ v[j]) - math.lgamma(zri))
             
-        b= math.lgamma(z+ Nijk)
-        
+        b= math.lgamma(z+ Nijk)       
         localBDeu += a - b + c
+        
     return localBDeu
 
 def main():
+    alpha=1
     nodesBDeuScore=[]
     infile='path to file containing initial structure information'
     allNodeObjects=readInitialStructure(infile)
@@ -120,7 +119,7 @@ def main():
         populateCounts(n)
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
-        nodesBDeuScore.append(getBDeu(n))
+        nodesBDeuScore.append(getBDeu(n, alpha))
         
     print "Final BDeu Score: %f" % sum(nodesBDeuScore)
       
