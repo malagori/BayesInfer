@@ -4,6 +4,7 @@ import os
 import sys
 import itertools
 import math
+from __future__ import division
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -65,17 +66,30 @@ def getBDeu(node):
 def calculateLocalBDeu(qi, node):
     # traverse all values of qi
     # compute the following
-    # a = log_gamma(alpha/qi)
-    # b = log_gamma( alpha/qi + ri_sum_k1(N_ijk) )
-    # c = ri_sum_k1{ log_gamma( alpha/qi.ri + N_ijk) - log_gamma(alpha/qi.ri) }
-    # sum_qi ( a - b + c)    
+    # z= alpha/qi
+    # a = log_gamma(z)
+    # b = log_gamma( z + ri_sum_k1(N_ijk) )
+    # c = ri_sum_k1{ log_gamma( z.(1/ri) + N_ijk) - log_gamma(z.(1/ri) }
+    # sum_qi ( a - b + c)  
+    z=  alpha/len(qi)
+    ri= 1/node.getR()
+    zri=z*ri
+    a= math.lgamma(z)
+    localBDeu=0.00
     for j in qi:
-        a= math.lgamma(alpha/len(qi))
-        # iterate over different values of variable
-        for k in node.getKvalues(node).keys():
+        Nijk=0
+        c=0
+        b=0
+        # iterate over different values of variable X and retrive each dictionary containing parentConfig:K_value_count
+        for k, v in node.getKvalues(node).iteritems():
+            Nijk+=v[j]
+            c += (math.lgamma(zri+ v[j]) - math.lgamma(zri))
             
-            
+        b= math.lgamma(z+ Nijk)
         
+        localBDeu += a - b + c
+    return localBDeu
+
 def main():
     nodesBDeuScore=[]
     infile='path to file containing initial structure information'
