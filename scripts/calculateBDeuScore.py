@@ -79,13 +79,13 @@ def getBDeu(node, alpha):
     bdeuScore=0.0
     a=0
     # if node.valueCountFlag is true, then do the following computation
-    if node.parentUpdateFlag == True:
+    #if node.parentUpdateFlag == True:
         # set the array containing parent configurations of a node. i.e:
         # qi is of the form [(0, 1, 1), (0, 2, 0),..,]
-        getUpdatedQi(node)
+    #    getUpdatedQi(node)
     # you can populate the counts of node with corresponding paraent configuration if node.valueUpdateFlag == True
-    if node.valueUpdateFlag == True:
-        populateCounts(node)
+    #if node.valueUpdateFlag == True:
+    #    populateCounts(node)
     # get node parent configurations
     qi= node.pConfigurations
         
