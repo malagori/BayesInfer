@@ -14,6 +14,7 @@ from __future__ import division
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
+from bayesInfer.readDataFile import readDataFromFile
 
 # total parent configurations
 def getUpdatedQi(node):
@@ -43,20 +44,37 @@ def populateCounts(node):
         pConfigDict={}
         # populate counts for different values of X for each parent configuration 
         for j in node.getPaConfigurations():
-            pConfigDict[j]=getDataCount(k,j, node.getParents())
+            # j is a tuple containing parent's values. we have to change it to list 
+            pConfigDict[j]=getDataCount(k,list(j), node)
         kValueDict[k]=pConfigDict
         
-def getDataCount(k, j, nodeParents):
-    # read from file of the form
-    # 0 1 1 1 
-    # 1 0 0 1
-    # 1 1 1 0
+def getDataCount(k, j, node):
+    # remember: j here is a list not tuple
+     
+    # subset data according to parent nodes
+    # A B D
+    # 0 1 1 
+    # 1 0 1
+    # 1 1 0
+    # remove last parent, which is hidden
+    # get the counts from data 
+    nodeParents=node.getParents()
+    
+    # All records with var value = k
+    localDf=df[df[node.name]==k]
+    # for each parent value
+    idx=0
+    for pa in nodeParents:
+        localDf=localDf[localDf[pa]==j[idx]]
+        idx+=1
+    # return the row count satisfiying the conditions
+    return len(localDf.index)
+    
     
 # calculate BDeu score for one variable
 def getBDeu(node, alpha):
     
-    alpha=1
-    bdeuScore=0
+    bdeuScore=0.0
     a=0
     # if node.valueCountFlag is true, then do the following computation
     if node.parentUpdateFlag == True:
@@ -102,15 +120,18 @@ def calculateLocalBDeu(qi, node, alpha):
         
     return localBDeu
 
-def main():
+def main(dataFile, structureFile):
+    
+    global df
+    df=readDataFromFile(dataFile)
     alpha=1
     nodesBDeuScore=[]
     infile='path to file containing initial structure information'
-    allNodeObjects=readInitialStructure(infile)
+    allNodeObjects=readInitialStructure(structureFile)
     
-    # draw initial structure when you get time
+    # draw initial structure when you get time .. future work
+    # you can update the structure here....       future work
     
-    # you can update the structure here.
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X

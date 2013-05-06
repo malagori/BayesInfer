@@ -31,7 +31,7 @@ class Node(object):
 		# keys= 	[(0,0,0),(0,0,1),...]
 		# values= 	[2, 6, ....]
 		self.pconfigVarValueCount={}
-		self.localBDeu=0
+		self.localBDeu=0.0
 		self.children=[]
 		# parent_k_counts is used when a node donot have any parent but it has children
 		self.parent_k_counts= 	[]
