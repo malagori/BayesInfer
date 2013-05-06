@@ -60,7 +60,7 @@ class Node(object):
 	def setName(self,name):
 		self.name= name
 	def setKvalues(self,kdict):
-		self.k_values=dict.fromkeys(kdict)
+		self.k_values=kdict
 	def setR(self,r):
 		self.r= r
 	def setpConfiguration(self,pConfigTupleArray):

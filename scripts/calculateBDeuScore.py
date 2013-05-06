@@ -48,6 +48,8 @@ def populateCounts(node):
             pConfigDict[j]=getDataCount(k,list(j), node)
         kValueDict[k]=pConfigDict
         
+    node.setKvalues(kValueDict)
+    
 def getDataCount(k, j, node):
     # remember: j here is a list not tuple
      
