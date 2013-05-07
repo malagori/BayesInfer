@@ -138,13 +138,41 @@ def main(dataFile, structureFile):
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
-        getUpdatedQi(n)
-        populateCounts(n)
+        getUpdatedQi(allNodeObjects[n])
+        populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
-        nodesBDeuScore.append(getBDeu(n, alpha))
+        nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
         
-    print "Final BDeu Score: %f" % sum(nodesBDeuScore)
-      
+    print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
+    
+    # change the structure by introducing hidden variable
+    h= Node()
+    cardinality=2 # user can input this information here
+    child1= 'B'
+    child2= 'C'
+    h.name='h1'
+    h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
+    h.children.append(child1) # add children to hidden variable
+    h.children.append(child2) 
+    h.childrenUpdateFlag= True
+    allNodeObjects[child1].parentUpdateFlag= True # get the children nodes and update the parentUpdateFlag
+    allNodeObjects[child2].parentUpdateFlag= True
+   
+    # compute the BDeu score again
+    for n in allNodeObjects:
+        node=allNodeObjects[n]
+        if node.parentUpdateFlag== True: # if true its a child of hidden variable. so, calculate BDeu again
+            # compute new parent configuration set
+            getUpdatedQi(node)
+            orginal_k_values_counts=node.k_values # its a copy of k_values dict
+            
+            # change the counts of this node according to some criteria i.e.
+            # for new parent configuration, assign the counts such that sum of counts of new parent
+            # configurations is equal to counts of old parent configuration which we split
+            # to get the new parent configuration. 
+    
+    
+       
 if __name__== "__main__":
     main()

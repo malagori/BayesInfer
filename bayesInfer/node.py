@@ -18,8 +18,13 @@ class Node(object):
 		# k_values is of the form {0:[(0,0,0),(0,0,1),..,(1,1,1)], 1:[(0,0,0),(0,0,1),..,(1,1,1)],...}
 		# or simply k_values: {0:{pconfigVarValueCount}, 1: {pconfigVarValueCount}, 2: {pconfigVarValueCount}, ...}
 		# keys= values of varaible, 
-		# while values corresponds to the dictionary whose keys are all parent configurations and whose values are data-counts for that particular parent configuration.
+		# while values corresponds to the dictionary whose keys are all parent configurations and 
+		# whose values are data-counts for that particular parent configuration. see details below
+		# where pconfigVarValueCount is dictionary for parent's configuration:
+		# keys= 	[(0,0,0),(0,0,1),...]
+		# values= 	[2, 6, ....]
 		self.k_values= 	{}
+		
 		self.valueUpdateFlag= False
 		self.r = 		0
 		self.parentUpdateFlag= False
@@ -30,8 +35,9 @@ class Node(object):
 		# dictionary for parent:variable's_value_count
 		# keys= 	[(0,0,0),(0,0,1),...]
 		# values= 	[2, 6, ....]
-		self.pconfigVarValueCount={}
+		#self.pconfigVarValueCount={} # this is extra info, need to be removed
 		self.localBDeu=0.0
+		self.childrenUpdateFlag=False
 		self.children=[]
 		# parent_k_counts is used when a node donot have any parent but it has children
 		self.parent_k_counts= 	[]
@@ -49,8 +55,8 @@ class Node(object):
 		return  self.pConfigurations
 	def getLocalBDeu(self):
 		return self.localBDeu
-	def getsetpconfigVarValueCount(self):
-		return self.pconfigVarValueCount
+	#def getsetpconfigVarValueCount(self):
+	#	return self.pconfigVarValueCount
 	
 	# setters
 	def setLocalBDeu(self,bdeuScore):
@@ -65,8 +71,8 @@ class Node(object):
 		self.r= r
 	def setpConfiguration(self,pConfigTupleArray):
 		self.pConfigurations=pConfigTupleArray
-	def setpconfigVarValueCount(self,pConfigDict):
-		self.pconfigVarValueCount= pConfigDict
+	#def setpconfigVarValueCount(self,pConfigDict):
+	#	self.pconfigVarValueCount= pConfigDict
 			
 
 		
