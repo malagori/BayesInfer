@@ -63,11 +63,11 @@ def getDataCount(k, j, node):
     nodeParents=node.getParents()
     
     # All records with var value = k
-    localDf=df[df[node.name]==k]
+    localDframe=df[df[node.name]==k]
     # for each parent value
     idx=0
     for pa in nodeParents:
-        localDf=localDf[localDf[pa]==j[idx]]
+        localDframe=localDframe[localDframe[pa]==j[idx]]
         idx+=1
     # return the row count satisfiying the conditions
     return len(localDf.index)
@@ -86,6 +86,11 @@ def getBDeu(node, alpha):
     # you can populate the counts of node with corresponding paraent configuration if node.valueUpdateFlag == True
     #if node.valueUpdateFlag == True:
     #    populateCounts(node)
+    
+    # consider the case when a node has not parents
+    # if len(node.pConfigurations) == 0:
+    # compute localBDeu for this node. calculateLocalBDeu function will be different.
+    
     # get node parent configurations
     qi= node.pConfigurations
         
@@ -122,9 +127,33 @@ def calculateLocalBDeu(qi, node, alpha):
         
     return localBDeu
 
+def genNewJandSplitEqually(j,counts, hiddenParent):
+    print "generate new J and split the counts equally"
+    oldList= [ i for i in j] # converting tuple into list
+    newList=oldList
+    parentValues= hiddenParent.getKvalues().keys()
+    for v in parentValues:
+        newList.append(v)
+        newJ[]
+        newList=oldList
+    
+def splitCounts(node):
+    Divisor= 2
+    print "split counts according to some criteria"
+    newKValueDict= {}
+    newJ=[]
+    newJFlagDone=False
+    #oldJ= newJ[0:-1] # -1 because we are considering that only one hidden variable is added in parentset
+    for key, countDict in node.getKvalues().iteritems():
+        for j in countDict.iteritems():
+            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
+            newKValueDict[newJ]= countDict[j]
+            
+            
+
 def main(dataFile, structureFile):
     
-    global df
+    global df, allNodeObjects
     df=readDataFromFile(dataFile)
     alpha=1
     nodesBDeuScore=[]
@@ -158,7 +187,11 @@ def main(dataFile, structureFile):
     h.childrenUpdateFlag= True
     allNodeObjects[child1].parentUpdateFlag= True # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].parentUpdateFlag= True
+    allNodeObjects[h.name]= h  # adding h to the structure
    
+    # get the max count and perturb the datacounts untill the maximum count get to zero.
+    
+    
     # compute the BDeu score again
     for n in allNodeObjects:
         node=allNodeObjects[n]
@@ -171,6 +204,7 @@ def main(dataFile, structureFile):
             # for new parent configuration, assign the counts such that sum of counts of new parent
             # configurations is equal to counts of old parent configuration which we split
             # to get the new parent configuration. 
+            splitCounts(node)
     
     
        
