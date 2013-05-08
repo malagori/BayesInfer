@@ -11,6 +11,8 @@ import sys
 import itertools
 import math
 from __future__ import division
+import numpy as np
+from pandas import Series
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -54,10 +56,10 @@ def getDataCount(k, j, node):
     # remember: j here is a list not tuple
      
     # subset data according to parent nodes
-    # A B D
-    # 0 1 1 
-    # 1 0 1
-    # 1 1 0
+    # A B D Counts
+    # 0 1 1 5
+    # 1 0 1 3
+    # 1 1 0 2
     # remove last parent, which is hidden
     # get the counts from data 
     nodeParents=node.getParents()
@@ -70,7 +72,7 @@ def getDataCount(k, j, node):
         localDframe=localDframe[localDframe[pa]==j[idx]]
         idx+=1
     # return the row count satisfiying the conditions
-    return len(localDf.index)
+    return sum(localDframe.Counts)
     
     
 # calculate BDeu score for one variable
@@ -90,14 +92,16 @@ def getBDeu(node, alpha):
     # consider the case when a node has not parents
     # if len(node.pConfigurations) == 0:
     # compute localBDeu for this node. calculateLocalBDeu function will be different.
-    
-    # get node parent configurations
-    qi= node.pConfigurations
-        
-    localBDeu= calculateLocalBDeu(qi, node, alpha)
-                
+    if len(node.pConfigurations) == 0:
+        print "calculate local BDeu for parent node"
+    else:
+        # get node parent configurations
+        qi= node.pConfigurations
+            
+        localBDeu= calculateLocalBDeu(qi, node, alpha)
     # set node localBDeu score there
     node.setLocalBDeu(localBDeu)
+    
     return node.localBDeu
 
 def calculateLocalBDeu(qi, node, alpha):
@@ -127,28 +131,30 @@ def calculateLocalBDeu(qi, node, alpha):
         
     return localBDeu
 
-def genNewJandSplitEqually(j,counts, hiddenParent):
-    print "generate new J and split the counts equally"
-    oldList= [ i for i in j] # converting tuple into list
-    newList=oldList
-    parentValues= hiddenParent.getKvalues().keys()
-    for v in parentValues:
-        newList.append(v)
-        newJ[]
-        newList=oldList
-    
-def splitCounts(node):
-    Divisor= 2
-    print "split counts according to some criteria"
-    newKValueDict= {}
-    newJ=[]
-    newJFlagDone=False
-    #oldJ= newJ[0:-1] # -1 because we are considering that only one hidden variable is added in parentset
-    for key, countDict in node.getKvalues().iteritems():
-        for j in countDict.iteritems():
-            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
-            newKValueDict[newJ]= countDict[j]
-            
+#def genNewJandSplitEqually(j,counts, hiddenParent):
+#    print "generate new J and split the counts equally"
+#    oldList= [ i for i in j] # converting tuple into list
+#    newList=oldList
+#    parentValues= hiddenParent.getKvalues().keys()
+#    for v in parentValues:
+#        newList.append(v)
+#        newJ[]
+#        newList=oldList
+#    
+#def splitCounts(node):
+#    Divisor= 2
+#    print "split counts according to some criteria"
+#    newKValueDict= {}
+#    newJ=[]
+#    newJFlagDone=False
+#    #oldJ= newJ[0:-1] # -1 because we are considering that only one hidden variable is added in parentset
+#    for key, countDict in node.getKvalues().iteritems():
+#        for j in countDict.iteritems():
+#            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
+#            newKValueDict[newJ]= countDict[j]
+       
+def countPerturbation():
+    print "perturb the counts here"     
             
 
 def main(dataFile, structureFile):
@@ -188,23 +194,53 @@ def main(dataFile, structureFile):
     allNodeObjects[child1].parentUpdateFlag= True # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].parentUpdateFlag= True
     allNodeObjects[h.name]= h  # adding h to the structure
-   
-    # get the max count and perturb the datacounts untill the maximum count get to zero.
     
+    # add hidden variable to the dataframe
+    # new dataframe would like this
+    # A B C counts H
+    # 0 1 1 10     0     
+    # 0 0 1 4      0     
+    # 0 1 0 4      0
+    # 0 1 1 0      1    
+    # 0 0 1 0      1     
+    # 0 1 0 0      1 
+    # 0 1 1 0      2    
+    # 0 0 1 0      2     
+    # 0 1 0 0      2     
+    #
+    # for each value of hidden variable, we create a column vector storing counts.
+    hiddenName=h.name
+    df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
+    df_temp= df.copy()
+    df_temp.Counts=np.zeros(df_temp.shape[0])
+    for i in h.getKvalues().keys():
+        if i != 0:
+            col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+            df_temp.hiddenName=col
+            df= df.append(df_temp, ignore_index=True)
     
-    # compute the BDeu score again
-    for n in allNodeObjects:
-        node=allNodeObjects[n]
-        if node.parentUpdateFlag== True: # if true its a child of hidden variable. so, calculate BDeu again
-            # compute new parent configuration set
-            getUpdatedQi(node)
-            orginal_k_values_counts=node.k_values # its a copy of k_values dict
-            
-            # change the counts of this node according to some criteria i.e.
-            # for new parent configuration, assign the counts such that sum of counts of new parent
-            # configurations is equal to counts of old parent configuration which we split
-            # to get the new parent configuration. 
-            splitCounts(node)
+    # split the counts like this:
+    # take the max count in df.Count i.e.
+    maxCount=max(df.Counts)
+    for iterations in xrange(0,2*maxCount): 
+        
+        # perturb the counts here
+        countPerturbation()
+        # compute the BDeu score again
+        for n in allNodeObjects:
+            node=allNodeObjects[n]
+            if node.parentUpdateFlag== True: # if true its a child of hidden variable. so, calculate BDeu again
+                # compute new parent configuration set
+                getUpdatedQi(node)
+                orginal_k_values_counts=node.k_values # its a copy of k_values dict
+                
+                # change the counts of this node according to some criteria i.e.
+                # for new parent configuration, assign the counts such that sum of counts of new parent
+                # configurations is equal to counts of old parent configuration which we split
+                # to get the new parent configuration. 
+                populateCounts(node)
+                node.setLocalBDeu(getBDeu(node, alpha))
+                
     
     
        
