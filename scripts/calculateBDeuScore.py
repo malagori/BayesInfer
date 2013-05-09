@@ -20,37 +20,48 @@ from bayesInfer.readDataFile import readDataFromFile
 
 # total parent configurations
 def getUpdatedQi(node):
-    dictPaConfiguration={}
-    pConfig=[]
-    allParentValues=[]
-    for p in node.getParents():
-        # get values of each parent and add it to allParentValues array
-        allParentValues.append(p.k_values.keys())
-    for i in itertools.product(*allParentValues):
-        # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
-        pConfig.append(i)
+    """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""
+    if len(node.getParents())==0:
+        return
+    else:
+        dictPaConfiguration={}
+        pConfig=[]
+        allParentValues=[]
+        for p in node.getParents():
+            # get values of each parent and add it to allParentValues array
+            allParentValues.append(p.k_values.keys())
+        for i in itertools.product(*allParentValues):
+            # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
+            pConfig.append(i)
+            
+        #dictPaConfiguration= dict.fromkeys(pConfig)
+        # dictPaConfiguration is of the form {(0, 1, 1): None, (0, 2, 0): None,..,}
+        #node.setpConfiguration(dictPaConfiguration)
         
-    #dictPaConfiguration= dict.fromkeys(pConfig)
-    # dictPaConfiguration is of the form {(0, 1, 1): None, (0, 2, 0): None,..,}
-    #node.setpConfiguration(dictPaConfiguration)
-    
-    node.setpConfiguration(pConfig)
-    node.valueUpdateFlag == True
+        node.setpConfiguration(pConfig)
+        node.valueUpdateFlag == True 
     
 def populateCounts(node):
-    print "populate the counts for this variable and its corresponding parent configurations"
+    """populate the counts for this variable for different parent configurations"""
     kValueDict= node.getKvalues()
+    
     # take care here if the variable have any parents or not.
-    #
-    for k in kValueDict.keys():
-        pConfigDict={}
-        # populate counts for different values of X for each parent configuration 
-        for j in node.getPaConfigurations():
-            # j is a tuple containing parent's values. we have to change it to list 
-            pConfigDict[j]=getDataCount(k,list(j), node)
-        kValueDict[k]=pConfigDict
-        
-    node.setKvalues(kValueDict)
+    if len(node.getParents()) == 0:
+        paValueDict={}
+        for i in kValueDict.keys():
+            paValueDict[i]= getDataCount(i, [], node)
+            
+        node.setParentValueCounts(paValueDict)
+    else:
+        for k in kValueDict.keys():
+            pConfigDict={}
+            # populate counts for different values of X for each parent configuration 
+            for j in node.getPaConfigurations():
+                # j is a tuple containing parent's values. we have to change it to list 
+                pConfigDict[j]=getDataCount(k,list(j), node)
+            kValueDict[k]=pConfigDict
+            
+        node.setKvalues(kValueDict)
     
 def getDataCount(k, j, node):
     # remember: j here is a list not tuple
@@ -60,17 +71,20 @@ def getDataCount(k, j, node):
     # 0 1 1 5
     # 1 0 1 3
     # 1 1 0 2
-    # remove last parent, which is hidden
-    # get the counts from data 
-    nodeParents=node.getParents()
+    # 
     
-    # All records with var value = k
-    localDframe=df[df[node.name]==k]
-    # for each parent value
-    idx=0
-    for pa in nodeParents:
-        localDframe=localDframe[localDframe[pa]==j[idx]]
-        idx+=1
+    # check if parent configuration is zero
+    if len(j)==0:
+        # compute the counts for parent variable for kth value
+        localDframe=df[df[node.name]==k]
+    else:
+        # All records with var value = k
+        localDframe=df[df[node.name]==k]
+        # for each parent value
+        idx=0
+        for pa in node.getParents():
+            localDframe=localDframe[localDframe[pa]==j[idx]]
+            idx+=1
     # return the row count satisfiying the conditions
     return sum(localDframe.Counts)
     
@@ -78,7 +92,7 @@ def getDataCount(k, j, node):
 # calculate BDeu score for one variable
 def getBDeu(node, alpha):
     
-    bdeuScore=0.0
+    localBDeu=0.0
     a=0
     # if node.valueCountFlag is true, then do the following computation
     #if node.parentUpdateFlag == True:
@@ -89,7 +103,7 @@ def getBDeu(node, alpha):
     #if node.valueUpdateFlag == True:
     #    populateCounts(node)
     
-    # consider the case when a node has not parents
+    # consider the case when a node has no parents
     # if len(node.pConfigurations) == 0:
     # compute localBDeu for this node. calculateLocalBDeu function will be different.
     if len(node.pConfigurations) == 0:
@@ -121,7 +135,7 @@ def calculateLocalBDeu(qi, node, alpha):
         Nijk=0
         c=0
         b=0
-        # iterate over different values of variable X and retrive each dictionary containing parentConfig:K_value_count
+        # iterate over different values of variable X and retrieve each dictionary containing parentConfig:K_value_count
         for k, v in node.getKvalues(node).iteritems():
             Nijk+=v[j]
             c += (math.lgamma(zri+ v[j]) - math.lgamma(zri))

@@ -40,7 +40,7 @@ class Node(object):
 		self.childrenUpdateFlag=False
 		self.children=[]
 		# parent_k_counts is used when a node donot have any parent but it has children
-		self.parent_k_counts= 	[]
+		self.parent_k_counts= 	{}
 	
 	# getters	
 	def getR(self):
@@ -55,6 +55,8 @@ class Node(object):
 		return  self.pConfigurations
 	def getLocalBDeu(self):
 		return self.localBDeu
+	def getParentValueCount(self):
+		return self.parent_k_counts
 	#def getsetpconfigVarValueCount(self):
 	#	return self.pconfigVarValueCount
 	
@@ -69,6 +71,8 @@ class Node(object):
 		self.k_values=kdict
 	def setR(self,r):
 		self.r= r
+	def setParentValueCounts(self, paValDict):
+		self.parent_k_counts= paValDict
 	def setpConfiguration(self,pConfigTupleArray):
 		self.pConfigurations=pConfigTupleArray
 	#def setpconfigVarValueCount(self,pConfigDict):
