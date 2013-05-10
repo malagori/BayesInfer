@@ -108,6 +108,7 @@ def getBDeu(node, alpha):
     # compute localBDeu for this node. calculateLocalBDeu function will be different.
     if len(node.pConfigurations) == 0:
         print "calculate local BDeu for parent node"
+        localBDeu=calculateBDeuParentNode(node, alpha)
     else:
         # get node parent configurations
         qi= node.pConfigurations
@@ -118,6 +119,21 @@ def getBDeu(node, alpha):
     
     return node.localBDeu
 
+def calculateBDeuParentNode(node, alpha):
+    """ calculate bdeu score for parent node"""
+    a= math.lgamma(alpha)
+    N= sum(df['Counts']) # total number of observations
+    b= math.lgamma(alpha + N)
+    c= 0.0
+    z= alpha/node.getR()
+    
+    for k, v in node.getParentValueCount().iteritems():
+        c+= (math.lgamma(z + v) - math.lgamma(z) )
+    
+    localBDeu = a -b + c
+    
+    return localBDeu
+    
 def calculateLocalBDeu(qi, node, alpha):
     # traverse all values of qi
     # compute the following
@@ -130,11 +146,11 @@ def calculateLocalBDeu(qi, node, alpha):
     ri= 1/node.getR()
     zri=z*ri
     a= math.lgamma(z)
-    localBDeu=0.00
+    localBDeu=0.0
     for j in qi:
         Nijk=0
-        c=0
-        b=0
+        c=0.0
+        b=0.0
         # iterate over different values of variable X and retrieve each dictionary containing parentConfig:K_value_count
         for k, v in node.getKvalues(node).iteritems():
             Nijk+=v[j]
@@ -168,7 +184,8 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newKValueDict[newJ]= countDict[j]
        
 def countPerturbation():
-    print "perturb the counts here"     
+    print "perturb the counts here"    
+    # after perturbation update the counts for each variable by calling populateCounts() 
             
 
 def main(dataFile, structureFile):
@@ -201,6 +218,7 @@ def main(dataFile, structureFile):
     child1= 'B'
     child2= 'C'
     h.name='h1'
+    h.setR(cardinality)
     h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
     h.children.append(child1) # add children to hidden variable
     h.children.append(child2) 
@@ -211,7 +229,7 @@ def main(dataFile, structureFile):
     
     # add hidden variable to the dataframe
     # new dataframe would like this
-    # A B C counts H
+    # A B C Counts H
     # 0 1 1 10     0     
     # 0 0 1 4      0     
     # 0 1 0 4      0
@@ -235,8 +253,8 @@ def main(dataFile, structureFile):
     
     # split the counts like this:
     # take the max count in df.Count i.e.
-    maxCount=max(df.Counts)
-    for iterations in xrange(0,2*maxCount): 
+    maxIter= 1000
+    for iterations in xrange(0, maxIter): 
         
         # perturb the counts here
         countPerturbation()
