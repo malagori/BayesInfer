@@ -10,6 +10,7 @@ import os
 import sys
 import itertools
 import math
+import random as rnumber
 from __future__ import division
 import numpy as np
 from pandas import Series
@@ -186,6 +187,16 @@ def calculateLocalBDeu(qi, node, alpha):
 def countPerturbation():
     print "perturb the counts here"    
     # after perturbation update the counts for each variable by calling populateCounts() 
+    while(True):
+        twoRIndex= [rnumber.randint(0,df.shape[0]) for i in range(0,2)]
+        if df[twoRIndex[1]: twoRIndex[1]+1].Count >= 1:
+            False
+    df[twoRIndex[0]: twoRIndex[0]+1].Count= df[twoRIndex[0]: twoRIndex[0]+1].Count + 1  # increment count by one
+    df[twoRIndex[1]: twoRIndex[1]+1].Count= df[twoRIndex[1]: twoRIndex[1]+1].Count - 1  # decrement count by one
+    
+def initialCounts():
+    print " This function will initialize the counts of dataframe as a starting point"
+    
             
 def addHiddenNodeToDf(h):
     # new dataframe would like this
@@ -204,17 +215,18 @@ def addHiddenNodeToDf(h):
     hiddenName=h.name
     df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
     df_temp= df.copy()
-    df_temp.Counts=np.zeros(df_temp.shape[0])
+    df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
     for i in h.getKvalues().keys():
-        if i != 0:
+        if i != 0: # rows with hidden value not equal to zero are add here
             col=[i]*df_temp.shape[0]  # fastest way to create list ;)
             df_temp.hiddenName=col
             df= df.append(df_temp, ignore_index=True)
             
 def main(dataFile, structureFile):
     
-    global df, allNodeObjects
+    global df, allNodeObjects, totalInitialObservations
     df=readDataFromFile(dataFile)
+    totalInitialObservations= sum(df['Counts']) # if we introduce next hidden variable, this variable would be updated
     alpha=1
     nodesBDeuScore=[]
     infile='path to file containing initial structure information'
