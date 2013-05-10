@@ -187,7 +187,30 @@ def countPerturbation():
     print "perturb the counts here"    
     # after perturbation update the counts for each variable by calling populateCounts() 
             
-
+def addHiddenNodeToDf(h):
+    # new dataframe would like this
+    # A B C Counts H
+    # 0 1 1 10     0     
+    # 0 0 1 4      0     
+    # 0 1 0 4      0
+    # 0 1 1 0      1    
+    # 0 0 1 0      1     
+    # 0 1 0 0      1 
+    # 0 1 1 0      2    
+    # 0 0 1 0      2     
+    # 0 1 0 0      2     
+    #
+    # for each value of hidden variable, we create a column vector storing counts.
+    hiddenName=h.name
+    df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
+    df_temp= df.copy()
+    df_temp.Counts=np.zeros(df_temp.shape[0])
+    for i in h.getKvalues().keys():
+        if i != 0:
+            col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+            df_temp.hiddenName=col
+            df= df.append(df_temp, ignore_index=True)
+            
 def main(dataFile, structureFile):
     
     global df, allNodeObjects
@@ -228,28 +251,7 @@ def main(dataFile, structureFile):
     allNodeObjects[h.name]= h  # adding h to the structure
     
     # add hidden variable to the dataframe
-    # new dataframe would like this
-    # A B C Counts H
-    # 0 1 1 10     0     
-    # 0 0 1 4      0     
-    # 0 1 0 4      0
-    # 0 1 1 0      1    
-    # 0 0 1 0      1     
-    # 0 1 0 0      1 
-    # 0 1 1 0      2    
-    # 0 0 1 0      2     
-    # 0 1 0 0      2     
-    #
-    # for each value of hidden variable, we create a column vector storing counts.
-    hiddenName=h.name
-    df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
-    df_temp= df.copy()
-    df_temp.Counts=np.zeros(df_temp.shape[0])
-    for i in h.getKvalues().keys():
-        if i != 0:
-            col=[i]*df_temp.shape[0]  # fastest way to create list ;)
-            df_temp.hiddenName=col
-            df= df.append(df_temp, ignore_index=True)
+    addHiddenNodeToDf(h)
     
     # split the counts like this:
     # take the max count in df.Count i.e.
