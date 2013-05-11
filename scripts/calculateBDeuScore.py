@@ -184,42 +184,53 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
 #            newKValueDict[newJ]= countDict[j]
        
-def countPerturbation():
+def countPerturbation(blockSize=2):
     print "perturb the counts here"    
     # after perturbation update the counts for each variable by calling populateCounts() 
     while(True):
-        twoRIndex= [rnumber.randint(0,df.shape[0]) for i in range(0,2)]
-        if df[twoRIndex[1]: twoRIndex[1]+1].Count >= 1:
+        twoRIndex= [rnumber.randint(0,df.shape[0]) for i in range(0,blockSize)] # randomly pick two indexes
+        if df[twoRIndex[1]: twoRIndex[1]+1].Counts >= 1:
             False
-    df[twoRIndex[0]: twoRIndex[0]+1].Count= df[twoRIndex[0]: twoRIndex[0]+1].Count + 1  # increment count by one
-    df[twoRIndex[1]: twoRIndex[1]+1].Count= df[twoRIndex[1]: twoRIndex[1]+1].Count - 1  # decrement count by one
+    df[twoRIndex[0]: twoRIndex[0]+1].Counts= df[twoRIndex[0]: twoRIndex[0]+1].Counts + 1  # increment count by one
+    df[twoRIndex[1]: twoRIndex[1]+1].Counts= df[twoRIndex[1]: twoRIndex[1]+1].Counts - 1  # decrement count by one
     
-def initialCounts():
+def splitCountsEqually(h):
     print " This function will initialize the counts of dataframe as a starting point"
-    
+    splittedCountsVector=math.floor(df[:totalInitialObservations].Counts/h.getR())
             
 def addHiddenNodeToDf(h):
+    # old dataframe was:
+    # A B C Counts 
+    # 0 1 1 10          
+    # 0 0 1 4           
+    # 0 1 0 4      
+    #
+    # and 
     # new dataframe would like this
     # A B C Counts H
-    # 0 1 1 10     0     
-    # 0 0 1 4      0     
-    # 0 1 0 4      0
-    # 0 1 1 0      1    
-    # 0 0 1 0      1     
-    # 0 1 0 0      1 
-    # 0 1 1 0      2    
-    # 0 0 1 0      2     
-    # 0 1 0 0      2     
+    # 0 1 1 4      0     
+    # 0 0 1 2      0     
+    # 0 1 0 2      0
+    # 0 1 1 3      1    
+    # 0 0 1 1      1     
+    # 0 1 0 1      1 
+    # 0 1 1 3      2    
+    # 0 0 1 1      2     
+    # 0 1 0 1      2     
     #
     # for each value of hidden variable, we create a column vector storing counts.
     hiddenName=h.name
     df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
     df_temp= df.copy()
-    df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
+    copyCountList= [math.floor(i/h.getR()) for i in df_temp.Counts]
+    
+    #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
     for i in h.getKvalues().keys():
         if i != 0: # rows with hidden value not equal to zero are add here
             col=[i]*df_temp.shape[0]  # fastest way to create list ;)
-            df_temp.hiddenName=col
+            df_temp[hiddenName]=col
+            df_temp.Counts=copyCountList
+            df.Counts[0:totalInitialObservations]= df.Counts[0:totalInitialObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
             
 def main(dataFile, structureFile):
@@ -265,8 +276,9 @@ def main(dataFile, structureFile):
     # add hidden variable to the dataframe
     addHiddenNodeToDf(h)
     
-    # split the counts like this:
-    # take the max count in df.Count i.e.
+    # split the counts equally:
+    splitCountsEqually(h)
+    
     maxIter= 1000
     for iterations in xrange(0, maxIter): 
         
