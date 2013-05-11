@@ -23,6 +23,8 @@ class Node(object):
 		# where pconfigVarValueCount is dictionary for parent's configuration:
 		# keys= 	[(0,0,0),(0,0,1),...]
 		# values= 	[2, 6, ....]
+		
+		# NOTE: keys of k_values dictionary need to be ascending order other 
 		self.k_values= 	{}
 		
 		self.valueUpdateFlag= False

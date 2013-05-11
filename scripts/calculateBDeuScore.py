@@ -10,7 +10,7 @@ import os
 import sys
 import itertools
 import math
-import random as rnumber
+import random as rNumber
 from __future__ import division
 import numpy as np
 from pandas import Series
@@ -30,7 +30,7 @@ def getUpdatedQi(node):
         allParentValues=[]
         for p in node.getParents():
             # get values of each parent and add it to allParentValues array
-            allParentValues.append(p.k_values.keys())
+            allParentValues.append(p.getKvalues().keys())
         for i in itertools.product(*allParentValues):
             # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
             pConfig.append(i)
@@ -184,19 +184,31 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
 #            newKValueDict[newJ]= countDict[j]
        
-def countPerturbation(blockSize=2):
-    print "perturb the counts here"    
-    # after perturbation update the counts for each variable by calling populateCounts() 
-    while(True):
-        twoRIndex= [rnumber.randint(0,df.shape[0]) for i in range(0,blockSize)] # randomly pick two indexes
-        if df[twoRIndex[1]: twoRIndex[1]+1].Counts >= 1:
-            False
-    df[twoRIndex[0]: twoRIndex[0]+1].Counts= df[twoRIndex[0]: twoRIndex[0]+1].Counts + 1  # increment count by one
-    df[twoRIndex[1]: twoRIndex[1]+1].Counts= df[twoRIndex[1]: twoRIndex[1]+1].Counts - 1  # decrement count by one
+def countPerturbation(h):
+    print "perturb the count here"
     
-def splitCountsEqually(h):
-    print " This function will initialize the counts of dataframe as a starting point"
-    splittedCountsVector=math.floor(df[:totalInitialObservations].Counts/h.getR())
+    hiddenName=h.getName()
+    # pick a random index
+    while (True):
+        rIndex=rNumber.randint(0,df.shape[0]-1)   # -1 because indexing starts from 0
+        if df.Counts[rIndex] > 0:
+            df.Counts[rIndex] -= 1 # decrement by 1 
+    # select the hidden value at rIndex
+    valueH=df[hiddenName][rIndex]
+    # choose other values of Hidden variable other then
+    hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out randomly selected valueH
+    
+    # choose one of the hValuesWithoutValueH values to be incremented by 1
+    incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
+    if incrementedHvalue <  valueH:
+        # compute the index of record in df to be incremented
+        incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalInitialObservations)
+        df.Counts[incrementedDfIndex] += 1
+    else:
+        incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalInitialObservations)
+        df.Counts[incrementedDfIndex] += 1
+
+    
             
 def addHiddenNodeToDf(h):
     # old dataframe was:
@@ -232,8 +244,12 @@ def addHiddenNodeToDf(h):
             df_temp.Counts=copyCountList
             df.Counts[0:totalInitialObservations]= df.Counts[0:totalInitialObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
+    
+    del df_temp  # delete the temprory data frame to save memory
+    
             
 def main(dataFile, structureFile):
+    
     
     global df, allNodeObjects, totalInitialObservations
     df=readDataFromFile(dataFile)
@@ -271,34 +287,36 @@ def main(dataFile, structureFile):
     h.childrenUpdateFlag= True
     allNodeObjects[child1].parentUpdateFlag= True # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].parentUpdateFlag= True
+    # compute new parent configuration set for both the children
+    getUpdatedQi(allNodeObjects[child1]) 
+    getUpdatedQi(allNodeObjects[child2]) 
     allNodeObjects[h.name]= h  # adding h to the structure
     
-    # add hidden variable to the dataframe
+    # add hidden variable to the dataframe and  split almost counts equally:
     addHiddenNodeToDf(h)
-    
-    # split the counts equally:
-    splitCountsEqually(h)
     
     maxIter= 1000
     for iterations in xrange(0, maxIter): 
-        
+        nodesBDeuScore=[]
+        countBDeuList=[]
         # perturb the counts here
-        countPerturbation()
+        countPerturbation(h)
         # compute the BDeu score again
         for n in allNodeObjects:
             node=allNodeObjects[n]
             if node.parentUpdateFlag== True: # if true its a child of hidden variable. so, calculate BDeu again
-                # compute new parent configuration set
-                getUpdatedQi(node)
-                orginal_k_values_counts=node.k_values # its a copy of k_values dict
-                
+                             
                 # change the counts of this node according to some criteria i.e.
                 # for new parent configuration, assign the counts such that sum of counts of new parent
                 # configurations is equal to counts of old parent configuration which we split
                 # to get the new parent configuration. 
                 populateCounts(node)
                 node.setLocalBDeu(getBDeu(node, alpha))
-                
+            nodesBDeuScore.append(node.getLocalBDeu())
+        countBDeuList= h.getParentValueCount().values()
+        countBDeuList.append(sum(nodesBDeuScore))
+        print countBDeuList  # countBDeu: [c1, c2, c3, ..., cn, bdeu_score]
+  
     
     
        
