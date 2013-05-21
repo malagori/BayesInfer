@@ -10,6 +10,7 @@ import os
 import sys
 import itertools
 import math
+import datetime
 import argparse
 import random as rNumber
 import numpy as np
@@ -339,11 +340,17 @@ def main(argv):
     # add hidden variable to the dataframe and  split almost counts equally:
     df=addHiddenNodeToDf(h, df)
     
+    # write df to file called initialCountSplit.txt
+    outName= 'initialHiddenCountSplit'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+    df.to_csv(outName+'.csv', sep=',')
+    
     # populate hidden value counts
     populateCounts(h)
     
     # open file to write the results
     wf= open(outputFile, 'w')
+    
+    maxIter=2
     
     for iterations in xrange(0, maxIter + 1 ): 
         nodesBDeuScore=[]
@@ -370,8 +377,13 @@ def main(argv):
         hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
         if (iterations % thining) == 0:
             print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
-        for i in hiddenValueCountList:
-            wf.write(str(i)+',')
+        hValues=node.getKvalues().keys()
+        for i in xrange(0,len(hValues)-1):
+            count=df[df[node.getName()]==hValues[i]].Counts
+            for j in count:
+                wf.write(str(j)+',')
+                print j
+        print str(sum(nodesBDeuScore))
         wf.write(str(sum(nodesBDeuScore)) + "\n")
     wf.close()
        
