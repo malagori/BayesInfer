@@ -382,9 +382,7 @@ def main(argv):
         for i in xrange(0,len(hValues)-1):
             count=df[df[node.getName()]==hValues[i]].Counts
             for j in count:
-                wf.write(str(j)+',')
-                print j
-        print str(sum(nodesBDeuScore))
+                wf.write(str(j)+',')    
         wf.write(str(sum(nodesBDeuScore)) + "\n")
     wf.close()
        
