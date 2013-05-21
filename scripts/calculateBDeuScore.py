@@ -272,6 +272,11 @@ def main(argv):
     alpha           =args.a
     maxIter         = args.i
     
+    print "structure: %s" % structureFile
+    print "outputFile %s" % outputFile
+    print "dataFile %s" % dataFile
+    print "alpha %f" % alpha
+    print "maxIter %d" % maxIter 
     # read data file
     df=readDataFromFile(dataFile)
     totalInitialObservations= sum(df['Counts']) # if we introduce next hidden variable, this variable would be updated
