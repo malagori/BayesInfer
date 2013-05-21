@@ -24,7 +24,6 @@ def readInitialStructure(infile):
         node.setR(int(cardinality))
         node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
         node.setName(var)
-        print parents
         node.setParents(parents)
         allNodesObj[var]=node
     return allNodesObj

@@ -46,7 +46,7 @@ def getUpdatedQi(node):
         allNodeObjects[node.getName()]=node
         
     
-def populateCounts(node, df):
+def populateCounts(node):
     """populate the counts for this variable for different parent configurations"""
     kValueDict= node.getKvalues()
     
@@ -54,7 +54,7 @@ def populateCounts(node, df):
     if len(node.getParents()) == 0:
         paValueDict={}
         for i in kValueDict.keys():
-            paValueDict[i]= getDataCount(i, [], node, df)
+            paValueDict[i]= getDataCount(i, [], node)
         #print "paValueDict:"
         #print paValueDict
         node.setParentValueCounts(paValueDict)
@@ -66,13 +66,13 @@ def populateCounts(node, df):
             # populate counts for different values of X for each parent configuration 
             for j in node.getPaConfigurations():
                 # j is a tuple containing parent's values. we have to change it to list 
-                pConfigDict[j]=getDataCount(k,list(j), node, df)
+                pConfigDict[j]=getDataCount(k,list(j), node)
             kValueDict[k]=pConfigDict
             
         node.setKvalues(kValueDict)
         allNodeObjects[node.getName()]=node
     
-def getDataCount(k, j, node,df):
+def getDataCount(k, j, node):
     # remember: j here is a list not tuple
      
     # subset data according to parent nodes
@@ -115,10 +115,10 @@ def getBDeu(node, alpha):
     # consider the case when a node has no parents
     # if len(node.pConfigurations) == 0:
     # compute localBDeu for this node. calculateLocalBDeu function will be different.
-    print "Node name: %s" % node.getName()
-    print "parent configuration %d" % len(node.pConfigurations)
+    #print "Node name: %s" % node.getName()
+    #print "parent configuration %d" % len(node.pConfigurations)
     if len(node.pConfigurations) == 0 :
-        print "calculate local BDeu for parent node"
+        #print "calculate local BDeu for parent node"
         localBDeu=calculateBDeuParentNode(node, alpha)
     else:
         # get node parent configurations
@@ -196,7 +196,7 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newKValueDict[newJ]= countDict[j]
        
 def countPerturbation(h):
-    print "perturb the count here"
+    #print "perturb the count here"
     
     hiddenName=h.getName()
     # pick a random index
@@ -282,6 +282,7 @@ def main(argv):
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-t', metavar='Thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
     args = parser.parse_args()
     
@@ -290,6 +291,7 @@ def main(argv):
     dataFile        = args.d
     alpha           = args.a
     maxIter         = args.i
+    thining         = args.t
     
     print "structure: %s" % structureFile
     print "outputFile %s" % outputFile
@@ -310,7 +312,7 @@ def main(argv):
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
         getUpdatedQi(allNodeObjects[n])
-        populateCounts(allNodeObjects[n],df)
+        populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
@@ -338,10 +340,7 @@ def main(argv):
     df=addHiddenNodeToDf(h, df)
     
     # populate hidden value counts
-    populateCounts(h, df)
-    
-    
-    maxIter= 2
+    populateCounts(h)
     
     # open file to write the results
     wf= open(outputFile, 'w')
@@ -350,11 +349,11 @@ def main(argv):
         nodesBDeuScore=[]
         hiddenValueCountList=[]
         # perturb the counts here
-        print "df before perturbation."
-        print df
+        #print "df before perturbation."
+        #print df
         countPerturbation(h)
-        print "df after perturbation."
-        print df
+        #print "df after perturbation."
+        #print df
         # compute the BDeu score again
         for n in allNodeObjects:
             node=allNodeObjects[n]
@@ -365,15 +364,12 @@ def main(argv):
                 # for new parent configuration, assign the counts such that sum of counts of new parent
                 # configurations is equal to counts of old parent configuration which we split
                 # to get the new parent configuration. 
-                populateCounts(node, df)
+                populateCounts(node)
                 node.setLocalBDeu(getBDeu(node, alpha))
             nodesBDeuScore.append(node.getLocalBDeu())
         hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
-        
-        print allNodeObjects[h.getName()].getParentValueCount()
-        print hiddenValueCountList  # countBDeu: [c1, c2, c3, ..., cn, bdeu_score]
-        print sum(nodesBDeuScore)
-        
+        if (iterations % thining) == 0:
+            print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
         for i in hiddenValueCountList:
             wf.write(str(i)+',')
         wf.write(str(sum(nodesBDeuScore)) + "\n")
