@@ -261,7 +261,7 @@ def main(argv):
     parser.add_argument('-s', metavar='structureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
-    parser.add_argument('-i', metavar='alpha',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
     args = parser.parse_args()
     
