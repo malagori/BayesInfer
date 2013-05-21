@@ -271,6 +271,29 @@ def addHiddenNodeToDf(h,df):
             df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
     return df  # delete the temprory data frame to save memory
+
+def addHiddenNode():
+    name = raw_input("Enter Hidden Variable Name: ")
+    card = raw_input("Enter Hidden Cardinality: ")
+    cardinality= int(card)
+    child1= raw_input("Enter first Child Variable Name: ")
+    child2= raw_input("Enter first Child Variable Name: ")
+    # change the structure by introducing hidden variable
+    h= Node()
+    h.setName(name)
+    h.setR(cardinality)
+    h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
+    h.addChild(child1) # add children to hidden variable
+    h.addChild(child2)
+    h.setChildrenUpdateFlag(True)
+    allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
+    allNodeObjects[child2].setParentUpdateFlag( True)
+    # compute new parent configuration set for both the children
+    getUpdatedQi(allNodeObjects[child1]) 
+    getUpdatedQi(allNodeObjects[child2]) 
+    allNodeObjects[h.getName()]= h  # adding h to the structure
+    return h
+   
     
             
 def main(argv):
@@ -321,37 +344,20 @@ def main(argv):
         
     print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
     
-    # change the structure by introducing hidden variable
-    h= Node()
-    cardinality=2 # user can input this information here
-    child1= 'A'
-    child2= 'B'
-    h.setName('H')
-    h.setR(cardinality)
-    h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
-    h.addChild(child1) # add children to hidden variable
-    h.addChild(child2)
-    h.setChildrenUpdateFlag(True)
-    allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
-    allNodeObjects[child2].setParentUpdateFlag( True)
-    # compute new parent configuration set for both the children
-    getUpdatedQi(allNodeObjects[child1]) 
-    getUpdatedQi(allNodeObjects[child2]) 
-    allNodeObjects[h.getName()]= h  # adding h to the structure
+    # enter information about hidden variable
+    h=addHiddenNode()
+
     # add hidden variable to the dataframe and  split almost counts equally:
     df=addHiddenNodeToDf(h, df)
     
     # write df to file called initialCountSplit.txt
     outName= 'initialHiddenCountSplit'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep=',')
-    
     # populate hidden value counts
     populateCounts(h)
     
     # open file to write the results
     wf= open(outputFile, 'w')
-    
-    maxIter=2
     
     for iterations in xrange(0, maxIter + 1 ): 
         nodesBDeuScore=[]
