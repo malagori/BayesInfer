@@ -351,7 +351,7 @@ def main(argv):
     df=addHiddenNodeToDf(h, df)
     
     # write df to file called initialCountSplit.txt
-    outName= 'initialHiddenCountSplit'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+    outName= outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep=',')
     # populate hidden value counts
     populateCounts(h)
