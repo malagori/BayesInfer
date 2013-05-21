@@ -218,7 +218,7 @@ def countPerturbation(h):
     incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
     #print "hidden value %d " % valueH
     #print "incrementedHvalue %d " % incrementedHvalue
-    #print "rIndex %d" % rIndex
+    #print "decremented index %d" % rIndex
     #print "totalUniqueObservations %d" % totalUniqueObservations
     if incrementedHvalue <  valueH:
         #print "rIndex %d" % rIndex
@@ -231,7 +231,7 @@ def countPerturbation(h):
     else:
         incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
         df.Counts[incrementedDfIndex] += 1
-
+    #print "incremented Index %d " % incrementedDfIndex
     
             
 def addHiddenNodeToDf(h,df):
@@ -358,7 +358,7 @@ def main(argv):
     
     # open file to write the results
     wf= open(outputFile, 'w')
-    
+
     for iterations in xrange(0, maxIter + 1 ): 
         nodesBDeuScore=[]
         hiddenValueCountList=[]
@@ -385,10 +385,12 @@ def main(argv):
         if (iterations % thining) == 0:
             print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
         hValues=node.getKvalues().keys()
+
         for i in xrange(0,len(hValues)-1):
-            count=df[df[node.getName()]==hValues[i]].Counts
+            count=df[df[h.getName()]==hValues[i]].Counts
             for j in count:
                 wf.write(str(j)+',')    
+            del count
         wf.write(str(sum(nodesBDeuScore)) + "\n")
     wf.close()
        
