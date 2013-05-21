@@ -20,6 +20,8 @@ from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
 from bayesInfer.readDataFile import readDataFromFile
 
+
+
 # total parent configurations
 def getUpdatedQi(node):
     """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""
@@ -31,7 +33,7 @@ def getUpdatedQi(node):
         allParentValues=[]
         for p in node.getParents():
             # get values of each parent and add it to allParentValues array
-            allParentValues.append(p.getKvalues().keys())
+            allParentValues.append(allNodeObjects[p].getKvalues().keys())
         for i in itertools.product(*allParentValues):
             # pConfig is of the form {(0, 1, 1), (0, 2, 0),...,}
             pConfig.append(i)
@@ -154,7 +156,7 @@ def calculateLocalBDeu(qi, node, alpha):
         c=0.0
         b=0.0
         # iterate over different values of variable X and retrieve each dictionary containing parentConfig:K_value_count
-        for k, v in node.getKvalues(node).iteritems():
+        for k, v in node.getKvalues().iteritems():
             Nijk+=v[j]
             c += (math.lgamma(zri+ v[j]) - math.lgamma(zri))
             
@@ -233,7 +235,8 @@ def addHiddenNodeToDf(h):
     #
     # for each value of hidden variable, we create a column vector storing counts.
     hiddenName=h.name
-    df[hiddenName]=Series(np.zeros(df.shape[0]), index=df.index)
+    hiddenColumn=Series(np.zeros(df.shape[0]), index=df.index)
+    df[hiddenName]=hiddenColumn
     df_temp= df.copy()
     copyCountList= [math.floor(i/h.getR()) for i in df_temp.Counts]
     
@@ -250,10 +253,8 @@ def addHiddenNodeToDf(h):
     
             
 def main(argv):
-    
-    
+    # global variables 
     global df, allNodeObjects, totalInitialObservations
-    alpha=1
     nodesBDeuScore=[]
      
     # Take care of input
