@@ -10,10 +10,12 @@ import os
 import sys
 import itertools
 import math
+import argparse
 import random as rNumber
 from __future__ import division
 import numpy as np
 from pandas import Series
+
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -248,15 +250,32 @@ def addHiddenNodeToDf(h):
     del df_temp  # delete the temprory data frame to save memory
     
             
-def main(dataFile, structureFile):
+def main(argv):
     
     
     global df, allNodeObjects, totalInitialObservations
-    df=readDataFromFile(dataFile)
-    totalInitialObservations= sum(df['Counts']) # if we introduce next hidden variable, this variable would be updated
     alpha=1
     nodesBDeuScore=[]
-    infile='path to file containing initial structure information'
+     
+    # Take care of input
+    parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
+    parser.add_argument('-s', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
+    parser.add_argument('-d', action='dataFile',type=str, help='Specify path to the data file ')
+    parser.add_argument('-a', action='alpha',type=float , help='Specify path to the data file ', default=1.0)
+    parser.add_argument('-i', action='alpha',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
+    args = parser.parse_args()
+    
+    structureFile   = args.s
+    outputFile      = args.o
+    dataFile        = args.d
+    alpha           =args.a
+    maxIter         = args.i
+    
+    # read data file
+    df=readDataFromFile(dataFile)
+    totalInitialObservations= sum(df['Counts']) # if we introduce next hidden variable, this variable would be updated
+    # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
     
     # draw initial structure when you get time .. future work
@@ -277,9 +296,9 @@ def main(dataFile, structureFile):
     # change the structure by introducing hidden variable
     h= Node()
     cardinality=2 # user can input this information here
-    child1= 'B'
-    child2= 'C'
-    h.name='h1'
+    child1= 'A'
+    child2= 'B'
+    h.name='H'
     h.setR(cardinality)
     h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
     h.children.append(child1) # add children to hidden variable
@@ -295,10 +314,15 @@ def main(dataFile, structureFile):
     # add hidden variable to the dataframe and  split almost counts equally:
     addHiddenNodeToDf(h)
     
-    maxIter= 1000
+    
+    maxIter= 2
+    
+    # open file to write the results
+    wf= open(outputFile, 'w')
+    
     for iterations in xrange(0, maxIter): 
         nodesBDeuScore=[]
-        countBDeuList=[]
+        hiddenValueCountList=[]
         # perturb the counts here
         countPerturbation(h)
         # compute the BDeu score again
@@ -313,12 +337,15 @@ def main(dataFile, structureFile):
                 populateCounts(node)
                 node.setLocalBDeu(getBDeu(node, alpha))
             nodesBDeuScore.append(node.getLocalBDeu())
-        countBDeuList= h.getParentValueCount().values()
-        countBDeuList.append(sum(nodesBDeuScore))
-        print countBDeuList  # countBDeu: [c1, c2, c3, ..., cn, bdeu_score]
-  
-    
-    
+        hiddenValueCountList= h.getParentValueCount().values()
+        
+        print hiddenValueCountList  # countBDeu: [c1, c2, c3, ..., cn, bdeu_score]
+        print sum(nodesBDeuScore)
+        
+        for i in hiddenValueCountList:
+            wf.write(str(i)+',')
+        wf.write(str(sum(nodesBDeuScore)))
+    wf.close()
        
 if __name__== "__main__":
-    main()
+    main(sys.argv[1:])
