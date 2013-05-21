@@ -59,10 +59,22 @@ class Node(object):
 		return self.localBDeu
 	def getParentValueCount(self):
 		return self.parent_k_counts
+	def getChildrenUpdateFlag(self):
+		return self.childrenUpdateFlag
+	def getParentUpdateFlag(self):
+		return self.parentUpdateFlag
+	def getChildren(self):
+		return self.children
 	#def getsetpconfigVarValueCount(self):
 	#	return self.pconfigVarValueCount
 	
 	# setters
+	def addChild(self,child):
+		self.children.append(child)
+	def setParentUpdateFlag(self,flag):
+		self.parentUpdateFlag= flag
+	def setChildrenUpdateFlag(self, flag):
+		self.childrenUpdateFlag=flag
 	def setLocalBDeu(self,bdeuScore):
 		self.localBDeu= bdeuScore
 	def setParents(self,pList):

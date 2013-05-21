@@ -43,9 +43,10 @@ def getUpdatedQi(node):
         #node.setpConfiguration(dictPaConfiguration)
         
         node.setpConfiguration(pConfig)
-        node.valueUpdateFlag == True 
+        allNodeObjects[node.getName()]=node
+        
     
-def populateCounts(node):
+def populateCounts(node, df):
     """populate the counts for this variable for different parent configurations"""
     kValueDict= node.getKvalues()
     
@@ -53,21 +54,25 @@ def populateCounts(node):
     if len(node.getParents()) == 0:
         paValueDict={}
         for i in kValueDict.keys():
-            paValueDict[i]= getDataCount(i, [], node)
-            
+            paValueDict[i]= getDataCount(i, [], node, df)
+        #print "paValueDict:"
+        #print paValueDict
         node.setParentValueCounts(paValueDict)
+        allNodeObjects[node.getName()]=node
+        #print node.getParentValueCount()
     else:
         for k in kValueDict.keys():
             pConfigDict={}
             # populate counts for different values of X for each parent configuration 
             for j in node.getPaConfigurations():
                 # j is a tuple containing parent's values. we have to change it to list 
-                pConfigDict[j]=getDataCount(k,list(j), node)
+                pConfigDict[j]=getDataCount(k,list(j), node, df)
             kValueDict[k]=pConfigDict
             
         node.setKvalues(kValueDict)
+        allNodeObjects[node.getName()]=node
     
-def getDataCount(k, j, node):
+def getDataCount(k, j, node,df):
     # remember: j here is a list not tuple
      
     # subset data according to parent nodes
@@ -80,10 +85,10 @@ def getDataCount(k, j, node):
     # check if parent configuration is zero
     if len(j)==0:
         # compute the counts for parent variable for kth value
-        localDframe=df[df[node.name]==k]
+        localDframe=df[df[node.getName()]==k]
     else:
         # All records with var value = k
-        localDframe=df[df[node.name]==k]
+        localDframe=df[df[node.getName()]==k]
         # for each parent value
         idx=0
         for pa in node.getParents():
@@ -110,16 +115,19 @@ def getBDeu(node, alpha):
     # consider the case when a node has no parents
     # if len(node.pConfigurations) == 0:
     # compute localBDeu for this node. calculateLocalBDeu function will be different.
-    if len(node.pConfigurations) == 0:
+    print "Node name: %s" % node.getName()
+    print "parent configuration %d" % len(node.pConfigurations)
+    if len(node.pConfigurations) == 0 :
         print "calculate local BDeu for parent node"
         localBDeu=calculateBDeuParentNode(node, alpha)
     else:
         # get node parent configurations
-        qi= node.pConfigurations
+        qi= node.getPaConfigurations()
             
         localBDeu= calculateLocalBDeu(qi, node, alpha)
     # set node localBDeu score there
     node.setLocalBDeu(localBDeu)
+    allNodeObjects[node.getName()]=node
     
     return node.localBDeu
 
@@ -195,7 +203,10 @@ def countPerturbation(h):
     while (True):
         rIndex=rNumber.randint(0,df.shape[0]-1)   # -1 because indexing starts from 0
         if df.Counts[rIndex] > 0:
+            #print "before decrimenting index %d %d: " % (rIndex, df.Counts[rIndex])
             df.Counts[rIndex] -= 1 # decrement by 1 
+            #print "after decrimenting index %d %d: " % (rIndex, df.Counts[rIndex])
+            break
     # select the hidden value at rIndex
     valueH=df[hiddenName][rIndex]
     # choose other values of Hidden variable other then
@@ -203,17 +214,25 @@ def countPerturbation(h):
     
     # choose one of the hValuesWithoutValueH values to be incremented by 1
     incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
+    #print "hidden value %d " % valueH
+    #print "incrementedHvalue %d " % incrementedHvalue
+    #print "rIndex %d" % rIndex
+    #print "totalUniqueObservations %d" % totalUniqueObservations
     if incrementedHvalue <  valueH:
+        #print "rIndex %d" % rIndex
         # compute the index of record in df to be incremented
-        incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalInitialObservations)
+        incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalUniqueObservations)
+        #print "incrementedDfIndex %d " % incrementedDfIndex
+        #print df.Counts[incrementedDfIndex]
         df.Counts[incrementedDfIndex] += 1
+        #print df.Counts[incrementedDfIndex]
     else:
-        incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalInitialObservations)
+        incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
         df.Counts[incrementedDfIndex] += 1
 
     
             
-def addHiddenNodeToDf(h):
+def addHiddenNodeToDf(h,df):
     # old dataframe was:
     # A B C Counts 
     # 0 1 1 10          
@@ -234,6 +253,7 @@ def addHiddenNodeToDf(h):
     # 0 1 0 1      2     
     #
     # for each value of hidden variable, we create a column vector storing counts.
+
     hiddenName=h.name
     hiddenColumn=Series(np.zeros(df.shape[0]), index=df.index)
     df[hiddenName]=hiddenColumn
@@ -246,15 +266,14 @@ def addHiddenNodeToDf(h):
             col=[i]*df_temp.shape[0]  # fastest way to create list ;)
             df_temp[hiddenName]=col
             df_temp.Counts=copyCountList
-            df.Counts[0:totalInitialObservations]= df.Counts[0:totalInitialObservations]-copyCountList
+            df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
-    
-    del df_temp  # delete the temprory data frame to save memory
+    return df  # delete the temprory data frame to save memory
     
             
 def main(argv):
     # global variables 
-    global df, allNodeObjects, totalInitialObservations
+    global df, allNodeObjects, totalUniqueObservations
     nodesBDeuScore=[]
      
     # Take care of input
@@ -279,7 +298,7 @@ def main(argv):
     print "maxIter %d" % maxIter 
     # read data file
     df=readDataFromFile(dataFile)
-    totalInitialObservations= sum(df['Counts']) # if we introduce next hidden variable, this variable would be updated
+    totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
     
@@ -291,7 +310,7 @@ def main(argv):
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
         getUpdatedQi(allNodeObjects[n])
-        populateCounts(allNodeObjects[n])
+        populateCounts(allNodeObjects[n],df)
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
@@ -303,21 +322,23 @@ def main(argv):
     cardinality=2 # user can input this information here
     child1= 'A'
     child2= 'B'
-    h.name='H'
+    h.setName('H')
     h.setR(cardinality)
     h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
-    h.children.append(child1) # add children to hidden variable
-    h.children.append(child2) 
-    h.childrenUpdateFlag= True
-    allNodeObjects[child1].parentUpdateFlag= True # get the children nodes and update the parentUpdateFlag
-    allNodeObjects[child2].parentUpdateFlag= True
+    h.addChild(child1) # add children to hidden variable
+    h.addChild(child2)
+    h.setChildrenUpdateFlag(True)
+    allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
+    allNodeObjects[child2].setParentUpdateFlag( True)
     # compute new parent configuration set for both the children
     getUpdatedQi(allNodeObjects[child1]) 
     getUpdatedQi(allNodeObjects[child2]) 
-    allNodeObjects[h.name]= h  # adding h to the structure
-    
+    allNodeObjects[h.getName()]= h  # adding h to the structure
     # add hidden variable to the dataframe and  split almost counts equally:
-    addHiddenNodeToDf(h)
+    df=addHiddenNodeToDf(h, df)
+    
+    # populate hidden value counts
+    populateCounts(h, df)
     
     
     maxIter= 2
@@ -325,31 +346,37 @@ def main(argv):
     # open file to write the results
     wf= open(outputFile, 'w')
     
-    for iterations in xrange(0, maxIter): 
+    for iterations in xrange(0, maxIter + 1 ): 
         nodesBDeuScore=[]
         hiddenValueCountList=[]
         # perturb the counts here
+        print "df before perturbation."
+        print df
         countPerturbation(h)
+        print "df after perturbation."
+        print df
         # compute the BDeu score again
         for n in allNodeObjects:
             node=allNodeObjects[n]
-            if node.parentUpdateFlag== True: # if true its a child of hidden variable. so, calculate BDeu again
-                             
+
+            if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                
                 # change the counts of this node according to some criteria i.e.
                 # for new parent configuration, assign the counts such that sum of counts of new parent
                 # configurations is equal to counts of old parent configuration which we split
                 # to get the new parent configuration. 
-                populateCounts(node)
+                populateCounts(node, df)
                 node.setLocalBDeu(getBDeu(node, alpha))
             nodesBDeuScore.append(node.getLocalBDeu())
-        hiddenValueCountList= h.getParentValueCount().values()
+        hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
         
+        print allNodeObjects[h.getName()].getParentValueCount()
         print hiddenValueCountList  # countBDeu: [c1, c2, c3, ..., cn, bdeu_score]
         print sum(nodesBDeuScore)
         
         for i in hiddenValueCountList:
             wf.write(str(i)+',')
-        wf.write(str(sum(nodesBDeuScore)))
+        wf.write(str(sum(nodesBDeuScore)) + "\n")
     wf.close()
        
 if __name__== "__main__":
