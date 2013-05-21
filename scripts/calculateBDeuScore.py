@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import division
 __author__ = "Mehmood Alam Khan"
 __email__  = "malagori@kth.se"
 __version__= "0.9"
@@ -12,7 +12,6 @@ import itertools
 import math
 import argparse
 import random as rNumber
-from __future__ import division
 import numpy as np
 from pandas import Series
 
@@ -259,17 +258,17 @@ def main(argv):
      
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
-    parser.add_argument('-s', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
-    parser.add_argument('-d', action='dataFile',type=str, help='Specify path to the data file ')
-    parser.add_argument('-a', action='alpha',type=float , help='Specify path to the data file ', default=1.0)
-    parser.add_argument('-i', action='alpha',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-s', metavar='structureFile' ,type=str, help='Specify path to the file containing initial structure. ')
+    parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
+    parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
+    parser.add_argument('-i', metavar='alpha',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
     args = parser.parse_args()
     
     structureFile   = args.s
     outputFile      = args.o
     dataFile        = args.d
-    alpha           =args.a
+    alpha           = args.a
     maxIter         = args.i
     
     print "structure: %s" % structureFile
