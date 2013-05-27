@@ -272,12 +272,12 @@ def addHiddenNodeToDf(h,df):
             df= df.append(df_temp, ignore_index=True)
     return df  # delete the temprory data frame to save memory
 
-def addHiddenNode():
-    name = raw_input("Enter Hidden Variable Name: ")
-    card = raw_input("Enter Hidden Cardinality: ")
-    cardinality= int(card)
-    child1= raw_input("Enter first Child Variable Name: ")
-    child2= raw_input("Enter first Child Variable Name: ")
+def addHiddenNode(name, cardinality, child1, child2):
+    #name = raw_input("Enter Hidden Variable Name: ")
+    #card = raw_input("Enter Hidden Cardinality: ")
+    #cardinality= int(card)
+    #child1= raw_input("Enter first Child Variable Name: ")
+    #child2= raw_input("Enter first Child Variable Name: ")
     # change the structure by introducing hidden variable
     h= Node()
     h.setName(name)
@@ -305,6 +305,10 @@ def main(argv):
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
     parser.add_argument('-s', metavar='structureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
+    parser.add_argument('-n', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
+    parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
+    parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
+    parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='Thining',type=int , help='Display BDeu Score after iterations ', default=500)
@@ -317,6 +321,10 @@ def main(argv):
     alpha           = args.a
     maxIter         = args.i
     thining         = args.t
+    name            = args.n
+    cardinality     = args.c
+    child1          = args.c1
+    child2          = args.c2
     
     print "structure: %s" % structureFile
     print "outputFile %s" % outputFile
@@ -345,7 +353,7 @@ def main(argv):
     print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
     
     # enter information about hidden variable
-    h=addHiddenNode()
+    h=addHiddenNode(name, cardinality, child1, child2)
 
     # add hidden variable to the dataframe and  split almost counts equally:
     df=addHiddenNodeToDf(h, df)
