@@ -21,6 +21,7 @@ from pandas import Series
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
 from bayesInfer.readDataFile import readDataFromFile
+from bayesInfer.storeRetriveSeed import RandomSeed
 
 
 
@@ -303,7 +304,7 @@ def main(argv):
      
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
-    parser.add_argument('-s', metavar='structureFile' ,type=str, help='Specify path to the file containing initial structure. ')
+    parser.add_argument('-is', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
     parser.add_argument('-n', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
     parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
@@ -311,11 +312,13 @@ def main(argv):
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
-    parser.add_argument('-t', metavar='Thining',type=int , help='Display BDeu Score after iterations ', default=500)
+    parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
+    parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
+    parser.add_argument('-sl', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
     args = parser.parse_args()
     
-    structureFile   = args.s
+    structureFile   = args.initialStructureFile
     outputFile      = args.o
     dataFile        = args.d
     alpha           = args.a
@@ -325,12 +328,26 @@ def main(argv):
     cardinality     = args.c
     child1          = args.c1
     child2          = args.c2
+    seed            = args.s
+    seedFile        = args.sl
+    
+    if seed == None and seedFile == None:
+        seed= time.time()
+    elif seed != None and seedFile == None:
+        RandomSeed.setInitialState(seed)
+    elif seedFile != None and seed == None:
+        state= RandomSeed.getSateFromFile(seedFile)
+        rNumber.setstate(state)
     
     print "structure: %s" % structureFile
     print "outputFile %s" % outputFile
     print "dataFile %s" % dataFile
     print "alpha %f" % alpha
     print "maxIter %d" % maxIter 
+    print "seed %d" % seed
+    
+    # set the state
+    
     # read data file
     df=readDataFromFile(dataFile)
     totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
@@ -392,6 +409,9 @@ def main(argv):
         hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
         if (iterations % thining) == 0:
             print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
+            stateOutFile= 'sate_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+            RandomSeed.storeSate(stateOutFile)
+            
         hValues=node.getKvalues().keys()
 
         for i in xrange(0,len(hValues)-1):
