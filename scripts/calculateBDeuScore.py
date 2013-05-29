@@ -342,9 +342,9 @@ def main(argv):
      
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
-    parser.add_argument('-is', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
+    parser.add_argument('-b', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
-    parser.add_argument('-n', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
+    parser.add_argument('-x', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
     parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
     parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
@@ -352,29 +352,32 @@ def main(argv):
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
-    parser.add_argument('-sl', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
+    parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
     args = parser.parse_args()
     
-    structureFile   = args.initialStructureFile
+    structureFile   = args.b
     outputFile      = args.o
     dataFile        = args.d
     alpha           = args.a
     maxIter         = args.i
     thining         = args.t
-    name            = args.n
+    name            = args.x
     cardinality     = args.c
     child1          = args.c1
     child2          = args.c2
     seed            = args.s
-    seedFile        = args.sl
+    seedFile        = args.l
+    
+    # instanciate RandomSeed object
+    rs=RandomSeed()
     
     if seed == None and seedFile == None:
         seed= time.time()
     elif seed != None and seedFile == None:
-        RandomSeed.setInitialState(seed)
+        rs.setInitialState(seed)
     elif seedFile != None and seed == None:
-        state= RandomSeed.getSateFromFile(seedFile)
+        state= rs.getSateFromFile(seedFile)
         rNumber.setstate(state)
     
     print "structure: %s" % structureFile
@@ -411,8 +414,8 @@ def main(argv):
     h=addHiddenNode(name, cardinality, child1, child2)
 
     # add hidden variable to the dataframe and  split almost counts equally:
-    df=addHiddenNodeToDf(h, df)
-    
+    #df=addHiddenNodeToDf(h, df)
+    df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
     outName= outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep=',')
@@ -447,8 +450,8 @@ def main(argv):
         hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
         if (iterations % thining) == 0:
             print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
-            stateOutFile= 'sate_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
-            RandomSeed.storeSate(stateOutFile)
+            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+            rs.storeSate(stateOutFile)
             
         hValues=node.getKvalues().keys()
 
