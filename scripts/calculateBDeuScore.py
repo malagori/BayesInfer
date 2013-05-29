@@ -234,7 +234,45 @@ def countPerturbation(h):
         df.Counts[incrementedDfIndex] += 1
     #print "incremented Index %d " % incrementedDfIndex
     
-            
+def percentageHiddenCoutsSplit(h,df):
+    # old dataframe was:
+    # A B C Counts 
+    # 0 1 1 10          
+    # 0 0 1 4           
+    # 0 1 0 4      
+    #
+    # and 
+    #  the new counts for will be randomly split
+    # A B C Counts H
+    # 0 1 1 4      0     
+    # 0 0 1 2      0     
+    # 0 1 0 2      0
+    # 0 1 1 3      1    
+    # 0 0 1 1      1     
+    # 0 1 0 1      1 
+    # 0 1 1 3      2    
+    # 0 0 1 1      2     
+    # 0 1 0 1      2     
+    #
+    # for each value of hidden variable, we create a column vector storing counts.
+
+    hiddenName=h.name
+    hiddenColumn=Series(np.zeros(df.shape[0]), index=df.index)
+    df[hiddenName]=hiddenColumn
+    df_temp= df.copy()
+    
+    
+    #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
+    for i in h.getKvalues().keys():
+        if i != 0: # rows with hidden value not equal to zero are add here
+            col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+            copyCountList= [math.floor(i*rNumber.random()) for i in df_temp.Counts]
+            df_temp[hiddenName]=col
+            df_temp.Counts=copyCountList
+            df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
+            df= df.append(df_temp, ignore_index=True)
+    return df  # delete the temprory data frame to save memory
+
 def addHiddenNodeToDf(h,df):
     # old dataframe was:
     # A B C Counts 
