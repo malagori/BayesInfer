@@ -24,7 +24,7 @@ class RandomSeed(object):
                 print '%s, initializing random module' % infile
                 with open(infile, 'rb') as f:
                     state = pickle.load(f)
-                    self.setState(state)
+                self.setState(state)
                 return self.getState()
                 ##random.setstate(self.state)
             else:
