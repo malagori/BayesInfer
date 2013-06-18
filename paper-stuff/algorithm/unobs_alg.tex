@@ -1,0 +1,55 @@
+\documentclass[10pt]{article}
+
+\title{Algorithm for Finding Unobserved Variables}
+\author{Pekka Parviainen}
+
+\begin{document}
+
+\maketitle
+
+Input: $m$ samples from the joint distribution of (observed) variables $N$
+
+Parameters: Maximum indegree $k$, 
+
+Output: A Bayesian network (possibly with hidden variables)
+
+\begin{enumerate}
+\item Find an optimal Bayesian network $A^*$ on $N$ (for example, using Silander--Myllym\"aki algorithm or greedy equivalence search (GES)).
+\item Repeat until adding a hidden variable does not increase the score
+\begin{enumerate}
+\item For each graph $A$ in the equivalence class of $A^*$
+\begin{enumerate}
+\item For each arc $uv\in A$
+\begin{itemize}
+\item Compute the change in score when $uv$ is removed and a hidden variable $w$ is added to a parent of $u$ and $v$.
+\end{itemize}
+\end{enumerate}
+\item Choose the highest scoring arc (and graph) and replace it with the hidden variable $w$. This new graph will be $A^*$
+\end{enumerate}
+\item return $A^*$
+
+\end{enumerate}
+
+Information concerning moving within an equivalence class can be found in papers by Chickering \cite{chickering95, chickering02b, chickering02c}.
+
+For scoring the arc addition we need to explicitly assign values to the hidden variable. We try to choose the values so that the total score of the network is maximized. To this end, consider the following greedy algorithm.
+
+Input: Counts for observed variables $u$ and $v$ and their parents.
+
+Output: Counts for the hidden variable $w$
+
+\begin{enumerate}
+\item Initialize $w$ with random counts.
+\item Repeat until joint score of $u$, $v$, and $w$ doesn't increase
+\begin{enumerate}
+\item Compute score after each local alteration (switch a one to a zero or the other way around)
+\item Choose the best alteration 
+\end{enumerate}
+\end{enumerate}
+
+To get good results, we need to run this algorithm several times with different initializations.
+
+\bibliographystyle{plain}
+\bibliography{equivalence}
+
+\end{document} 
