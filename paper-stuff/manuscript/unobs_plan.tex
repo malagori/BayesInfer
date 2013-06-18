@@ -1,0 +1,244 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+
+
+\begin{document}
+
+\title{Learning Bayesian networks with unobserved variables}
+\author{Pekka Parviainen, Mehmood Alam Khan}
+
+\maketitle
+
+\section{Background}
+
+Bayesian networks are often used to analyze causal relations between variables. While using Bayesian networks in causal analysis one often assumes causal sufficiency, that is, that no unobserved variable affects two or more observed variables. However, this is often an unrealistic assumption. Therefore, applying standard models straightforwardly can lead to misleading conclusions. Thus, there is demand for models that handle unobserved (hidden, latent) variables.
+
+There are two main approaches to structure learning in Bayesian networks: constraint-based and score-based. The constraint-based model is based on testing conditional independencies between variables and constructing networks that express the found independencies (and dependencies). On the other hand, the score-base approach is based on assigning each network a score based on how well the network fits to the data and trying to find a highest-scoring network. 
+
+While score-based methods perform often very well in practice, especially when the data is scarce, they lack a principled approach for handling unobserved variables. The constraint-based approach, on the other hand, allows presenting the structures using maximal ancestral graphs (MAGs) that implicitly include unobserved variables. 
+
+Models with unobserved variables are challenging due to the fact that there are an infinite amount of such models. Thus, to be able use such models in practice, we need to make some assumptions. However, finding a "good" set of assumptions is challenging.
+
+In mathematical modeling we often have to balance between model complexity and computational complexity. Generally, the more complex the model is the better it is able to catch all the relevant aspects of the phenomenon that we try to model. However, complex models can easily become computationally intractable. Thus, the goal is to construct models that are complex enough to capture all relevant aspects of the phenomenon of interest while being simple enough to allow inference in practice.
+
+%Causal sufficiency
+%Models with unobserved variables require assumptions
+%score-based vs. constraint-based
+
+\subsection{Prerequisites}
+
+This project requires understanding of several key concepts in Bayesian networks and Bayesian probability theory. At least the following concepts should be understood.
+
+Bayesian networks: d-separation, Markov equivalence, identifiability, faithfulness, perfect map \cite[ch. 3]{koller09}, structure learning \cite[ch. 18]{koller09}, partially observed data \cite[ch. 19.4, 19.5]{koller09}, causality \cite[ch. 21]{koller09}.
+
+Bayesian probability theory: marginalization, uncertainty represented by a probability distribution, Bayesian approach to Bayesian networks \cite{friedman03}.
+
+There have been some studies on Bayesian networks with unobserved variables \cite{boyen99, elidan00, elidan01, elidan05, friedman97b, friedman98, Friedman:1999vw, Geiger:1998tw, Kearns:1998wn, pellet08, Zhang:2004uh}. 
+
+
+
+\section{Research questions}
+
+
+
+The goal of this project is to construct a principled and practical Bayesian model for Bayesian networks with unobserved variables. Basically, the project has three "dimensions": theoretical, algorithmic and practical. The main research questions can be summarized as follows.
+
+\begin{enumerate}
+\item What is the expressiveness of the model (compared to other models)?
+\item How to learn the model effectively?
+\item How good is the model in practice?
+\end{enumerate}
+
+The first two questions are highly interdependent.
+
+
+%Model complexity vs. computational complexity
+
+%Better than constraint-based?
+
+%Restrict to multinomial variables
+
+%Prove that our model is equally powerful to ?
+
+
+\section{Solution ideas}
+
+To get started, we can consider simplified models. For example, we can try to solve the problem when the structure for observed variables forms a (poly)tree. We can also allow at most one hidden variable per observed variable.
+
+Another possibility is to consider some information-theoretic framework instead of the Bayesian one.
+
+\section{Problem Formulation}
+
+
+\textbf{Notations:}
+	\begin{itemize}
+		\item `$x_i$' denotes observed variable and `X' as set of observed variables.
+		\item `D' denotes dataset.  $D = \lbrace x_i\left[ k\right] \mid i \in \left[ 1,...,n \right],  k \in \left[ 1,...,m \right] \rbrace$
+  		\item `$y_{\langle i, j \rangle}$' denotes unobserbed variable and `Y' as set of unobserved variables. $H = \lbrace y_{\langle i, j \rangle} \left[ k\right] \mid \lbrace i, j \rbrace \in \left( X \times X \right),  k \in \left[ 1,...,m \right] \rbrace$
+		\item $G = \left( V, A\right)$ is a directed acyclic graph with vertex set V and set of arcs A. Where $V = \left[X \cup Y \right]$
+		\item The parent set of a variable is denoted by $p$. For-instance, the parent set of variable $x_i$ in a graph G will be $p_G\left(x_i\right)$
+		\item Similarly, Children of a variable $x_i$ in a graph G is represented by $c_G\left(x_i\right)$	
+		\item $\Theta_{x_i}$ are the parameters for variable $x_i$ of X in a given Bayesian network.
+		\item $\Theta_{x_i}= \lbrace \Theta_{x_i | p_G \left( x_i \right) } \rbrace$ are the parameters for variable $x_i$ in a BN given its parent set.
+		\item $\Theta_{x_i | p_G \left( x_i \right) } = \lbrace \theta_{x_i | p_G \left( x_i \right)=\textbf{u} } \rbrace$ are parameters for variable $x_i$ given its parent set take their \textbf{u}-th configuration in a given bayesian network. 
+		\item Similarly, $\Theta_G = \lbrace	\Theta_{x_i} \rbrace, i= 1,.., n $, encodes all the parameters for a given bayesian network with underlying graph G. 
+		
+	\end{itemize}
+
+\textbf{Assumptions:}
+	\begin{itemize}
+		\item A hidden variable $y_{\langle i, j \rangle}$ can not have any parents but it may have zero or two children, $x_i$ and $x_j$.
+		\item An observed variable can have many parents or none.
+		\item Complete data.
+		\item \textit{Multinomial sample:} Dataset D consists of multinomial samples. Binary variables are special cases. Same is assumed for hidden variables H.
+		\item \textit{Dirichlet:} Prior over $\Theta_{x_i | p_G \left( x_i \right) }$ is a \textit{Dirichlet} distribution. 
+		\item \textit{Parameter independence:} The priors over the parameters $ \lbrace \theta_{x_i | p_G \left( x_i \right)=\textbf{u} } \rbrace $  for different $x_i, p_G$ and $u$ are independent.
+		\begin{itemize}
+			\item \textit{Global parameter independence:} Given a graph G such that $P\left(G\right) > 0$ then, 
+								$P\left( \Theta_G | G \right) = \prod_i^n P \left( \Theta_{x_i} | G\right) $ 
+			\item \textit{Local parameter independence:}  Given a graph G such that $P\left(G\right) > 0$ then, 
+								$ P \left( \Theta_{x_i} | G\right) = \prod_{u \in U} P \left( \theta_{x_i | p_G \left( x_i \right)=u } | G\right) $, \\where $ U=\lbrace u_i \rbrace$ are the set of all possible configuration of parents of $x_i$
+		\end{itemize}
+		\item \textit{Parameter modularity:} For a given two DAGs, $G$ and $G^{'}$, such that $P\left(G\right) > 0$ and $P\left( G^{'} \right) > 0$, If a variable $x_i$ has the same parent set in $G$ and $G^{'}$ i.e. $p_G\left(x_i\right)= p_{G^{'}}\left(x_i\right)= \textbf{U}$, then \\
+					$  P \left( \theta_{x_i | U } | G\right) =  P \left( \theta_{x_i | U } | G^{'}\right)$ 
+		
+	\end{itemize}
+	
+	
+\textbf{Structure learning with fully observed data:} \\
+\begin{equation}\label{eq:equation1}
+P\left(G  \vert D \right) = \int_\theta \frac{ P\left(D \vert G,\theta \right) P\left(\theta  \vert G \right) P\left(G \right) } { P\left(D \right) }\,\mathrm{d}\theta
+\end{equation}
+where, G refers to a structure or DAG, D as data and $\theta$ are parameters.\\
+\begin{equation}\label{eq:equation2}
+P\left(G \vert D \right) \propto \int_\theta P\left(D \vert G,\theta \right) P\left(\theta \vert G \right) P\left(G \right) \,\mathrm{d}\theta
+\end{equation}
+ \\
+\textbf{Structure learning with partially observed data:} \\
+\begin{equation}\label{eq:equation3}
+P\left(G \vert D \right) = \sum_{ H } \int_\theta  \frac{ P\left(G \right) P\left( \theta \vert G \right) P\left(H \vert \theta, G \right) P\left(D \vert H, \theta, G \right)  } { P\left(D \right) }\,\mathrm{d}\theta
+\end{equation}
+where, H is hidden variable and assumed as discrete.\\
+\begin{equation}\label{eq:equation4}
+P\left(G \vert D \right) \propto \sum_{ H } \int_\theta   P\left(G \right) P\left( \theta \vert G \right) P\left(H \vert \theta, G \right) P\left(D \vert H, \theta, G \right) \,\mathrm{d}\theta
+\end{equation}
+ \\
+
+\textbf{Components:}
+
+\begin{enumerate}
+ 
+\item \textbf{$P(G) $:}
+
+\begin{equation}\label{eq:equation5}
+P\left(G \right) \propto \prod_{i \in N }  
+														s\left(x_i, p_G\left( x_i \right)\right)   
+												\prod_{\substack{ 
+															\lbrace i,j \rbrace \in \left(N \times N\right)  } }   
+												 		r\left( y_{\langle i,j\rangle} , c_G\left( y_{\langle i,j\rangle}  \right)\right)
+\end{equation}
+Where,
+\begin{equation}\label{eq:equation6}
+	r\left( y_{\langle i,j\rangle}  , c_G\left(y_{\langle i,j\rangle}  \right)\right) = \left\{ 
+  					\begin{array}{l l}
+    					 	\geq 0  & \quad \text{if $c_G\left( y_{\langle i,j\rangle}  \right) = \emptyset$  OR  $c_G\left( y_{\langle i,j\rangle}  \right) = \lbrace i, j\rbrace $ }\\
+    						0 & \quad \text{Otherwise}
+  					\end{array} \right.			   
+\end{equation}		
+
+\begin{equation}\label{eq:equation7}
+	 				s\left(x_i, p_G\left( x_i \right)\right)  = \left\{ 
+  					\begin{array}{l l}
+    						0  & \quad \text{if $ \lbrace y_{\langle i, j \rangle } \in p_G \left( i \right), j \neq i, k \neq i \rbrace $ }\\
+    							& \quad \text  {OR}\\
+    							& \quad \text{$ \lbrace y_{\langle i, j \rangle } \in p_G\left( i \right)$ AND  $ x_j \in p_G \left( i \right) \rbrace $ }\\ 
+    							& \quad \text{OR}\\
+    							& \quad \text{$ \lbrace y_{\langle j, i \rangle } \in p_G\left( i \right)$ AND  $ x_j \in p_G \left( i \right) \rbrace $}\\\\
+    					    \geq 0 & \quad \text{Otherwise}
+  					\end{array} \right.	
+\end{equation}	
+
+
+\item \textbf{$P(\Theta | G) $:}
+\begin{equation}\label{eq:equation8}
+P(\Theta | G) = \prod_i^{n} f( \theta_{x_i | p_G \left( x_i \right) } | G ) \prod_{\substack{ 
+															\langle i,j\rangle \in \left(N \times N\right)}}
+															\rho \left( \theta_{\lbrace i, j \rbrace} \right)
+\end{equation}
+
+\item \textit{$P(H | \Theta, G) $:}
+\begin{equation}\label{eq:equation9}
+P(H | \Theta, G) = \prod_{k=1}^{m} \prod_{\substack{ 
+															\langle i,j\rangle \in \left(N \times N\right)}}
+															\theta_{y_{\langle i,j\rangle\left[ k \right]}}
+\end{equation}
+
+\item \textit{$P(D|H, \Theta, G) $:}
+\begin{equation}\label{eq:equation10}
+P(D|H, \Theta, G) = \prod_{k=1}^{m} \prod_i^{n}  \theta_{x_i | p_G \left( x_i \right)= u\left[ k \right] } 
+\end{equation}
+
+
+\end{enumerate}
+
+\section{Full Joint Distribution}
+\begin{equation}\label{eq:equation11}
+P(D, H, \Theta, G)= P(G)P(\Theta|G)P(H |\Theta|G)P(D | H,\Theta|G)
+\end{equation}
+
+\begin{equation}
+\begin{split}
+							= \prod_{i \in N }  
+														s\left(x_i, p_G\left( x_i \right)\right)   
+												\prod_{\substack{ 
+															\lbrace i,j \rbrace \in \left(N \times N\right)  } }   
+												 		r\left( y_{\langle i,j\rangle} , c_G\left( y_{\langle i,j\rangle}  \right)\right)
+								\prod_i^{n} f( \theta_{x_i | p_G \left( x_i \right) } | G ) \\
+								\quad								
+								\prod_{\substack{ 
+											\langle i,j\rangle \in \left(N \times N\right)}} 
+											\rho \left( \theta_{\lbrace i, j \rbrace} \right)							
+								\prod_{k=1}^{m} \prod_{\substack{ 
+															\langle i,j\rangle \in \left(N \times N\right)}}
+															\theta_{y_{\langle i,j\rangle\left[ k \right]}}
+								\prod_{k=1}^{m} \prod_i^{n}  \theta_{x_i | p_G \left( x_i \right)= u\left[ k \right] } 
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+							= \prod_{i \in N } 
+									\left( 
+											s\left(x_i, p_G\left( x_i \right)\right)    f( \theta_{x_i | p_G \left( x_i \right) } | G )\prod_{k=1}^{m} \theta_{x_i | p_G \left( x_i \right)= u\left[ k \right] } 
+									\right)\\
+								\prod_{\substack{ 
+												\lbrace i,j \rbrace \in \left(N \times N\right)  } } 
+									\left(  
+												r\left( y_{\langle i,j\rangle} , c_G\left( y_{\langle i,j\rangle}  \right)\right)							
+												\rho \left( \theta_{\lbrace i, j \rbrace} \right)							
+								\prod_{k=1}^{m} \theta_{y_{\langle i,j\rangle\left[ k \right]}}\right)								
+\end{split}
+\end{equation}
+
+
+\subsection{Algorithm}
+\begin{enumerate}
+	\item Gready equivalance search for observed variables $X$
+	\item Repeat until no improvement
+		\begin{itemize}
+		\item For every member $A'$ in equivalance class of $A$
+		\begin{itemize}
+			\item For $e \in A'$, compute score of the network given that $e$ is replaced with hidden parent. Where $e$ is an arc whose both ends are observed. Replacement approach can be optimal or sum over all the values. 
+		\end{itemize}
+		\item Choose the best modification and assign it to $A$.		
+		\end{itemize}
+	\item Repeat step 2 but instead removing hidden variables one by one.
+\end{enumerate}
+
+%As equation~(\ref{eq:equation1})
+
+\bibliography{unobs_plan}
+\bibliographystyle{plain}
+
+\end{document}
