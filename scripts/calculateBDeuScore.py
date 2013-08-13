@@ -450,16 +450,15 @@ def main(argv):
         hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
         if (iterations % thining) == 0:
             print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
-            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
-            rs.storeSate(stateOutFile)
             hValues=node.getKvalues().keys()
-    
             for i in xrange(0,len(hValues)-1):
                 count=df[df[h.getName()]==hValues[i]].Counts
                 for j in count:
-                    wf.write(str(j)+',')    
+                    wf.write(str(j)+',')
                 del count
             wf.write(str(sum(nodesBDeuScore)) + "\n")
+            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+            rs.storeSate(stateOutFile)
     wf.close()
        
 if __name__== "__main__":
