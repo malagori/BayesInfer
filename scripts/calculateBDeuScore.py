@@ -365,12 +365,7 @@ def countPerturbation( h, rIndex, incrementFlag):
             incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
             df.Counts[incrementedDfIndex] += 1
         #print "incremented Index %d " % incrementedDfIndex
-    else:
-        if df.Counts[rIndex] > 0:
-            #print "before incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-            df.Counts[rIndex] += 1 # decrement by 1 
-            #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-    
+    else:    
         # select the hidden value at rIndex
         valueH=df[hiddenName][rIndex]
         # choose other values of Hidden variable other then
@@ -378,22 +373,33 @@ def countPerturbation( h, rIndex, incrementFlag):
         
         # choose one of the hValuesWithoutValueH values to be incremented by 1
         decrementedHvalue=rNumber.choice(hValuesWithoutValueH)
-        #print "hidden value %d " % valueH
-        #print "incrementedHvalue %d " % incrementedHvalue
-        #print "decremented index %d" % rIndex
-        #print "totalUniqueObservations %d" % totalUniqueObservations
-        if decrementedHvalue <  valueH:
-            #print "rIndex %d" % rIndex
-            # compute the index of record in df to be incremented
-            decrementedDfIndex=rIndex-((valueH-decrementedHvalue)*totalUniqueObservations)
-            #print "incrementedDfIndex %d " % incrementedDfIndex
-            #print df.Counts[incrementedDfIndex]
-            df.Counts[decrementedDfIndex] -= 1
-            #print df.Counts[incrementedDfIndex]
-        else:
-            decrementedDfIndex = rIndex + ((decrementedHvalue- valueH)*totalUniqueObservations)
-            df.Counts[decrementedDfIndex] -= 1
-        #print "incremented Index %d " % incrementedDfIndex
+        
+        #  loop until valid case occur other wise exit with doing nothing
+
+        for i in xrange(0,len(hValuesWithoutValueH)):
+            if decrementedHvalue <  valueH:
+                decrementedDfIndex=rIndex-((valueH-decrementedHvalue)*totalUniqueObservations)
+                if df.Counts[decrementedDfIndex] == 0:
+                    noDecrement=True
+                    continue
+                else:
+                    df.Counts[decrementedDfIndex] -= 1
+                    noDecrement=False
+                    break
+            else:
+                decrementedDfIndex = rIndex + ((decrementedHvalue- valueH)*totalUniqueObservations)
+                if df.Counts[decrementedDfIndex] == 0:
+                    noDecrement=True
+                    continue
+                else:
+                    df.Counts[decrementedDfIndex] -= 1
+                    noDecrement=False
+                    break
+     
+        
+        if noDecrement == False:
+            df.Counts[rIndex] += 1 # decrement by 1 
+        #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
             
 def main(argv):
     # global variables 
@@ -409,7 +415,7 @@ def main(argv):
     parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
-    parser.add_argument('-Sa', metavar='alpha',type=bool , help='Steepest Asent is used if set to True ', default=False)
+    parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
@@ -428,7 +434,7 @@ def main(argv):
     child1          = args.c1
     child2          = args.c2
     seed            = args.s
-    steepestAsent   = args.Sa
+    steepestAsent   = args.SteepestAsent
     seedFile        = args.l
     
     # instanciate RandomSeed object
@@ -506,7 +512,7 @@ def main(argv):
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
     
-    print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( sum(nodesBDeuScore))
+    print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
     hValues=node.getKvalues().keys()
     for i in xrange(0,len(hValues)-1):
         count=df[df[h.getName()]==hValues[i]].Counts
@@ -517,22 +523,23 @@ def main(argv):
     stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
 
     if steepestAsent == True:
-        
-        # randomly shuffle the indexes  
-        records=[i for i in xrange(0, df.shape[0]-1)]
-        
-        rRecords=rNumber.shuffle(records)
-        
+
+        rRecords=[i for i in xrange(0, df.shape[0]-1)]
+        # randomly shuffle the indexes 
+        rNumber.shuffle(rRecords)
         for i in rRecords:
             baseDFrame = df.copy()
+            #print "baseDFrame"
+            #print baseDFrame
             # below loop is for the counts increment and decrement
             for flag in [True, False]:
                 
                 for j in rRecords:
                     #increment the iteration number
-                    iterations +=1      
+                    iterations +=1                          
                     # perturb the counts in 
                     countPerturbation(h,j, incrementFlag=flag)
+
                     
                     nodesBDeuScore=[]
                     # compute the BDeu score again after perturbations
@@ -549,20 +556,21 @@ def main(argv):
                             node.setLocalBDeu(getBDeu(node, alpha))
                         nodesBDeuScore.append(node.getLocalBDeu())
                     totalCurrentBDeuScore= sum(nodesBDeuScore)
-                    
+                    #print ("Current BDeuScore %f Previous BDeuScore %f " % (totalCurrentBDeuScore, totalPreviousBDeuScore))
                     # check if current BDeuScore is greater than previous BDeuScore
                     if totalPreviousBDeuScore < totalCurrentBDeuScore:
                         baseDFrame = df.copy()
-                        print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
+                        print "Iteration: %d , BDeu Score: %f" % (iterations, totalCurrentBDeuScore)
                         hValues=node.getKvalues().keys()
                         for i in xrange(0,len(hValues)-1):
                             count=df[df[h.getName()]==hValues[i]].Counts
                             for j in count:
                                 wf.write(str(j)+',')
                             del count
-                        wf.write(str(sum(nodesBDeuScore)) + "\n")
+                        wf.write(str(totalCurrentBDeuScore) + "\n")
                         stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
                         rs.storeSate(stateOutFile)
+                        totalPreviousBDeuScore = totalCurrentBDeuScore
                 
                 # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
                 df = baseDFrame.copy() 
