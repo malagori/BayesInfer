@@ -21,6 +21,7 @@ end
 
 for da=1:length(dag)
     cpdags{da} = abs(label_edges(dag{da}));
+    %cpdags{da} = label_edges(dag{da});
 end
 
 if ~iscell(dags)
