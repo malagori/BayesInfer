@@ -31,7 +31,7 @@ def getUpdatedQi(node):
     if len(node.getParents())==0:
         return
     else:
-        dictPaConfiguration={}
+        #dictPaConfiguration={}
         pConfig=[]
         allParentValues=[]
         for p in node.getParents():
@@ -84,7 +84,6 @@ def getDataCount(k, j, node):
     # 1 0 1 3
     # 1 1 0 2
     # 
-    
     # check if parent configuration is zero
     if len(j)==0:
         # compute the counts for parent variable for kth value
@@ -105,7 +104,6 @@ def getDataCount(k, j, node):
 def getBDeu(node, alpha):
     
     localBDeu=0.0
-    a=0
     # if node.valueCountFlag is true, then do the following computation
     #if node.parentUpdateFlag == True:
         # set the array containing parent configurations of a node. i.e:
@@ -198,7 +196,7 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
 #            newKValueDict[newJ]= countDict[j]
        
-def countPerturbation(h):
+def randomCountPerturbation(h):
     #print "perturb the count here"
     
     hiddenName=h.getName()
@@ -271,7 +269,7 @@ def percentageHiddenCoutsSplit(h,df):
             df_temp.Counts=copyCountList
             df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
-    return df  # delete the temprory data frame to save memory
+    return df  # delete the temporary data frame to save memory
 
 def addHiddenNodeToDf(h,df):
     # old dataframe was:
@@ -309,7 +307,8 @@ def addHiddenNodeToDf(h,df):
             df_temp.Counts=copyCountList
             df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
-    return df  # delete the temprory data frame to save memory
+    del df_temp # delete the temporary data frame to save memory
+    return df  
 
 def addHiddenNode(name, cardinality, child1, child2):
     #name = raw_input("Enter Hidden Variable Name: ")
@@ -333,7 +332,74 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
    
+def countPerturbation( h, rIndex, incrementFlag):
+    #print "perturb the count here"
+    hiddenName=h.getName()
+    # pick a random index
+    if incrementFlag == False:
+        if df.Counts[rIndex] > 0:
+            #print "before decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
+            df.Counts[rIndex] -= 1 # decrement by 1 
+            #print "after decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
     
+        # select the hidden value at rIndex
+        valueH=df[hiddenName][rIndex]
+        # choose other values of Hidden variable other then
+        hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
+        
+        # choose one of the hValuesWithoutValueH values to be incremented by 1
+        incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
+        #print "hidden value %d " % valueH
+        #print "incrementedHvalue %d " % incrementedHvalue
+        #print "decremented index %d" % rIndex
+        #print "totalUniqueObservations %d" % totalUniqueObservations
+        if incrementedHvalue <  valueH:
+            #print "rIndex %d" % rIndex
+            # compute the index of record in df to be incremented
+            incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalUniqueObservations)
+            #print "incrementedDfIndex %d " % incrementedDfIndex
+            #print df.Counts[incrementedDfIndex]
+            df.Counts[incrementedDfIndex] += 1
+            #print df.Counts[incrementedDfIndex]
+        else:
+            incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
+            df.Counts[incrementedDfIndex] += 1
+        #print "incremented Index %d " % incrementedDfIndex
+    else:    
+        # select the hidden value at rIndex
+        valueH=df[hiddenName][rIndex]
+        # choose other values of Hidden variable other then
+        hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
+        
+        # choose one of the hValuesWithoutValueH values to be incremented by 1
+        decrementedHvalue=rNumber.choice(hValuesWithoutValueH)
+        
+        #  loop until valid case occur other wise exit with doing nothing
+
+        for i in xrange(0,len(hValuesWithoutValueH)):
+            if decrementedHvalue <  valueH:
+                decrementedDfIndex=rIndex-((valueH-decrementedHvalue)*totalUniqueObservations)
+                if df.Counts[decrementedDfIndex] == 0:
+                    noDecrement=True
+                    continue
+                else:
+                    df.Counts[decrementedDfIndex] -= 1
+                    noDecrement=False
+                    break
+            else:
+                decrementedDfIndex = rIndex + ((decrementedHvalue- valueH)*totalUniqueObservations)
+                if df.Counts[decrementedDfIndex] == 0:
+                    noDecrement=True
+                    continue
+                else:
+                    df.Counts[decrementedDfIndex] -= 1
+                    noDecrement=False
+                    break
+     
+        
+        if noDecrement == False:
+            df.Counts[rIndex] += 1 # decrement by 1 
+        #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
             
 def main(argv):
     # global variables 
@@ -349,6 +415,7 @@ def main(argv):
     parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
+    parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
@@ -367,6 +434,7 @@ def main(argv):
     child1          = args.c1
     child2          = args.c2
     seed            = args.s
+    steepestAsent   = args.SteepestAsent
     seedFile        = args.l
     
     # instanciate RandomSeed object
@@ -422,43 +490,127 @@ def main(argv):
     # populate hidden value counts
     populateCounts(h)
     
+    
+    
     # open file to write the results
     wf= open(outputFile, 'w')
+    
+    iterations=0
+    nodesBDeuScore=[]
+    # compute the BDeu score again after perturbations
+    for n in allNodeObjects:
+        node=allNodeObjects[n]
 
-    for iterations in xrange(0, maxIter + 1 ): 
-        nodesBDeuScore=[]
-        hiddenValueCountList=[]
-        # perturb the counts here
-        #print "df before perturbation."
-        #print df
-        countPerturbation(h)
-        #print "df after perturbation."
-        #print df
-        # compute the BDeu score again
-        for n in allNodeObjects:
-            node=allNodeObjects[n]
+        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+            
+            # change the counts of this node according to some criteria i.e.
+            # for new parent configuration, assign the counts such that sum of counts of new parent
+            # configurations is equal to counts of old parent configuration which we split
+            # to get the new parent configuration. 
+            populateCounts(node)
+            node.setLocalBDeu(getBDeu(node, alpha))
+        nodesBDeuScore.append(node.getLocalBDeu())
+    totalPreviousBDeuScore= sum(nodesBDeuScore)
+    
+    print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
+    hValues=node.getKvalues().keys()
+    for i in xrange(0,len(hValues)-1):
+        count=df[df[h.getName()]==hValues[i]].Counts
+        for j in count:
+            wf.write(str(j)+',')
+        del count
+    wf.write(str(sum(nodesBDeuScore)) + "\n")
+    stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
 
-            if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+    if steepestAsent == True:
+
+        rRecords=[i for i in xrange(0, df.shape[0]-1)]
+        # randomly shuffle the indexes 
+        rNumber.shuffle(rRecords)
+        for i in rRecords:
+            baseDFrame = df.copy()
+            #print "baseDFrame"
+            #print baseDFrame
+            # below loop is for the counts increment and decrement
+            for flag in [True, False]:
                 
-                # change the counts of this node according to some criteria i.e.
-                # for new parent configuration, assign the counts such that sum of counts of new parent
-                # configurations is equal to counts of old parent configuration which we split
-                # to get the new parent configuration. 
-                populateCounts(node)
-                node.setLocalBDeu(getBDeu(node, alpha))
-            nodesBDeuScore.append(node.getLocalBDeu())
-        hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
-        if (iterations % thining) == 0:
-            print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
-            hValues=node.getKvalues().keys()
-            for i in xrange(0,len(hValues)-1):
-                count=df[df[h.getName()]==hValues[i]].Counts
-                for j in count:
-                    wf.write(str(j)+',')
-                del count
-            wf.write(str(sum(nodesBDeuScore)) + "\n")
-            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
-            rs.storeSate(stateOutFile)
+                for j in rRecords:
+                    #increment the iteration number
+                    iterations +=1                          
+                    # perturb the counts in 
+                    countPerturbation(h,j, incrementFlag=flag)
+
+                    
+                    nodesBDeuScore=[]
+                    # compute the BDeu score again after perturbations
+                    for n in allNodeObjects:
+                        node=allNodeObjects[n]
+                
+                        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                            
+                            # change the counts of this node according to some criteria i.e.
+                            # for new parent configuration, assign the counts such that sum of counts of new parent
+                            # configurations is equal to counts of old parent configuration which we split
+                            # to get the new parent configuration. 
+                            populateCounts(node)
+                            node.setLocalBDeu(getBDeu(node, alpha))
+                        nodesBDeuScore.append(node.getLocalBDeu())
+                    totalCurrentBDeuScore= sum(nodesBDeuScore)
+                    #print ("Current BDeuScore %f Previous BDeuScore %f " % (totalCurrentBDeuScore, totalPreviousBDeuScore))
+                    # check if current BDeuScore is greater than previous BDeuScore
+                    if totalPreviousBDeuScore < totalCurrentBDeuScore:
+                        baseDFrame = df.copy()
+                        print "Iteration: %d , BDeu Score: %f" % (iterations, totalCurrentBDeuScore)
+                        hValues=node.getKvalues().keys()
+                        for i in xrange(0,len(hValues)-1):
+                            count=df[df[h.getName()]==hValues[i]].Counts
+                            for j in count:
+                                wf.write(str(j)+',')
+                            del count
+                        wf.write(str(totalCurrentBDeuScore) + "\n")
+                        stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+                        rs.storeSate(stateOutFile)
+                        totalPreviousBDeuScore = totalCurrentBDeuScore
+                
+                # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
+                df = baseDFrame.copy() 
+    else: 
+        for iterations in xrange(0, maxIter + 1 ): 
+            
+            # perturb the counts here
+            #print "df before perturbation."
+            #print df
+            randomCountPerturbation(h)
+            #print "df after perturbation."
+            #print df
+            
+            nodesBDeuScore=[]
+            hiddenValueCountList=[]
+            # compute the BDeu score again after perturbations
+            for n in allNodeObjects:
+                node=allNodeObjects[n]
+    
+                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                    
+                    # change the counts of this node according to some criteria i.e.
+                    # for new parent configuration, assign the counts such that sum of counts of new parent
+                    # configurations is equal to counts of old parent configuration which we split
+                    # to get the new parent configuration. 
+                    populateCounts(node)
+                    node.setLocalBDeu(getBDeu(node, alpha))
+                nodesBDeuScore.append(node.getLocalBDeu())
+            hiddenValueCountList= allNodeObjects[h.getName()].getParentValueCount().values()
+            if (iterations % thining) == 0:
+                print "Iteration: %d , BDeu Score: %f" % (iterations, sum(nodesBDeuScore))
+                hValues=node.getKvalues().keys()
+                for i in xrange(0,len(hValues)-1):
+                    count=df[df[h.getName()]==hValues[i]].Counts
+                    for j in count:
+                        wf.write(str(j)+',')
+                    del count
+                wf.write(str(sum(nodesBDeuScore)) + "\n")
+                stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+                rs.storeSate(stateOutFile)
     wf.close()
        
 if __name__== "__main__":
