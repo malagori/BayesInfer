@@ -11,21 +11,25 @@ from bayesInfer.node import Node
 
 def readInitialStructure(infile):
     allNodesObj={}
-    for line in open(infile, 'r'):
-        var=''
-        pa=''
-        parents=[]
-        var, cardinality, pa=line.split(':')
-        pa=pa.strip()  # removing \n characters at the end
-        if len(pa) > 0:
-            parents=pa.split(',')
-        node=Node()
-        # cardinality is read as a string, we must convert string to integer 
-        node.setR(int(cardinality))
-        node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
-        node.setName(var)
-        node.setParents(parents)
-        allNodesObj[var]=node
+    try:
+        with open(infile) as f:
+            for line in f:
+                var=''
+                pa=''
+                parents=[]
+                var, cardinality, pa=line.split(':')
+                pa=pa.strip()  # removing \n characters at the end
+                if len(pa) > 0:
+                    parents=pa.split(',')
+                node=Node()
+                # cardinality is read as a string, we must convert string to integer 
+                node.setR(int(cardinality))
+                node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
+                node.setName(var)
+                node.setParents(parents)
+                allNodesObj[var]=node
+    except IOError:
+        print "Class readGraph; Error: can\'t find structure file"
     return allNodesObj
 
 def generateData():

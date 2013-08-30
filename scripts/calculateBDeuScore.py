@@ -20,7 +20,7 @@ from pandas import Series
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
-from bayesInfer.readDataFile import readDataFromFile
+from bayesInfer.readDataFile import readDataFrame
 from bayesInfer.storeRetriveSeed import RandomSeed
 
 
@@ -458,7 +458,7 @@ def main(argv):
     # set the state
     
     # read data file
-    df=readDataFromFile(dataFile)
+    df=readDataFrame(dataFile)
     totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
