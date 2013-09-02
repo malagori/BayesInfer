@@ -1,7 +1,7 @@
-function [n_dags,dag_list] = pdag_to_all_dags( pdag )
+function [dag_list] = pdag_to_all_dags( pdag )
 
 %
-% [n_dags,dag_list] = pdag_to_all_dags( pdag)
+% [dag_list] = pdag_to_all_dags( pdag)
 %
 % generates a cell array of ALL Markov-equivalent DAGs 
 % corresponding to a partially directed acyclic graph (PDAG).
