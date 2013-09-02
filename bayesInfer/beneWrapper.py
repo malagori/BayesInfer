@@ -39,29 +39,29 @@ class BeneWrapper(object):
         
         try:
             infile= self.outDirectory+'net'
-            varName=0
-            allNodesObj={}
+#            varName=0
+#            allNodesObj={}
             optDag=[]
             with open(infile) as f:
                 for line in f:
-                    node=Node()
-                    parents=[]
-                    varName+=1
-                    cardinality=2
+#                    node=Node()
+#                    parents=[]
+#                    varName+=1
+#                    cardinality=2
                     varParentSet=list(decimalToBinary(line, self.totalVaiables))
                     optDag.append(varParentSet)
-                    for i in range(0, len(varParentSet)):
-                        if varParentSet[i] == '1':
-                            # set parent
-                            parents.append(i+1)
-                            
-                            
-                    node.setR(int(cardinality))
-                    node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
-                    node.setName(varName)
-                    node.setParents(parents)
-                    allNodesObj[varName]=node
-            return allNodesObj, optDag
+#                    for i in range(0, len(varParentSet)):
+#                        if varParentSet[i] == '1':
+#                            # set parent
+#                            parents.append(i+1)
+#                            
+#                            
+#                    node.setR(int(cardinality))
+#                    node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
+#                    node.setName(varName)
+#                    node.setParents(parents)
+#                    allNodesObj[varName]=node
+            return optDag
             
             
         except IOError, e:
