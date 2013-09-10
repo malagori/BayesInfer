@@ -16,7 +16,7 @@ class EquivalenceClass(object):
         self.matlabLibPath= os.path.dirname(os.path.abspath(matlab_lib.__file__))
         mlab.addpath(self.matlabLibPath)
         
-    def getCpdag(self, vdFile, dataFile, outDirectory, totalVaiables):
+    def getOptDag(self, vdFile, dataFile, outDirectory, totalVaiables):
         
         #create obj of BeneWrapper class and initialize the fields
         bwObj= BeneWrapper(vdFile, dataFile, score=1.0, outDirectory, totalVaiables) 
@@ -25,12 +25,20 @@ class EquivalenceClass(object):
         
         optDag = bwObj.readBeneBnt()
         
-        dag= np.array(optDag).astype('int')
+        optDag= np.array(optDag).astype('int')
         
-        cDag= mlab.dag_to_cpdag(dag)
+        return optDag
         
+    def generateCdag(self,optDag):
+        """
+        this function partial dag from dag represented in 2d numpy array.
+        input: dag in 2d numpy array
+        output: cdag in 2d numpy array
+        
+        """
+        cDag= mlab.dag_to_cpdag(optDag)
         return cDag
-        
+    
     def generateBnt(self,dag):
         """
         this function generate populate network from dag represented in list of list.
@@ -46,11 +54,11 @@ class EquivalenceClass(object):
             
             varName +=1
             cardinality=2
-            parentSet= [j+1 for j in range(0,len(i)) if i[j]==1]
+            parentSet= [j+1 for j in range(0,len(i)) if i[j]==1] # parent name starts from 1 not 0
             
             node= Node()
             node.setName(varName) 
-            node.setR(int(cardinality))
+            node.setR(int(cardinality)) # can update cardinality from vdFile
             node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
             node.setParents(parentSet)
             allNodesObj[varName]= node

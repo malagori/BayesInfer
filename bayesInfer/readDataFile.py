@@ -2,6 +2,7 @@
 import pandas as pd
 from collections import Counter
 import numpy as np
+
 __author__ = "Mehmood Alam Khan"
 __email__  = "malagori@kth.se"
 __version__= "0.9"
@@ -65,7 +66,7 @@ def convertBeneDataFile(infile):
         df.columns= newCols
         
     except IOError:
-        print "Class: readDataFile; Function  Error: could not read dataframe"
+        print "Class: readDataFile; Function convertBeneDataFile();  Error: could not read dataframe"
          
     return df
     
