@@ -13,6 +13,8 @@ from bayesInfer.storeRetriveSeed import RandomSeed
 from bayesInfer.readDataFile import convertBeneDataFile
 from bayesInfer.readDataFile import readVdFile
 from bayesInfer.equivalenceClass import EquivalenceClass
+from bayesInfer.node import Node
+from bayesInfer.BDeuClass import BDeuClass
 
 class MainAlgo(object):
     '''
@@ -32,9 +34,13 @@ class MainAlgo(object):
         self.steepestAsent   = steepestAsent
         self.seedFile        = seedFile
         
+    def checkHiddenScore(self, edgeTuple, ):
+        print "hi"
+        
+        
     def runAlgo(self):
         
-        # instanciate RandomSeed object
+        # instantiating RandomSeed object
         rs=RandomSeed()
         
         if self.seed == None and self.seedFile == None:
@@ -56,13 +62,56 @@ class MainAlgo(object):
         objEC= EquivalenceClass()
         # get the opt bnt from bene
         optDag= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames))
-        # pDag
-        cDag=objEC.generateCdag(optDag)
-        # generate all dags in pDag
-        dagsDict, allDagsNetworkDict= objEC.getAllDagsInPdag(cDag, cardinality)
         
-        for id, dag in dagsDict.iteritems():
+        # Repeat until adding a hidden variable does not increase the score
+        while True:
+        
+            # pDag
+            cDag=objEC.generateCdag(optDag)
+            # generate all dags in pDag
+            dagsDict, allDagsNetworkDict= objEC.getAllDagsInPdag(cDag, cardinality)
             
+            # dict of dict
+            Pa_C_PaPa_CPa={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score
+            ParentChildDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
+            
+            for id, dag in dagsDict.iteritems():
+                idx=1
+                edges=[]
+                allNodeObjects=allDagsNetworkDict[id]
+                
+                # instantiate CalculateBDeuClass's object 
+                objCBDeu= BDeuClass(df, allNodeObjects, totalUniqueObservations)
+                
+                # compute initial bdeu score before adding any hidden variable
+                # update the parent configurations for all variables
+                # and the counts associated with the each parent configuration for each value of X
+                for n in allNodeObjects:
+                    getUpdatedQi(allNodeObjects[n])
+                    populateCounts(allNodeObjects[n])
+                # find the BDeu Score for the whole structure
+                for n in allNodeObjects:
+                    nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
+                    
+                print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
+                
+                for i in dag:
+                    e=[edges.append((idx,j+1)) for j in range(0,len(i)) if i[j]==1]
+                    idx+=1
+                for i in edges:
+                    # check if score for adding hidden variable at this edge is already computed in other equvilance dag
+                    parentNode= Node()
+                    childNode= Node()
+                    parentNode= allNodeObjects[i[0]]
+                    childNode= allNodeObjects[i[1]]
+                    
+                    keyPa_C_PaPa_CPa=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
+                    
+                    
+                    
+                    
+                    
+                
         
         
         
