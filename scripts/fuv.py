@@ -28,6 +28,7 @@ def main(argv):
     parser.add_argument('-od', metavar='outDir',type=str, help='Specify path to output directory ')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify alpha parameter ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
+    parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
     parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
@@ -40,6 +41,8 @@ def main(argv):
     seed            = args.s
     steepestAsent   = args.SteepestAsent
     seedFile        = args.l
+    outPutFile      = args.o
+    iterations      = args.i
     
     
     print "vdfile: %s"          % vdFile
@@ -47,8 +50,9 @@ def main(argv):
     print "dataFile %s"         % dataFile
     print "alpha %f"            % alpha 
     print "seed %d"             % seed
+    print "outPutFile %d"       % outPutFile
     
-    runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, seedFile)
+    runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile)
     
     
 if __name__== "__main__":

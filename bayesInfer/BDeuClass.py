@@ -1,14 +1,16 @@
-'''
-Created on Sep 10, 2013
-
-@author: malagori
-'''
 from __future__ import division
+__author__ = "Mehmood Alam Khan"
+__email__  = "malagori@kth.se"
+__version__= "0.9"
+__license__ = "GPL"
+__credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
+
+
 import os
 import sys
 import itertools
 import math
-import datetime
+
 import time
 import argparse
 import random as rNumber
@@ -27,7 +29,7 @@ class BDeuClass(object):
         self.df
         self.allNodeObjects
         self.totalUniqueObservations
-        self.nodesBDeuScore=[]
+        self.dagBDeuScore=float("-inf")
         
     
     # total parent configurations
@@ -252,7 +254,7 @@ class BDeuClass(object):
                 df_temp.Counts=copyCountList
                 self.df.Counts[0:self.totalUniqueObservations]= self.df.Counts[0:self.totalUniqueObservations]-copyCountList
                 self.df= self.df.append(df_temp, ignore_index=True)
-        return self.df  # delete the temporary data frame to save memory
+        #return self.df  # delete the temporary data frame to save memory
     
     def addHiddenNodeToDf(self, h):
         # old dataframe was:
