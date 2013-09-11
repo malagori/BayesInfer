@@ -27,6 +27,7 @@ class BDeuClass(object):
         self.df
         self.allNodeObjects
         self.totalUniqueObservations
+        self.nodesBDeuScore=[]
         
     
     # total parent configurations

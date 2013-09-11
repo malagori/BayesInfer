@@ -72,8 +72,8 @@ class MainAlgo(object):
             dagsDict, allDagsNetworkDict= objEC.getAllDagsInPdag(cDag, cardinality)
             
             # dict of dict
-            Pa_C_PaPa_CPa={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score
-            ParentChildDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
+            cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
+            edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
             
             for id, dag in dagsDict.iteritems():
                 idx=1
@@ -87,13 +87,13 @@ class MainAlgo(object):
                 # update the parent configurations for all variables
                 # and the counts associated with the each parent configuration for each value of X
                 for n in allNodeObjects:
-                    getUpdatedQi(allNodeObjects[n])
-                    populateCounts(allNodeObjects[n])
+                    objCBDeu.getUpdatedQi(allNodeObjects[n])
+                    objCBDeu.populateCounts(allNodeObjects[n])
                 # find the BDeu Score for the whole structure
                 for n in allNodeObjects:
-                    nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
+                    objCBDeu.nodesBDeuScore.append(objCBDeu.getBDeu(allNodeObjects[n], self.alpha))
                     
-                print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
+                print "BDeu Score for before adding hidden variable: %f" % sum(objCBDeu.nodesBDeuScore)
                 
                 for i in dag:
                     e=[edges.append((idx,j+1)) for j in range(0,len(i)) if i[j]==1]
@@ -102,10 +102,11 @@ class MainAlgo(object):
                     # check if score for adding hidden variable at this edge is already computed in other equvilance dag
                     parentNode= Node()
                     childNode= Node()
-                    parentNode= allNodeObjects[i[0]]
-                    childNode= allNodeObjects[i[1]]
                     
-                    keyPa_C_PaPa_CPa=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
+                    parentNode= objCBDeu.allNodeObjects[i[0]]
+                    childNode= objCBDeu.allNodeObjects[i[1]]
+                    
+                    key=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
                     
                     
                     
