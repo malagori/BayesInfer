@@ -11,10 +11,12 @@ import random as rNumber
 
 from bayesInfer.storeRetriveSeed import RandomSeed
 from bayesInfer.readDataFile import convertBeneDataFile
+from bayesInfer.readDataFile import readVdFile
+from bayesInfer.equivalenceClass import EquivalenceClass
 
 class MainAlgo(object):
     '''
-    classdocs
+    This class contains the main workflow of our algorithm
     '''
 
 
@@ -45,10 +47,22 @@ class MainAlgo(object):
             
         # read data file
         df=convertBeneDataFile(self.dataFile)
+        totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
         
         # read vdFile
+        variableNames, cardinality= readVdFile(self.vdFile)
+        
+        # create object of EquivalenceClass
+        objEC= EquivalenceClass()
+        # get the opt bnt from bene
+        optDag= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames))
+        # pDag
+        cDag=objEC.generateCdag(optDag)
+        # generate all dags in pDag
+        dagsDict, allDagsNetworkDict= objEC.getAllDagsInPdag(cDag, cardinality)
+        
+        for id, dag in dagsDict.iteritems():
+            
         
         
-        
-        totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
         

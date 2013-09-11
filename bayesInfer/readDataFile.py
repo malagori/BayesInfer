@@ -70,3 +70,26 @@ def convertBeneDataFile(infile):
          
     return df
     
+    
+def readVdFile(infile):
+    
+    tokens=[]
+    cardinality=[]
+    variableNames=[]
+    try:
+        with open(infile) as f:
+            for line in f:
+                tokens=line.split("\t")
+                variableNames.append(tokens[0])
+                cardinality.append(len(tokens)-1)
+    except IOError:
+        print "file: readVdFile; Function readVdFile();  Error: could not read vd file"   
+        
+    return variableNames, cardinality
+       
+                
+    
+    
+    
+    
+    
