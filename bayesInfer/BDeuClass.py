@@ -32,6 +32,7 @@ class BDeuClass(object):
         self.dagBDeuScore=float("-inf")
         
     
+    
     # total parent configurations
     def getUpdatedQi(self,node):
         """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""

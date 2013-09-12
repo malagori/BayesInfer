@@ -39,9 +39,20 @@ class MainAlgo(object):
         self.iterations     = iterations
         self.df
         
-    def checkHiddenScore(self, edgeTuple, ):
-        print "hi"
-        
+    def printDag(self,iterations, allNodesObjects):
+        with open(str("bestDag_"+iterations), 'w') as wdag:
+            p=[]
+            for key, node in allNodesObjects.iteritems():
+                p=[]
+                p=sum(node.getParents())
+                if not p: # if p is empty list 
+                    p.append(0)
+                wdag.write("%s\n" % p)
+
+                    
+            
+            
+            
         
     def runAlgo(self):
         
@@ -67,7 +78,7 @@ class MainAlgo(object):
         # create object of EquivalenceClass
         objEC= EquivalenceClass()
         # get the opt bnt from bene
-        optDag= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames))
+        optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames))
         
         HIDDEN_NAME= len(variableNames) +1
         
@@ -75,7 +86,7 @@ class MainAlgo(object):
         cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
         edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
         hiddenNodesDict={}
-        iterations=1
+        iterations=0
         totalPreviousBDeuScore= float("-inf")
         totalCurrentBDeuScore= float("-inf")
         currentMaxBDeu= float("-inf")
@@ -83,9 +94,34 @@ class MainAlgo(object):
         
         
         with open(self.outputFile, 'w') as wf:
-        
+            
+            totalUniqueObservations= self.df.shape[0]
+            objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations)
+
+            # update the parent configurations for all variables
+            # and the counts associated with the each parent configuration for each value of X
+            for n in objCBDeu.allNodeObjects:
+                objCBDeu.getUpdatedQi(objCBDeu.allNodeObjects[n])
+                objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
+            # find the BDeu Score for the whole structure
+            for n in objCBDeu.allNodeObjects:
+                objCBDeu.nodesBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+            
+            
+            print "BDeu Score for optimal dag from Bene: %f" % sum(objCBDeu.nodesBDeuScore)
+            #print initial data frame 
+            self.df.to_csv('initialDF_bene'+'.csv', sep=',')
+            # print the state for the random number generator
+            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
+            rs.storeSate(stateOutFile)
+            wf.write("BDeuScore for optimal dag from Bene, %f" % sum(objCBDeu.nodesBDeuScore))
+            
             # Repeat until adding a hidden variable does not increase the score
             while True:
+            
+                
+                #increment the iteration number
+                iterations +=1 
             
                 # pDag
                 cDag=objEC.generateCdag(optDag)
@@ -106,11 +142,11 @@ class MainAlgo(object):
                     # compute initial bdeu score before adding any hidden variable
                     # update the parent configurations for all variables
                     # and the counts associated with the each parent configuration for each value of X
-                    for n in allNodeObjects:
-                        objCBDeu.getUpdatedQi(allNodeObjects[n])
-                        objCBDeu.populateCounts(allNodeObjects[n])
+                    for n in objCBDeu.allNodeObjects:
+                        objCBDeu.getUpdatedQi(objCBDeu.allNodeObjects[n])
+                        objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
                     # find the BDeu Score for the whole structure
-                    for n in allNodeObjects:
+                    for n in objCBDeu.allNodeObjects:
                         objCBDeu.nodesBDeuScore.append(objCBDeu.getBDeu(allNodeObjects[n], self.alpha))
                     
                     totalPreviousBDeuScore=sum(objCBDeu.nodesBDeuScore)
@@ -158,10 +194,9 @@ class MainAlgo(object):
                             tmpAllNodesObj      = objCBDeu.allNodeObjects
                             tmpDF               = objCBDeu.df.copy()
                             tmpDagBDeuScore     = objCBDeu.dagBDeuScore
+                            
                             # add hidden variable to the network
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
-                            # generate new name for next hidden variable 
-                            
                             
                             # split the dataframe counts
                             print "data frame before adding hidden variable"
@@ -180,7 +215,7 @@ class MainAlgo(object):
                             if self.steepestAsent == True:
                                 
                                 
-                                rRecords=[i for i in xrange(0, df.shape[0]-1)]
+                                rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
                                 # randomly shuffle the indexes 
                                 rNumber.shuffle(rRecords)
                                 for i in rRecords:
@@ -224,6 +259,7 @@ class MainAlgo(object):
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[i]= key
+                                # generate new name for hidden variable
                                 HIDDEN_NAME += 1
                                 objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                                 initialBDeuScore = totalCurrentBDeuScore
@@ -246,12 +282,24 @@ class MainAlgo(object):
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
-                    #print the current dag, df, 
+                    #print optdag
+                    self.printDag(currentMaxAllNodesObjects)
+                    #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
+                    print "Iteration: %d , BDeu Score: %f" % (iterations, totalCurrentBDeuScore)
+                    hValues= h.getKvalues().keys()
+                    for i in xrange(0,len(hValues)-1):
+                        count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
+                        for j in count:
+                            wf.write(str(j)+',')
+                        del count
+                    wf.write(str(currentMaxBDeu) + "\n")
+                    # print the state for the random number generator
+                    stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
+                    rs.storeSate(stateOutFile)
                 else: 
                     break
                 
-                #increment the iteration number
-                iterations +=1 
+                
                 
                 
                 

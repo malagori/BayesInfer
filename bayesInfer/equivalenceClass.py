@@ -16,7 +16,7 @@ class EquivalenceClass(object):
         self.matlabLibPath= os.path.dirname(os.path.abspath(matlab_lib.__file__))
         mlab.addpath(self.matlabLibPath)
         
-    def getOptDag(self, vdFile, dataFile, score=1.0, outDirectory, totalVaiables):
+    def getOptDag(self, vdFile, dataFile, score=1.0, outDirectory, totalVaiables, cardinality):
         
         
         #create obj of BeneWrapper class and initialize the fields
@@ -24,11 +24,11 @@ class EquivalenceClass(object):
         
         bwObj.generateOptBnt()
         
-        optDag = bwObj.readBeneBnt()
+        optDag, allNodesObj = bwObj.readBeneBnt(cardinality)
         
         optDag= np.array(optDag).astype('int')
         
-        return optDag
+        return optDag, allNodesObj
         
     def generateCdag(self,optDag):
         """
