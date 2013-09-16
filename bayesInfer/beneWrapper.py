@@ -61,6 +61,7 @@ class BeneWrapper(object):
         
         try:
             infile= self.outDirectory+'/'+'net'
+            print infile
             varName=0
             allNodesObj={}
             optDag=[]
@@ -70,7 +71,7 @@ class BeneWrapper(object):
                     parents=[]
                     varName+=1
                     
-                    varParentSet=list(decimalToBinary(line, self.totalVaiables))
+                    varParentSet=list(decimalToBinary(int(line), self.totalVaiables))
                     optDag.append(varParentSet)
                     for i in range(0, len(varParentSet)):
                         if varParentSet[i] == '1':
