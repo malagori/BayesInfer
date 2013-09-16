@@ -119,7 +119,6 @@ class MainAlgo(object):
             # Repeat until adding a hidden variable does not increase the score
             while True:
             
-                
                 #increment the iteration number
                 iterations +=1 
             
