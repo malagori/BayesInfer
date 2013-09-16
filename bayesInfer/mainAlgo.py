@@ -70,7 +70,7 @@ class MainAlgo(object):
         # create object of EquivalenceClass
         objEC= EquivalenceClass()
         # get the opt bnt from bene
-        optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames))
+        optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
         HIDDEN_NAME= len(variableNames) +1
         
