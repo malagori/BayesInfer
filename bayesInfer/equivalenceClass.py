@@ -8,7 +8,7 @@ import os
 import numpy as np
 from mlabwrap import mlab
 from bayesInfer.node import Node
-from bayesInfer import matlab_lib
+import bayesInfer.matlab_lib
 from bayesInfer.beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
