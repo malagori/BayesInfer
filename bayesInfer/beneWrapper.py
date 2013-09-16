@@ -44,7 +44,7 @@ class BeneWrapper(object):
             print "self.outDirectory %s" % self.outDirectory
             
             if benePwd != None:
-                subprocess.call([ benePwd, self.vdFile, self.dataFile, self.score, self.outDirectory])
+                subprocess.call([ str(benePwd), str(self.vdFile), str(self.dataFile), str(self.score), str(self.outDirectory)])
         except IOError, e:
             print ("Class: beneWrapper; Function: generateOptBnt();  Error: " + str(e))
             
