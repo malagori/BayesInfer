@@ -16,7 +16,7 @@ class EquivalenceClass(object):
         self.matlabLibPath= os.path.dirname(os.path.abspath(matlab_lib.__file__))
         mlab.addpath(self.matlabLibPath)
         
-    def getOptDag(self, vdFile, dataFile, score=1.0, outDirectory, totalVaiables, cardinality):
+    def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality):
         
         
         #create obj of BeneWrapper class and initialize the fields
