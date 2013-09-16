@@ -8,15 +8,14 @@ import os
 import numpy as np
 from mlabwrap import mlab
 from node import Node
-#import matlab_lib
 from beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
     def __init__(self):
-        #self.matlabLibPath='/gulo/glob/mehmood/projects/bayesian/BayesInfer/bayesInfer/matlab_lib'
         self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
         mlab.addpath(self.matlabLibPath)
-        
+    def __exit__(self):
+        mlab.close()
     def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality):
         
         
