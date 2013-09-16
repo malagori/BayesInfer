@@ -2,6 +2,7 @@ from __future__ import division
 
 import time
 import random as rNumber
+import pandas as pd
 
 
 from storeRetriveSeed import RandomSeed
@@ -28,7 +29,7 @@ class MainAlgo(object):
         self.seedFile       = seedFile
         self.outputFile     = outPutFile
         self.iterations     = iterations
-        self.df
+        self.df             = pd.DataFrame(index=None, columns=None)
         
     def printDag(self,iterations, allNodesObjects):
         with open(str("bestDag_"+iterations), 'w') as wdag:
