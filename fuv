@@ -13,9 +13,9 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, seedFile ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, seedFile)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile)
     objMainAlgo.runAlgo()
     
 def main(argv):
