@@ -14,7 +14,7 @@ class EquivalenceClass(object):
     def __init__(self):
         self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
         mlab.addpath(self.matlabLibPath)
-    def __exit__(self):
+    def __exit__(self,type, value, traceBack):
         mlab.close()
     def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality):
         
