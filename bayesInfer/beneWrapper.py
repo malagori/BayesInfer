@@ -37,8 +37,14 @@ class BeneWrapper(object):
             null = open("/dev/null")
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
             benePwd= self.which('data2net.sh')
+            print "benePwd: %s" % benePwd
+            print "self.vdFile %s" % self.vdFile
+            print "self.dataFile %s" % self.dataFile
+            print "self.score %s" % self.score
+            print "self.outDirectory %s" % self.outDirectory
+            
             if benePwd != None:
-                subprocess.call([ benePwd, self.vdFile, self.dataFile, self.score, self.outDirectory], stdout=beneStdOut, stderr=null)
+                subprocess.call([ benePwd, self.vdFile, self.dataFile, self.score, self.outDirectory])
         except IOError, e:
             print ("Class: beneWrapper; Function: generateOptBnt();  Error: " + str(e))
             
