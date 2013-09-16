@@ -1,10 +1,4 @@
 from __future__ import division
-'''
-Created on Sep 10, 2013
-
-@author: malagori
-'''
-
 
 import time
 import datetime
