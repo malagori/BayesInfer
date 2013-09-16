@@ -22,7 +22,7 @@ class BeneWrapper(object):
             null = open("/dev/null")
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
             print beneStdOut
-            subprocess.check_call([ "data2net.sh", self.vdFile, self.dataFile, self.score, self.outDirectory], stdout=beneStdOut, stderr=null)
+            subprocess.call([ "data2net.sh", self.vdFile, self.dataFile, self.score, self.outDirectory])
         except IOError, e:
             print ("Class: beneWrapper; Function: generateOptBnt();  Error: " + str(e))
             
