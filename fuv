@@ -51,7 +51,7 @@ def main(argv):
     print "alpha %f"            % alpha 
     if seed != None:
         print "seed %d"             % seed
-    print "outPutFile %d"       % outPutFile
+    print "outPutFile %s"       % outPutFile
     
     runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile)
     
