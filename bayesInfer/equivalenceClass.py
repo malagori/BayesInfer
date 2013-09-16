@@ -7,9 +7,9 @@ __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 import os
 import numpy as np
 from mlabwrap import mlab
-from bayesInfer.node import Node
+from node import Node
 #from bayesInfer import matlab_lib
-from bayesInfer.beneWrapper import BeneWrapper
+from beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
     def __init__(self):

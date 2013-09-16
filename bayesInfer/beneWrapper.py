@@ -6,7 +6,7 @@ __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 
 import os
 import subprocess
-from bayesInfer.node import Node
+from node import Node
 
 class BeneWrapper(object):
     def __init__(self, vdFile, dataFile, score, outDirectory, totalVaiables):

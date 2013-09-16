@@ -5,7 +5,6 @@ __version__= "0.9"
 __license__ = "GPL"
 __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 
-import itertools
 
 
 """ 

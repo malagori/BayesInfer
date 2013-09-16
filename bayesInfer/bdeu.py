@@ -6,25 +6,17 @@ __license__ = "GPL"
 __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 
 
-import os
-import sys
 import itertools
 import math
 
-import time
+
 import random as rNumber
 import numpy as np
-#from pandas import Series
 
-
-from bayesInfer.node import Node
-
+from node import Node
 
 class BDeuClass(object):
     def __init__(self, df, allNodeObjects, totalUniqueObservations):
-        '''
-        Constructor
-        '''
         self.df
         self.allNodeObjects
         self.totalUniqueObservations

@@ -1,16 +1,15 @@
 from __future__ import division
 
 import time
-import datetime
 import random as rNumber
 
 
-from bayesInfer.storeRetriveSeed import RandomSeed
-from bayesInfer.readDataFile import convertBeneDataFile
-from bayesInfer.readDataFile import readVdFile
-from bayesInfer.equivalenceClass import EquivalenceClass
-from bayesInfer.node import Node
-from bayesInfer.bdeuClass import BDeuClass
+from storeRetriveSeed import RandomSeed
+from readDataFile import convertBeneDataFile
+from readDataFile import readVdFile
+from equivalenceClass import EquivalenceClass
+from node import Node
+from bdeu import BDeuClass
 
 class MainAlgo(object):
     '''
