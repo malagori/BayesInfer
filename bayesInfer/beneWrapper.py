@@ -16,13 +16,29 @@ class BeneWrapper(object):
         self.outDirectory = outDirectory    # path to output directory
         self.totalVaiables = totalVaiables  # number of variables
 
-        
+    def checkExe(self, exePath):
+        return os.path.isfile(exePath) and os.access(exePath, os.X_OK)
+    
+    def which(self, program):
+        fpath, fname = os.path.split(program)
+        if fpath:
+            if self.checkExe(program):
+                return program
+        else:
+            for path in os.environ["PATH"].split(os.pathsep):
+                path = path.strip('"')
+                exe_file = os.path.join(path, program)
+                if self.checkExe(exe_file):
+                    return exe_file
+        return None
+    
     def generateOptBnt(self):
         try:
             null = open("/dev/null")
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
-            print beneStdOut
-            subprocess.call([ "data2net.sh", self.vdFile, self.dataFile, self.score, self.outDirectory])
+            benePwd= self.which('data2net.sh')
+            if benePwd != None:
+                subprocess.call([ benePwd, self.vdFile, self.dataFile, self.score, self.outDirectory], stdout=beneStdOut, stderr=null)
         except IOError, e:
             print ("Class: beneWrapper; Function: generateOptBnt();  Error: " + str(e))
             
