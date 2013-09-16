@@ -9,7 +9,6 @@ import subprocess
 from bayesInfer.node import Node
 
 class BeneWrapper(object):
-
     def __init__(self, vdFile, dataFile, score, outDirectory, totalVaiables):
         self.vdFile = vdFile                # variable descriptor file
         self.dataFile = dataFile            # data file

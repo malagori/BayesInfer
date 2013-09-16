@@ -12,10 +12,9 @@ import itertools
 import math
 
 import time
-import argparse
 import random as rNumber
 import numpy as np
-from pandas import Series
+#from pandas import Series
 
 
 from bayesInfer.node import Node
