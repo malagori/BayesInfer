@@ -60,7 +60,7 @@ class BeneWrapper(object):
         
         
         try:
-            infile= self.outDirectory+'net'
+            infile= self.outDirectory+'/'+'net'
             varName=0
             allNodesObj={}
             optDag=[]
