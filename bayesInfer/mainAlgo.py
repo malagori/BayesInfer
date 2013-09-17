@@ -107,6 +107,9 @@ class MainAlgo(object):
             for n in objCBDeu.allNodeObjects:
                 tmpNode= Node()
                 tmpNode=objCBDeu.allNodeObjects[n]
+                tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
+                print "Node: %s , Score: %f" % (n, tmpScore)
+                
                 print "Name: %s" % tmpNode.getName()
                 print "Cardinality: %d" % tmpNode.getR()
                 print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
@@ -115,8 +118,6 @@ class MainAlgo(object):
                 print "pConfigurations: " 
                 print tmpNode.getPaConfigurations()
                 
-                tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-                print "Node: %s , Score: %f" % (n, tmpScore)
                 nodesBDeuScore.append(tmpScore)
             
             
