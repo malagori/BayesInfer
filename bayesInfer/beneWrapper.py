@@ -72,9 +72,11 @@ class BeneWrapper(object):
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
                     print varParentSet
                     optDag.append(varParentSet)
-                    for i in xrange(len(varParentSet), 0, -1):
-                        if varParentSet[i-1] == '1':
-                            parents.append(i-1)
+                    idx=1
+                    for i in reversed(varParentSet):
+                        if i == '1':
+                            parents.append(idx)
+                        idx+=1
                             
                     varName+=1
                     node.setR(int(cardinality[varName-1]))

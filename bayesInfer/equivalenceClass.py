@@ -57,16 +57,19 @@ class EquivalenceClass(object):
         myDag=map(list, zip(*dag))
         for i in myDag:
             
-            
-            parentSet= [j for j in xrange(len(i), 0, -1) if i[j-1]==1] # parent name starts from 1 not 0
+            parents=[]
+            idx=1
+            for j in reversed(i):
+                if j == 1:
+                    parents.append(idx)
+                idx+=1# parent name starts from 1 not 0
             
             node= Node()
-            node.setR(int(cardinality[varName])) # can update cardinality from vdFile
             varName +=1
-            node.setName(varName) 
-            
+            node.setName(varName)
+            node.setR(int(cardinality[varName-1])) # can update cardinality from vdFile
             node.setKvalues(dict.fromkeys(list(xrange(0, int(cardinality[varName-1]), 1))))
-            node.setParents(parentSet)
+            node.setParents(parents)
             allNodesObj[varName]= node
             
         return allNodesObj
