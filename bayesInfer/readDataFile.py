@@ -69,8 +69,9 @@ def convertBeneDataFile(infile, columns):
     newCols= [i for i in xrange(1, columns+1)]
     #create df
     df =pd.DataFrame(rows)
-    df['Counts']= pd.Series(counts, df.index)
     df.columns= newCols
+    df['Counts']= pd.Series(counts, df.index)
+    
       
     return df
     
