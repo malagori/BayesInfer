@@ -90,7 +90,7 @@ class BeneWrapper(object):
                 node.setR(int(cardinality[varName])) # can update cardinality from vdFile
                 varName +=1
                 node.setName(varName) 
-                node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
+                node.setKvalues(dict.fromkeys(list(range(0, int(cardinality[varName-1]), 1))))
                 node.setParents(parentSet)
                 allNodesObj[varName]= node
             

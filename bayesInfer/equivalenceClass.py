@@ -12,7 +12,9 @@ from beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
     def __init__(self):
+        
         self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
+        print "os.path.abspath('matlab_lib/__init__.pyc') %s" % os.path.abspath('matlab_lib/__init__.pyc')
         print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
     def __exit__(self,type, value, traceBack):
@@ -62,7 +64,7 @@ class EquivalenceClass(object):
             varName +=1
             node.setName(varName) 
             
-            node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
+            node.setKvalues(dict.fromkeys(list(range(0, int(cardinality[varName-1]), 1))))
             node.setParents(parentSet)
             allNodesObj[varName]= node
             
