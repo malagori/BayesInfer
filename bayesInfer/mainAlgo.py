@@ -88,6 +88,10 @@ class MainAlgo(object):
         with open(self.outputFile, 'w') as wf:
             nodesBDeuScore=[]
             totalUniqueObservations= self.df.shape[0]
+            print "totalUniqueObservations: %d" % totalUniqueObservations
+            print "df:"
+            print self.df
+            print allNodesObj
             objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations)
 
             # update the parent configurations for all variables
@@ -97,7 +101,9 @@ class MainAlgo(object):
                 objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
             # find the BDeu Score for the whole structure
             for n in objCBDeu.allNodeObjects:
-                nodesBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+                tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
+                print "Node: %s , Score: %f" % (n, tmpScore)
+                nodesBDeuScore.append(tmpScore)
             
             
             print "BDeu Score for optimal dag from Bene: %f" % sum(nodesBDeuScore)
