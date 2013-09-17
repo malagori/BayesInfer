@@ -66,33 +66,25 @@ class BeneWrapper(object):
             varName=0
             with open(infile) as f:
                 for line in f:
+                    node= Node()
+                    parents=[]
+                    
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
                     print varParentSet
                     optDag.append(varParentSet)
-#                    for i in range(0, len(varParentSet)):
-#                        if varParentSet[i] == '1':
-#                            # set parent
-#                            parents.append(i+1)
-#                            
-#                            
-#                    node.setR(int(cardinality[varName-1]))
-#                    node.setKvalues(dict.fromkeys(list(range(0, int(cardinality[varName-1]), 1))))
-#                    node.setName(varName)
-#                    node.setParents(parents)
-#                    allNodesObj[varName]=node
+                    for i in xrange(len(varParentSet), 0, -1):
+                        if varParentSet[i] == '1':
+                            parents.append(i+1)
+                            
+                    varName+=1
+                    node.setR(int(cardinality[varName-1]))
+                    node.setKvalues(dict.fromkeys(list(xrange(0, int(cardinality[varName-1]), 1))))
+                    node.setName(varName)
+                    node.setParents(parents)
+                    allNodesObj[varName]=node
 
             # taking transpose of list of list to get the required dag
             optDag=map(list, zip(*optDag))
-            
-            for i in optDag:
-                parentSet= [j+1 for j in range(0,len(i)) if i[j]== '1'] # parent name starts from 1 not 0                
-                node= Node()
-                node.setR(int(cardinality[varName])) # can update cardinality from vdFile
-                varName +=1
-                node.setName(varName) 
-                node.setKvalues(dict.fromkeys(list(range(0, int(cardinality[varName-1]), 1))))
-                node.setParents(parentSet)
-                allNodesObj[varName]= node
             
             return optDag, allNodesObj
             

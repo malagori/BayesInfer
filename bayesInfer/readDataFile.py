@@ -48,7 +48,7 @@ def convertBeneDataFile(infile):
     
     try:
         benDF=pd.read_csv(infile, sep='\t')
-        newCols= [i for i in range(1, benDF.shape[1]+1)]
+        newCols= [i for i in xrange(1, benDF.shape[1]+1)]
         benDF.columns= newCols
         # converting rows into tuples
         trows= [tuple(row) for row in benDF.values]

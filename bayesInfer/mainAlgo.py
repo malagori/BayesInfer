@@ -171,7 +171,7 @@ class MainAlgo(object):
                     idx=1
                     edges=[]
                     for i in dag:
-                        e=[edges.append((idx,j+1)) for j in range(0,len(i)) if i[j]==1]
+                        e=[edges.append((idx,j+1)) for j in xrange(0,len(i)) if i[j]==1]
                         idx+=1
                     
                     # for each edge. replace it with hidden variable and compute the score

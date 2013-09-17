@@ -54,17 +54,18 @@ class EquivalenceClass(object):
         varName=0
         allNodesObj={}
         
-        for i in dag:
+        myDag=map(list, zip(*dag))
+        for i in myDag:
             
             
-            parentSet= [j+1 for j in range(0,len(i)) if i[j]==1] # parent name starts from 1 not 0
+            parentSet= [j+1 for j in xrange(len(i), 0, -1) if i[j]==1] # parent name starts from 1 not 0
             
             node= Node()
             node.setR(int(cardinality[varName])) # can update cardinality from vdFile
             varName +=1
             node.setName(varName) 
             
-            node.setKvalues(dict.fromkeys(list(range(0, int(cardinality[varName-1]), 1))))
+            node.setKvalues(dict.fromkeys(list(xrange(0, int(cardinality[varName-1]), 1))))
             node.setParents(parentSet)
             allNodesObj[varName]= node
             
@@ -81,7 +82,7 @@ class EquivalenceClass(object):
         allDagsNetworkDict= {} # network related to each dag is populated 
         nDags, Dag_list = mlab.pdag_to_all_dags(cDag, nout=2)
         
-        for i in range(0, nDags):
+        for i in xrange(0, nDags):
             npDagsArray= mlab.cell2mat(Dag_list[i]).astype(int)
             dagsDict[i]= npDagsArray.tolist()
             allDagsNetworkDict[i]= self.generateBnt(dagsDict[i], cardinality)

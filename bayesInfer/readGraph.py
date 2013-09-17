@@ -23,7 +23,7 @@ def readInitialStructure(infile):
                 node=Node()
                 # cardinality is read as a string, we must convert string to integer 
                 node.setR(int(cardinality))
-                node.setKvalues(dict.fromkeys(list(range(0, int(cardinality), 1))))
+                node.setKvalues(dict.fromkeys(list(xrange(0, int(cardinality), 1))))
                 node.setName(var)
                 node.setParents(parents)
                 allNodesObj[var]=node

@@ -296,7 +296,7 @@ class BDeuClass(object):
         h= Node()
         h.setName(name)
         h.setR(cardinality)
-        h.setKvalues(dict.fromkeys(list(range(0, cardinality, 1)))) 
+        h.setKvalues(dict.fromkeys(list(xrange(0, cardinality, 1)))) 
         h.addChild(child1) # add children to hidden variable
         h.addChild(child2)
         h.setChildrenUpdateFlag(True)
