@@ -48,7 +48,7 @@ def convertBeneDataFile(infile, columns):
     dic={}
     rows=[]
     try:
-        with open('iris.idt') as f:
+        with open(infile) as f:
             for line in f:
                 line=line.strip()
                 tok=[]
