@@ -2,7 +2,7 @@
 
 from setuptools import setup
 setup(
-    name='malagori',
+    name='BayesInfer',
     version='0.1dev',
     author='Mehmood Alam Khan',
     author_email='malagori@kth.se',
