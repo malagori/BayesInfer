@@ -33,18 +33,22 @@ class MainAlgo(object):
         
     def printDag(self,iterations, allNodesObjects):
         with open(str("bestDag_"+iterations), 'w') as wdag:
-            p=[]
+            p=[0]*len(allNodesObjects)
             for key, node in allNodesObjects.iteritems():
-                p=[]
-                p=sum(node.getParents())
-                if not p: # if p is empty list 
+                pa=[]
+                pa=node.getParents()
+                if not pa: # if p is empty list 
                     p.append(0)
-                wdag.write("%s\n" % p)
+                    wdag.write("%s\n" % p)
+                    continue
+                else:
+                    for i in pa:
+                        p[i-1]=1
+                    p=p[::-1]
+                    binStrParent=''.join(str(e) for e in p)
+                    deciParents=int(binStrParent,2)
+                    wdag.write("%s\n" % str(deciParents))
 
-                    
-            
-            
-            
         
     def runAlgo(self):
         
@@ -109,15 +113,15 @@ class MainAlgo(object):
                 tmpNode= Node()
                 tmpNode=objCBDeu.allNodeObjects[n]
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-                print "Node: %s , Score: %f" % (n, tmpScore)
-                
-                print "Name: %s" % tmpNode.getName()
-                print "Cardinality: %d" % tmpNode.getR()
-                print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
-                print "Parents: " 
-                print tmpNode.getParents()
-                print "pConfigurations: " 
-                print tmpNode.getPaConfigurations()
+#                print "Node: %s , Score: %f" % (n, tmpScore)
+#                
+#                print "Name: %s" % tmpNode.getName()
+#                print "Cardinality: %d" % tmpNode.getR()
+#                print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
+#                print "Parents: " 
+#                print tmpNode.getParents()
+#                print "pConfigurations: " 
+#                print tmpNode.getPaConfigurations()
                 
                 nodesBDeuScore.append(tmpScore)
             
