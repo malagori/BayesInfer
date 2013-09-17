@@ -58,13 +58,13 @@ class BeneWrapper(object):
         decimalToBinary = lambda x, n: x >= 0 and str(bin(x))[2:].zfill(n)
         
         
-        
+        allNodesObj={}
+        optDag=[]
         try:
             infile= self.outDirectory+'/'+'net'
             print infile
             varName=0
-            allNodesObj={}
-            optDag=[]
+            
             with open(infile) as f:
                 for line in f:
                     node=Node()
