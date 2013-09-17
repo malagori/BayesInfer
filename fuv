@@ -23,15 +23,15 @@ def main(argv):
      
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
-    parser.add_argument('-vd', metavar='vdfile' ,type=str, help='Specify path to the file containing variable information ')
+    parser.add_argument('-vd', metavar='vdFile' ,type=str, help='Specify path to the file containing variable information ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
-    parser.add_argument('-od', metavar='outDir',type=str, help='Specify path to output directory ')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify alpha parameter ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
     parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
-    parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
+    parser.add_argument('-o', metavar='outFile', type=str, help='Specify the file to output the results. ', default= 'fuv_results.txt')
+    parser.add_argument('-od', metavar='outDir', type=str, help='Specify Path to the directory to write the results. ', default= 'fuv_dir_results')
     args = parser.parse_args()
     
     vdFile          = args.vd
@@ -43,6 +43,7 @@ def main(argv):
     seedFile        = args.l
     outPutFile      = args.o
     iterations      = args.i
+
     
     
     print "vdfile: %s"          % vdFile
