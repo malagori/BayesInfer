@@ -8,8 +8,7 @@ __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 
 import itertools
 import math
-
-
+import pandas as pd
 import random as rNumber
 import numpy as np
 
@@ -17,10 +16,10 @@ from node import Node
 
 class BDeuClass(object):
     def __init__(self, df, allNodeObjects, totalUniqueObservations):
-        self.df
-        self.allNodeObjects
-        self.totalUniqueObservations
-        self.dagBDeuScore=float("-inf")
+        self.df                         = pd.DataFrame(index=None, columns=None)
+        self.allNodeObjects             = {}
+        self.totalUniqueObservations    = 0
+        self.dagBDeuScore               =float("-inf")
         
     
     

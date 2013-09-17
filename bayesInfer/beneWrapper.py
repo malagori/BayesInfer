@@ -64,7 +64,6 @@ class BeneWrapper(object):
             infile= self.outDirectory+'/'+'net'
             print infile
             varName=0
-            print "infile: %s" % infile
             with open(infile) as f:
                 for line in f:
                     node=Node()
@@ -73,8 +72,6 @@ class BeneWrapper(object):
                     
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
                     optDag.append(varParentSet)
-                    print "varParentSet: "
-                    print varParentSet
                     for i in range(0, len(varParentSet)):
                         if varParentSet[i] == '1':
                             # set parent
