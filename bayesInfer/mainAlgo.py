@@ -101,6 +101,12 @@ class MainAlgo(object):
                 tmpNode= objCBDeu.allNodeObjects[n]
                 objCBDeu.getUpdatedQi(tmpNode)
                 objCBDeu.populateCounts(tmpNode)
+                
+                
+            # find the BDeu Score for the whole structure
+            for n in objCBDeu.allNodeObjects:
+                tmpNode= Node()
+                tmpNode=objCBDeu.allNodeObjects[n]
                 print "Name: %s" % tmpNode.getName()
                 print "Cardinality: %d" % tmpNode.getR()
                 print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
@@ -109,8 +115,6 @@ class MainAlgo(object):
                 print "pConfigurations: " 
                 print tmpNode.getPaConfigurations()
                 
-            # find the BDeu Score for the whole structure
-            for n in objCBDeu.allNodeObjects:
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
                 print "Node: %s , Score: %f" % (n, tmpScore)
                 nodesBDeuScore.append(tmpScore)

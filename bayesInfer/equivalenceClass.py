@@ -13,6 +13,7 @@ from beneWrapper import BeneWrapper
 class EquivalenceClass(object):
     def __init__(self):
         self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
+        print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
     def __exit__(self,type, value, traceBack):
         mlab.close()
