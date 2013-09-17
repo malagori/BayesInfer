@@ -17,8 +17,8 @@ from node import Node
 class BDeuClass(object):
     def __init__(self, df, allNodeObjects, totalUniqueObservations):
         self.df                         = pd.DataFrame(index=None, columns=None)
-        self.allNodeObjects             = {}
-        self.totalUniqueObservations    = 0
+        self.allNodeObjects             = allNodeObjects
+        self.totalUniqueObservations    = totalUniqueObservations
         self.dagBDeuScore               = float("-inf")
         
     
