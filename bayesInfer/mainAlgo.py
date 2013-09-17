@@ -97,8 +97,18 @@ class MainAlgo(object):
             # update the parent configurations for all variables
             # and the counts associated with the each parent configuration for each value of X
             for n in objCBDeu.allNodeObjects:
-                objCBDeu.getUpdatedQi(objCBDeu.allNodeObjects[n])
-                objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
+                tmpNode= Node()
+                tmpNode= objCBDeu.allNodeObjects[n]
+                objCBDeu.getUpdatedQi(tmpNode)
+                objCBDeu.populateCounts(tmpNode)
+                print "Name: %s" % tmpNode.getName()
+                print "Cardinality: %d" % tmpNode.getR()
+                print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
+                print "Parents: " 
+                print tmpNode.getParents()
+                print "pConfigurations: " 
+                print tmpNode.getPaConfigurations()
+                
             # find the BDeu Score for the whole structure
             for n in objCBDeu.allNodeObjects:
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
