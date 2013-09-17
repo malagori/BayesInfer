@@ -36,7 +36,7 @@ def readDataFrame(infile):
 
     return df
 
-def convertBeneDataFile(infile):
+def convertBeneDataFile(infile, columns):
     """
     Read data from file contain data in following format:
         0  0  1  0  0 
@@ -45,29 +45,33 @@ def convertBeneDataFile(infile):
     
     returns dataframe, number of variables
     """
-    
+    dic={}
+    rows=[]
     try:
-        benDF=pd.read_csv(infile, sep='\t')
-        newCols= [i for i in xrange(1, benDF.shape[1]+1)]
-        benDF.columns= newCols
-        # converting rows into tuples
-        trows= [tuple(row) for row in benDF.values]
-        rowCount=[(item, count) for item, count in Counter(trows).iteritems() ]
-        dfDictionary= dict(rowCount)
-        newCols.append('Counts')
-        
-        # create new data frame
-        
-        varColumns=np.array([key for [key,val] in dfDictionary.iteritems()])
-        countCoumns=np.array([val for [key,val] in dfDictionary.iteritems()])
-        
-        df =pd.DataFrame(varColumns)
-        df['Counts']= pd.Series(countCoumns, df.index)
-        df.columns= newCols
-        
+        with open('iris.idt') as f:
+            for line in f:
+                line=line.strip()
+                tok=[]
+                tok=line.split('\t')
+                tok=map(int, tok)
+                if tuple(tok) in dic.keys():
+                    dic[tuple(tok)].append(1)
+                else:
+                    dic[tuple(tok)]= [1]
+                    res= map(int, tok)
+                    rows.append(res)  
     except IOError:
-        print "Class: readDataFile; Function convertBeneDataFile();  Error: could not read dataframe"
-         
+        print "Class: readDataFile; Function convertBeneDataFile();  Error: could not read dataframe"     
+    counts=[]
+    for i in rows:
+        counts.append(sum(dic[tuple(i)]))
+    # new columns
+    newCols= [i for i in xrange(1, columns+1)]
+    #create df
+    df =pd.DataFrame(rows)
+    df['Counts']= pd.Series(counts, df.index)
+    df.columns= newCols
+      
     return df
     
     

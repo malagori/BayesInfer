@@ -61,11 +61,13 @@ class MainAlgo(object):
             state= rs.getSateFromFile(self.seedFile)
             rNumber.setstate(state)
             
-        # read data file
-        self.df=convertBeneDataFile(self.dataFile)
+        
         
         # read vdFile
         variableNames, cardinality= readVdFile(self.vdFile)
+        
+        # read data file
+        self.df=convertBeneDataFile(self.dataFile, len(variableNames))
         
         # create object of EquivalenceClass
         objEC= EquivalenceClass()
@@ -99,17 +101,8 @@ class MainAlgo(object):
             for n in objCBDeu.allNodeObjects:
                 tmpNode= Node()
                 tmpNode= objCBDeu.allNodeObjects[n]
-                print "Name: %s" % tmpNode.getName()
-                print "Cardinality: %d" % tmpNode.getR()
-                print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
-                print "Parents: " 
-                print tmpNode.getParents()
-                print "pConfigurations: " 
-                print tmpNode.getPaConfigurations()
-                
                 objCBDeu.getUpdatedQi(tmpNode)
                 objCBDeu.populateCounts(tmpNode)
-                
                 
             # find the BDeu Score for the whole structure
             for n in objCBDeu.allNodeObjects:
