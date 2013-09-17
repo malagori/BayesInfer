@@ -73,7 +73,7 @@ class BeneWrapper(object):
                     print varParentSet
                     optDag.append(varParentSet)
                     for i in xrange(len(varParentSet), 0, -1):
-                        if varParentSet[i] == '1':
+                        if varParentSet[i-1] == '1':
                             parents.append(i+1)
                             
                     varName+=1

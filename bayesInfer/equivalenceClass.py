@@ -58,7 +58,7 @@ class EquivalenceClass(object):
         for i in myDag:
             
             
-            parentSet= [j+1 for j in xrange(len(i), 0, -1) if i[j]==1] # parent name starts from 1 not 0
+            parentSet= [j+1 for j in xrange(len(i), 0, -1) if i[j-1]==1] # parent name starts from 1 not 0
             
             node= Node()
             node.setR(int(cardinality[varName])) # can update cardinality from vdFile
