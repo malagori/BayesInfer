@@ -85,7 +85,7 @@ class BeneWrapper(object):
             optDag=map(list, zip(*optDag))
             
             for i in optDag:
-                parentSet= [j+1 for j in range(0,len(i)) if i[j]==1] # parent name starts from 1 not 0                
+                parentSet= [j+1 for j in range(0,len(i)) if i[j]== '1'] # parent name starts from 1 not 0                
                 node= Node()
                 node.setR(int(cardinality[varName])) # can update cardinality from vdFile
                 varName +=1
