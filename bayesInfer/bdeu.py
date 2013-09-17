@@ -15,7 +15,7 @@ import numpy as np
 from node import Node
 
 class BDeuClass(object):
-    def __init__(self, df, allNodeObjects, totalUniqueObservations):
+    def __init__(self, df, allNodeObjects, totalUniqueObservations, nodesBDeuScore):
         self.df                         = pd.DataFrame(index=None, columns=None)
         self.allNodeObjects             = {}
         self.totalUniqueObservations    = 0

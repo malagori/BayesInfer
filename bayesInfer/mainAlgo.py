@@ -86,7 +86,7 @@ class MainAlgo(object):
         
         
         with open(self.outputFile, 'w') as wf:
-            
+            nodesBDeuScore=[]
             totalUniqueObservations= self.df.shape[0]
             objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations)
 
@@ -97,16 +97,16 @@ class MainAlgo(object):
                 objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
             # find the BDeu Score for the whole structure
             for n in objCBDeu.allNodeObjects:
-                objCBDeu.nodesBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+                nodesBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
             
             
-            print "BDeu Score for optimal dag from Bene: %f" % sum(objCBDeu.nodesBDeuScore)
+            print "BDeu Score for optimal dag from Bene: %f" % sum(nodesBDeuScore)
             #print initial data frame 
             self.df.to_csv('initialDF_bene'+'.csv', sep=',')
             # print the state for the random number generator
             stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
             rs.storeSate(stateOutFile)
-            wf.write("BDeuScore for optimal dag from Bene, %f" % sum(objCBDeu.nodesBDeuScore))
+            wf.write("BDeuScore for optimal dag from Bene, %f" % sum(nodesBDeuScore))
             
             # Repeat until adding a hidden variable does not increase the score
             while True:
@@ -125,6 +125,7 @@ class MainAlgo(object):
          
                 for id, dag in dagsDict.iteritems():
                     
+                    nodesBDeuScore=[]
                     allNodeObjects=allDagsNetworkDict[id]
                     
                     # instantiate CalculateBDeuClass's object 
@@ -138,9 +139,9 @@ class MainAlgo(object):
                         objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
                     # find the BDeu Score for the whole structure
                     for n in objCBDeu.allNodeObjects:
-                        objCBDeu.nodesBDeuScore.append(objCBDeu.getBDeu(allNodeObjects[n], self.alpha))
+                        nodesBDeuScore.append(objCBDeu.getBDeu(allNodeObjects[n], self.alpha))
                     
-                    totalPreviousBDeuScore=sum(objCBDeu.nodesBDeuScore)
+                    totalPreviousBDeuScore=sum(nodesBDeuScore)
                     initialBDeuScore= totalPreviousBDeuScore
                     
                     print "BDeu Score for a dag in Equivalence class before adding hidden variable: %f" % totalPreviousBDeuScore
