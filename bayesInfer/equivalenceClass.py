@@ -59,17 +59,20 @@ class EquivalenceClass(object):
         print dag
         # dag's traspose to get the parent set
         myDag=map(list, zip(*dag))
-        print myDag
+
         
         for i in myDag:
             
             parents=[]
             idx=1
-            for j in reversed(i):
+            for j in i:
+            #for j in reversed(i):
                 if j == 1:
-                    parents.append(idx)
+                    parents.append(idx)          
                 idx+=1# parent name starts from 1 not 0
+            print parents
             
+    
             node= Node()
             varName +=1
             node.setName(varName)
