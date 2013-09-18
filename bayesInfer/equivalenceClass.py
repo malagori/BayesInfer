@@ -56,9 +56,10 @@ class EquivalenceClass(object):
         
         varName=0
         allNodesObj={}
-        
+        print dag
         # dag's traspose to get the parent set
         myDag=map(list, zip(*dag))
+        print myDag
         
         for i in myDag:
             

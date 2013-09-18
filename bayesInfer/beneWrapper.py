@@ -71,8 +71,8 @@ class BeneWrapper(object):
                     parents=[]
                     
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
-                    varParentSet=[i for i in reversed(varParentSet)]
-                    optDag.append(varParentSet)
+                    p=[i for i in reversed(varParentSet)]
+                    optDag.append(p)
                     idx=1
                     for i in reversed(varParentSet):
                         if i == '1':
