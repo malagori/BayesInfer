@@ -261,7 +261,6 @@ class MainAlgo(object):
                                                     node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
                                                 nodesBDeuScore.append(node.getLocalBDeu())
                                             totalCurrentBDeuScore= sum(nodesBDeuScore)
-                                            print "totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                                             if totalPreviousBDeuScore < totalCurrentBDeuScore:
                                                 baseDFrame = objCBDeu.df.copy()
                                                 print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
