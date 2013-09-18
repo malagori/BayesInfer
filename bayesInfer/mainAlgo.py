@@ -274,6 +274,8 @@ class MainAlgo(object):
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[i]=h
                                 hiddenCount+=1 # count the number of hidden variable added
+                                print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, InitialBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+                                print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[i]= key
@@ -286,8 +288,9 @@ class MainAlgo(object):
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
                                 objCBDeu.df= tmpDF
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
+                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: InitialBDeu: %f; CurrentBDeu: %f"    % (id,initialBDeuScore, totalPreviousBDeuScore)
                     if hiddenCount > 0:
-                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable(s): %f" % (id, totalPreviousBDeuScore)   
+                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable(s).%f " % (id, totalPreviousBDeuScore)   
                     else:
                         print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: %f"    % (id, totalPreviousBDeuScore)          
                     # store BDeu Class object
