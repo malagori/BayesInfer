@@ -11,7 +11,6 @@ from readDataFile import readVdFile
 from equivalenceClass import EquivalenceClass
 from node import Node
 from bdeu import BDeuClass
-import numpy as np
 
 class MainAlgo(object):
     '''
@@ -78,7 +77,7 @@ class MainAlgo(object):
         objEC= EquivalenceClass()
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
-        optDag= np.array(optDag).astype('int')
+        
         HIDDEN_NAME= len(variableNames) +1
         
         # dict of dict
