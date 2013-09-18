@@ -38,10 +38,11 @@ class BeneWrapper(object):
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
             benePwd= self.which('data2net.sh')
             print "benePwd: %s" % benePwd
-            print "self.vdFile %s" % self.vdFile
-            print "self.dataFile %s" % self.dataFile
-            print "self.score %s" % self.score
-            print "self.outDirectory %s" % self.outDirectory
+            print "vdFile %s" % self.vdFile
+            print "dataFile %s" % self.dataFile
+            print "outDirectory %s" % self.outDirectory
+            print "score %s" % self.score
+            
             
             if benePwd != None:
                 subprocess.call([ str(benePwd), str(self.vdFile), str(self.dataFile), str(self.score), str(self.outDirectory)])
@@ -70,7 +71,6 @@ class BeneWrapper(object):
                     parents=[]
                     
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
-                    print varParentSet
                     optDag.append(varParentSet)
                     idx=1
                     for i in reversed(varParentSet):

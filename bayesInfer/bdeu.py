@@ -26,7 +26,7 @@ class BDeuClass(object):
     # total parent configurations
     def getUpdatedQi(self,node):
         """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""
-        print "Function: getUpdatedQi; Node Name: %s" % node.getName()
+        #print "Function: getUpdatedQi; Node Name: %s" % node.getName()
         if len(node.getParents())==0:
             return
         else:

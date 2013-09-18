@@ -94,10 +94,9 @@ class MainAlgo(object):
         with open(self.outputFile, 'w') as wf:
             nodesBDeuScore=[]
             totalUniqueObservations= self.df.shape[0]
-            print "totalUniqueObservations: %d" % totalUniqueObservations
+            #print "totalUniqueObservations: %d" % totalUniqueObservations
             print "df:"
             print self.df
-            print allNodesObj
             objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations)
 
             # update the parent configurations for all variables
@@ -170,7 +169,7 @@ class MainAlgo(object):
                     totalPreviousBDeuScore=sum(nodesBDeuScore)
                     initialBDeuScore= totalPreviousBDeuScore
                     
-                    print "BDeu Score for a dag in Equivalence class before adding hidden variable: %f" % totalPreviousBDeuScore
+                    print "BDeu Score for a dag %d in Equivalence class before adding hidden variable: %f" % (id, totalPreviousBDeuScore)
                     
                     # find all the edges in the dag
                     idx=1
@@ -178,7 +177,7 @@ class MainAlgo(object):
                     for i in dag:
                         e=[edges.append((idx,j+1)) for j in xrange(0,len(i)) if i[j]==1]
                         idx+=1
-                    
+                    hiddenCount= 0 # hidden variable counter
                     # for each edge. replace it with hidden variable and compute the score
                     for edge in edges:
                         # check if score for adding hidden variable for this edge is already computed in other equivalence dag
@@ -274,6 +273,7 @@ class MainAlgo(object):
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[i]=h
+                                hiddenCount+=1 # count the number of hidden variable added
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[i]= key
@@ -286,7 +286,10 @@ class MainAlgo(object):
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
                                 objCBDeu.df= tmpDF
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
-                                    
+                    if hiddenCount > 0:
+                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable(s): %f" % (id, totalPreviousBDeuScore)   
+                    else:
+                        print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: %f"    % (id, totalPreviousBDeuScore)          
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
