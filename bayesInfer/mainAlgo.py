@@ -296,12 +296,13 @@ class MainAlgo(object):
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
-                currentMaxBDeu=float("-inf")
+                currentMaxAllNodesObjects={}
+                currentMaxDF= pd.DataFrame(index=None, columns=None)
                 for obj in arrayListBDeuClassObjs:
                     if currentMaxBDeu < obj.dagBDeuScore:
                         currentMaxBDeu                 = obj.dagBDeuScore
                         currentMaxAllNodesObjects      = obj.allNodeObjects
-                        currentMaxDF                   = obj.df
+                        currentMaxDF                   = obj.df.copy()
                 
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
@@ -309,7 +310,7 @@ class MainAlgo(object):
                     #print optdag
                     self.printDag(currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
-                    print "Iteration: %d , BDeu Score: %f" % (iterations, totalCurrentBDeuScore)
+                    print "Iteration: %d , BDeu Score: %f" % (iterations, currentMaxBDeu)
                     hValues= h.getKvalues().keys()
                     for i in xrange(0,len(hValues)-1):
                         count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
