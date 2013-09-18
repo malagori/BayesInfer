@@ -11,6 +11,7 @@ import math
 import pandas as pd
 import random as rNumber
 import numpy as np
+from pandas import Series
 
 from node import Node
 
