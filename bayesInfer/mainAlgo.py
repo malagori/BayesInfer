@@ -251,7 +251,6 @@ class MainAlgo(object):
                                             # compute the BDeu score again after perturbations
                                             for n in objCBDeu.allNodeObjects:
                                                 node=objCBDeu.allNodeObjects[n]
-                                        
                                                 if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
                                                     
                                                     # change the counts of this node according to some criteria i.e.
@@ -262,9 +261,10 @@ class MainAlgo(object):
                                                     node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
                                                 nodesBDeuScore.append(node.getLocalBDeu())
                                             totalCurrentBDeuScore= sum(nodesBDeuScore)
-                                            
+                                            print "totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                                             if totalPreviousBDeuScore < totalCurrentBDeuScore:
                                                 baseDFrame = objCBDeu.df.copy()
+                                                print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                                                 totalPreviousBDeuScore = totalCurrentBDeuScore
                                         
                                         # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
