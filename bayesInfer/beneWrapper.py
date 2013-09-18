@@ -87,7 +87,7 @@ class BeneWrapper(object):
 
             # taking transpose of list of list to get the required dag
             optDag=map(list, zip(*optDag))
-            
+            print optDag
             return optDag, allNodesObj
             
             

@@ -31,7 +31,7 @@ class EquivalenceClass(object):
         
         optDag, allNodesObj = bwObj.readBeneBnt(cardinality)
         
-        optDag= np.array(optDag).astype('int')
+        #optDag= np.array(optDag).astype('int')
         
         return optDag, allNodesObj
         
