@@ -13,10 +13,11 @@ from beneWrapper import BeneWrapper
 class EquivalenceClass(object):
     def __init__(self):
         
-        self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
-        print "os.path.abspath('matlab_lib/__init__.pyc') %s" % os.path.abspath('matlab_lib/__init__.pyc')
-        print "self.matlabLibPath: %s" % self.matlabLibPath
+        #self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
+        #print "os.path.abspath('matlab_lib/__init__.pyc') %s" % os.path.abspath('matlab_lib/__init__.pyc')
+        #print "self.matlabLibPath: %s" % self.matlabLibPath
         self.matlabLibPath= '/bubo/home/h1/mehmood/projects/bayesian/BayesInfer/matlab_lib'
+        print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
     def __exit__(self,type, value, traceBack):
         mlab.close()
@@ -41,6 +42,7 @@ class EquivalenceClass(object):
         output: cdag in 2d numpy array
         
         """
+        mlab.addpath(self.matlabLibPath)
         cDag= mlab.dag_to_cpdag(optDag)
         return cDag
     
@@ -83,6 +85,7 @@ class EquivalenceClass(object):
         input: cDag, cardinality for each variable [list]
         output: dagsDict(index= int), allDagsNetworkDict(index= int)
         """
+        mlab.addpath(self.matlabLibPath)
         
         dagsDict= {} # each dag is represented as list of list
         allDagsNetworkDict= {} # network related to each dag is populated 
