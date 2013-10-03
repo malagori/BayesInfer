@@ -35,24 +35,30 @@ class MainAlgo(object):
         '''
             this function return optDag after improvement in bdeu score either by adding hidden var or removing edges
         '''
-        
+        optDag=[]
+        cardinality=[]
         with open(str("bestDag_"+iterations), 'w') as wdag:
-            p=[0]*len(allNodesObjects)
             for key, node in allNodesObjects.iteritems():
+                cardinality.append(node.getR())
+                p=[0]*len(allNodesObjects)
                 pa=[]
                 pa=node.getParents()
                 if not pa: # if p is empty list 
-                    p.append(0)
-                    wdag.write("%s\n" % p)
+                    wdag.write("%d\n" % 0)
+                    optDag.append(p)
                     continue
                 else:
                     for i in pa:
                         p[i-1]=1
+                    optDag.append(p)
                     p=p[::-1]
                     binStrParent=''.join(str(e) for e in p)
                     deciParents=int(binStrParent,2)
                     wdag.write("%s\n" % str(deciParents))
-
+        
+        optDag=map(list, zip(*optDag))
+        
+        return optDag, cardinality
 
     def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore):
         '''
@@ -194,6 +200,7 @@ class MainAlgo(object):
             
                 #increment the iteration number
                 iterations +=1 
+                print "printing optDag"
                 print optDag
                 # pDag
                 cDag=objEC.generateCdag(optDag)
@@ -344,12 +351,12 @@ class MainAlgo(object):
                                 # update the variable names after adding hidden variable
                                 objCBDeu.setVariableNames(h.getName())
                                 
-                                # update the edges list after adding hidden variable
-                                hChildren= h.getChildren()
-                                
-                                # update edges by adding edges of hidden variable to its children
-                                edges.append((h.getName(), hChildren[0]))
-                                edges.append((h.getName(), hChildren[1]))
+#                                # update the edges list after adding hidden variable
+#                                hChildren= h.getChildren()
+#                                
+#                                # update edges by adding edges of hidden variable to its children
+#                                edges.append((h.getName(), hChildren[0]))
+#                                edges.append((h.getName(), hChildren[1]))
                                 
                                 # generate new name for hidden variable
                                 HIDDEN_NAME += 1
@@ -362,11 +369,7 @@ class MainAlgo(object):
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
                                 objCBDeu.df= tmpDF
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
-                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: InitialBDeu: %f; CurrentBDeu: %f"    % (id,initialBDeuScore, totalPreviousBDeuScore)
-                    if hiddenCount > 0:
-                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable(s).%f " % (id, totalPreviousBDeuScore)   
-                    else:
-                        print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: %f"    % (id, totalPreviousBDeuScore)          
+                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: InitialBDeu: %f; CurrentBDeu: %f"    % (id,initialBDeuScore, totalPreviousBDeuScore)        
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
@@ -388,11 +391,9 @@ class MainAlgo(object):
                     variableNames= currentMaxVariables
                     
                     # update optdag 
-                    
                     # update cardinality 
-                    
                     #print optdag
-                    self.printDag(currentMaxAllNodesObjects)
+                    optDag, cardinality = self.printDag(currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
                     print "Iteration: %d , BDeu Score: %f" % (iterations, currentMaxBDeu)
                     hValues= h.getKvalues().keys()
