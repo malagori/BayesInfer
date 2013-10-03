@@ -104,7 +104,43 @@ class MainAlgo(object):
                 
         return totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu
         
+    def removeEdgesFromBnt(self, edges, previousBDeuScore, objCBDeu):
+        '''
+         This function removes edges from the bayesian network every time there is an improvement in the bdeu score
+        '''
+        # keep a copy of the objCBDeu
+        objCBDeuCopy        = objCBDeu
+        currentBDeuScore    = float("-inf")
+        maxObjCBDeu         = objCBDeu
         
+        for edge in edges:
+            
+            childNode= Node()
+            
+            childNode= objCBDeu.allNodeObjects[edge[1]]
+            newParents= childNode.getParents()
+            newParents.remove(edge[0]) # remove the parent from the parent set of child node
+            childNode.setParents(newParents)
+            objCBDeu.populateCounts(childNode)
+            childNode.setLocalBDeu(objCBDeu.getBDeu(childNode, self.alpha))
+            
+            objCBDeu.allNodeObjects[edge[1]]= childNode
+            
+            for n in objCBDeu.allNodeObjects:
+                node= Node()
+                node= objCBDeu.allNodeObjects[n]
+                currentBDeuScore+=node.getLocalBDeu()
+                
+            if previousBDeuScore < currentBDeuScore:
+                print "removing edge from bnt improves the bdeu scores"
+                previousBDeuScore   = currentBDeuScore
+                objCBDeu.dagBDeuScore= currentBDeuScore
+                maxObjCBDeu         = objCBDeu
+            else:
+                objCBDeu= objCBDeuCopy
+ 
+        return maxObjCBDeu
+                
         
     def runAlgo(self):
         '''
@@ -281,14 +317,12 @@ class MainAlgo(object):
                             # add hidden variable to the network
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
-                            
-                            
                             # split the dataframe counts
-                            print "data frame before adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame before adding hidden variable"
+                            #print objCBDeu.df
                             objCBDeu.percentageHiddenCoutsSplit(h)
-                            print "data frame after adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame after adding hidden variable"
+                            #print objCBDeu.df
                             
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
@@ -364,6 +398,9 @@ class MainAlgo(object):
                                 initialBDeuScore = totalCurrentBDeuScore
                                 
                                 # remove edges and see if we get increase in bdeu score
+                                
+                                objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
+                                
                                 
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
