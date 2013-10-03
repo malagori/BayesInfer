@@ -16,14 +16,17 @@ from pandas import Series
 from node import Node
 
 class BDeuClass(object):
-    def __init__(self, df, allNodeObjects, totalUniqueObservations):
+    def __init__(self, df, allNodeObjects, totalUniqueObservations, variableNames):
         self.df                         = df
         self.allNodeObjects             = allNodeObjects
         self.totalUniqueObservations    = totalUniqueObservations
         self.dagBDeuScore               = float("-inf")
+        self.variableNames              = variableNames
         
     
-    
+    def setVariableNames(self, name):
+        self.variableNames.append(name)
+        
     # total parent configurations
     def getUpdatedQi(self,node):
         """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""

@@ -32,6 +32,10 @@ class MainAlgo(object):
         self.df             = pd.DataFrame(index=None, columns=None)
         
     def printDag(self,iterations, allNodesObjects):
+        '''
+            this function return optDag after improvement in bdeu score either by adding hidden var or removing edges
+        '''
+        
         with open(str("bestDag_"+iterations), 'w') as wdag:
             p=[0]*len(allNodesObjects)
             for key, node in allNodesObjects.iteritems():
@@ -49,8 +53,57 @@ class MainAlgo(object):
                     deciParents=int(binStrParent,2)
                     wdag.write("%s\n" % str(deciParents))
 
+
+    def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore):
+        '''
+        This function do the steepest asent to compute local optimum bdeu score.
+        '''
+        
+        rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
+        # randomly shuffle the indexes 
+        rNumber.shuffle(rRecords)
+        for i in rRecords:
+            baseDFrame = objCBDeu.df.copy()
+            #print "baseDFrame"
+            #print baseDFrame
+            # below loop is for the counts increment and decrement
+            for flag in [True, False]:
+                
+                for j in rRecords:
+                                             
+                    # perturb the counts in 
+                    objCBDeu.countPerturbation(h,j, incrementFlag=flag)
+                    
+                    nodesBDeuScore=[]
+                    # compute the BDeu score again after perturbations
+                    for n in objCBDeu.allNodeObjects:
+                        node=objCBDeu.allNodeObjects[n]
+                        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                            
+                            # change the counts of this node according to some criteria i.e.
+                            # for new parent configuration, assign the counts such that sum of counts of new parent
+                            # configurations is equal to counts of old parent configuration which we split
+                            # to get the new parent configuration. 
+                            objCBDeu.populateCounts(node)
+                            node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                        nodesBDeuScore.append(node.getLocalBDeu())
+                    totalCurrentBDeuScore= sum(nodesBDeuScore)
+                    if totalPreviousBDeuScore < totalCurrentBDeuScore:
+                        baseDFrame = objCBDeu.df.copy()
+                        print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                        totalPreviousBDeuScore = totalCurrentBDeuScore
+                
+                # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
+                objCBDeu.df = baseDFrame.copy()
+                
+        return totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu
+        
+        
         
     def runAlgo(self):
+        '''
+        This function run the main algorithm
+        '''
         
         HIDDEN_NAME=-1
         
@@ -78,12 +131,15 @@ class MainAlgo(object):
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
+        print "optDag inside class MainAlgo and function runAlgo()"
+        print optDag
+        
         HIDDEN_NAME= len(variableNames) +1
         
         # dict of dict
         cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
         edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
-        hiddenNodesDict={}
+        hiddenNodesDict={} # keys: edge tuple (parent, child): values: hidden node objects
         iterations=0
         totalPreviousBDeuScore= float("-inf")
         totalCurrentBDeuScore= float("-inf")
@@ -97,7 +153,7 @@ class MainAlgo(object):
             #print "totalUniqueObservations: %d" % totalUniqueObservations
             print "df:"
             print self.df
-            objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations)
+            objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations, variableNames)
 
             # update the parent configurations for all variables
             # and the counts associated with the each parent configuration for each value of X
@@ -178,9 +234,12 @@ class MainAlgo(object):
                         e=[edges.append((idx,j+1)) for j in xrange(0,len(i)) if i[j]==1]
                         idx+=1
                     hiddenCount= 0 # hidden variable counter
+                    
                     # for each edge. replace it with hidden variable and compute the score
-                    for edge in edges:
+                    while ((not edges)!= True):
                         # check if score for adding hidden variable for this edge is already computed in other equivalence dag
+                        
+                        edge= edges.pop()
                         
                         parentNode= Node()
                         childNode= Node()
@@ -215,6 +274,8 @@ class MainAlgo(object):
                             # add hidden variable to the network
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
+                            
+                            
                             # split the dataframe counts
                             print "data frame before adding hidden variable"
                             print objCBDeu.df
@@ -230,58 +291,72 @@ class MainAlgo(object):
                             objCBDeu.populateCounts(h)
                             
                             if self.steepestAsent == True:
+                                totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu= self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore)
                                 
-                                
-                                rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
-                                # randomly shuffle the indexes 
-                                rNumber.shuffle(rRecords)
-                                for i in rRecords:
-                                    baseDFrame = objCBDeu.df.copy()
-                                    #print "baseDFrame"
-                                    #print baseDFrame
-                                    # below loop is for the counts increment and decrement
-                                    for flag in [True, False]:
-                                        
-                                        for j in rRecords:
-                                                                     
-                                            # perturb the counts in 
-                                            objCBDeu.countPerturbation(h,j, incrementFlag=flag)
-                                            
-                                            nodesBDeuScore=[]
-                                            # compute the BDeu score again after perturbations
-                                            for n in objCBDeu.allNodeObjects:
-                                                node=objCBDeu.allNodeObjects[n]
-                                                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                                                    
-                                                    # change the counts of this node according to some criteria i.e.
-                                                    # for new parent configuration, assign the counts such that sum of counts of new parent
-                                                    # configurations is equal to counts of old parent configuration which we split
-                                                    # to get the new parent configuration. 
-                                                    objCBDeu.populateCounts(node)
-                                                    node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
-                                                nodesBDeuScore.append(node.getLocalBDeu())
-                                            totalCurrentBDeuScore= sum(nodesBDeuScore)
-                                            if totalPreviousBDeuScore < totalCurrentBDeuScore:
-                                                baseDFrame = objCBDeu.df.copy()
-                                                print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-                                                totalPreviousBDeuScore = totalCurrentBDeuScore
-                                        
-                                        # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
-                                        objCBDeu.df = baseDFrame.copy()
+#                                rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
+#                                # randomly shuffle the indexes 
+#                                rNumber.shuffle(rRecords)
+#                                for i in rRecords:
+#                                    baseDFrame = objCBDeu.df.copy()
+#                                    #print "baseDFrame"
+#                                    #print baseDFrame
+#                                    # below loop is for the counts increment and decrement
+#                                    for flag in [True, False]:
+#                                        
+#                                        for j in rRecords:
+#                                                                     
+#                                            # perturb the counts in 
+#                                            objCBDeu.countPerturbation(h,j, incrementFlag=flag)
+#                                            
+#                                            nodesBDeuScore=[]
+#                                            # compute the BDeu score again after perturbations
+#                                            for n in objCBDeu.allNodeObjects:
+#                                                node=objCBDeu.allNodeObjects[n]
+#                                                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+#                                                    
+#                                                    # change the counts of this node according to some criteria i.e.
+#                                                    # for new parent configuration, assign the counts such that sum of counts of new parent
+#                                                    # configurations is equal to counts of old parent configuration which we split
+#                                                    # to get the new parent configuration. 
+#                                                    objCBDeu.populateCounts(node)
+#                                                    node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+#                                                nodesBDeuScore.append(node.getLocalBDeu())
+#                                            totalCurrentBDeuScore= sum(nodesBDeuScore)
+#                                            if totalPreviousBDeuScore < totalCurrentBDeuScore:
+#                                                baseDFrame = objCBDeu.df.copy()
+#                                                print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+#                                                totalPreviousBDeuScore = totalCurrentBDeuScore
+#                                        
+#                                        # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
+#                                        objCBDeu.df = baseDFrame.copy()
                             
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
-                                hiddenNodesDict[i]=h
+                                hiddenNodesDict[edge]=h
+                                
                                 hiddenCount+=1 # count the number of hidden variable added
                                 print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, InitialBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
                                 print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
-                                edgesDict[i]= key
+                                edgesDict[edge]= key
+                                
+                                # update the variable names after adding hidden variable
+                                objCBDeu.setVariableNames(h.getName())
+                                
+                                # update the edges list after adding hidden variable
+                                hChildren= h.getChildren()
+                                
+                                # update edges by adding edges of hidden variable to its children
+                                edges.append((h.getName(), hChildren[0]))
+                                edges.append((h.getName(), hChildren[1]))
+                                
                                 # generate new name for hidden variable
                                 HIDDEN_NAME += 1
                                 objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                                 initialBDeuScore = totalCurrentBDeuScore
+                                
+                                # remove edges and see if we get increase in bdeu score
                                 
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
@@ -302,10 +377,20 @@ class MainAlgo(object):
                         currentMaxBDeu                 = obj.dagBDeuScore
                         currentMaxAllNodesObjects      = obj.allNodeObjects
                         currentMaxDF                   = obj.df.copy()
+                        currentMaxVariables            = obj.variableNames
                 
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
+                    # update the orginal df for next iteration
+                    self.df = currentMaxDF.copy()
+                    # update variable set if hidden is added
+                    variableNames= currentMaxVariables
+                    
+                    # update optdag 
+                    
+                    # update cardinality 
+                    
                     #print optdag
                     self.printDag(currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class

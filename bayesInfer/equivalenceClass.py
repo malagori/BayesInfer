@@ -11,6 +11,7 @@ from node import Node
 from beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
+    
     def __init__(self):
         
         #self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
@@ -19,8 +20,11 @@ class EquivalenceClass(object):
         self.matlabLibPath= '/bubo/home/h1/mehmood/glob/projects/bayesian/BayesInfer/bayesInfer/matlab_lib'
         print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
+        
     def __exit__(self,type, value, traceBack):
         mlab.close()
+        
+        
     def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality):
         
         
