@@ -269,6 +269,7 @@ class MainAlgo(object):
                     initialBDeuScore= totalPreviousBDeuScore
                     
                     print "BDeu Score for a dag %d in Equivalence class before adding hidden variable: %f" % (id, totalPreviousBDeuScore)
+                    print dag
                     
                     # find all the edges in the dag
                     idx=1
