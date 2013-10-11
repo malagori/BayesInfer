@@ -58,4 +58,7 @@ def main(argv):
     
     
 if __name__== "__main__":
+    if not sys.argv[1:]:
+        print "Type: fuv --help"
+        sys.exit()
     main(sys.argv[1:])
