@@ -13,7 +13,7 @@ def convertDfToBene(infile):
     '''
     count=1
     with open(infile, 'r') as rf:
-        with open(str(infile+'.out'), 'w') as wf:
+        with open(str(infile+'.bene'), 'w') as wf:
             tokens=[]
             for line in rf:
                 if count != 1:
