@@ -82,7 +82,7 @@ def readVdFile(infile):
     cardinality=[]
     variableNames=[]
     try:
-        with open(infile) as f:
+        with open(infile, 'r') as f:
             for line in f:
                 tokens=line.split("\t")
                 variableNames.append(tokens[0])
