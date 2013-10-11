@@ -253,7 +253,7 @@ class MainAlgo(object):
                     allNodeObjects=allDagsNetworkDict[id]
                     
                     # instantiate CalculateBDeuClass's object 
-                    objCBDeu= BDeuClass(self.df, allNodeObjects, totalUniqueObservations)
+                    objCBDeu= BDeuClass(self.df, allNodeObjects, totalUniqueObservations, variableNames)
                     
                     # compute initial bdeu score before adding any hidden variable
                     # update the parent configurations for all variables

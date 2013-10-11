@@ -18,7 +18,8 @@ class EquivalenceClass(object):
         #print "self.matlabLibPath: %s" % self.matlabLibPath
         self.matlabLibPath= '/bubo/home/h1/mehmood/glob/projects/bayesian/BayesInfer/bayesInfer/matlab_lib'
         print "self.matlabLibPath: %s" % self.matlabLibPath
-        mlab.addpath(self.matlabLibPath)   
+        mlab.addpath(self.matlabLibPath)
+          
     def __exit__(self,type, value, traceBack):
         mlab.close()
         
