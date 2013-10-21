@@ -252,6 +252,7 @@ class MainAlgo(object):
                     nodesBDeuScore=[]
                     allNodeObjects=allDagsNetworkDict[id]
                     tdf= self.df.copy()
+                    print tdf
                     # instantiate CalculateBDeuClass's object 
                     objCBDeu= BDeuClass(tdf, allNodeObjects, totalUniqueObservations, variableNames)
                     
@@ -263,7 +264,7 @@ class MainAlgo(object):
                         objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
                     # find the BDeu Score for the whole structure
                     for n in objCBDeu.allNodeObjects:
-                        nodesBDeuScore.append(objCBDeu.getBDeu(allNodeObjects[n], self.alpha))
+                        nodesBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
                     
                     totalPreviousBDeuScore=sum(nodesBDeuScore)
                     initialBDeuScore= totalPreviousBDeuScore
