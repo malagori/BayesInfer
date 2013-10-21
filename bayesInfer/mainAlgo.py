@@ -369,7 +369,7 @@ class MainAlgo(object):
                                 
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
-                                objCBDeu.df= tmpDF
+                                objCBDeu.df= tmpDF.copy()
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
                                 print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
