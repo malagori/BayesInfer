@@ -334,7 +334,7 @@ class MainAlgo(object):
                             
                             if self.steepestAsent == True:
                                 totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu= self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore)
-                                print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                                #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                                 
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
