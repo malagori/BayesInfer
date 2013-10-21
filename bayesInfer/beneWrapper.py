@@ -39,11 +39,10 @@ class BeneWrapper(object):
             benePwd= self.which('data2net.sh')
             
             print "benePwd:         %s" % benePwd
-            print "vdFile:          %s" % self.vdFile
-            print "dataFile:        %s" % self.dataFile
-            print "outDirectory:    %s" % self.outDirectory
+#            print "vdFile:          %s" % self.vdFile
+#            print "dataFile:        %s" % self.dataFile
+#            print "outDirectory:    %s" % self.outDirectory
             print "score:           %s" % self.score
-            
             
             if benePwd != None:
                 subprocess.call([ str(benePwd), str(self.vdFile), str(self.dataFile), str(self.score), str(self.outDirectory)])
