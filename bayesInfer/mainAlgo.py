@@ -173,8 +173,8 @@ class MainAlgo(object):
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
-        #print "optDag inside class MainAlgo and function runAlgo()"
-        #print optDag
+        print "optDag inside class MainAlgo and function runAlgo()"
+        print optDag
         
         HIDDEN_NAME= len(variableNames) +1
         
@@ -255,6 +255,8 @@ class MainAlgo(object):
                     print tdf
                     # instantiate CalculateBDeuClass's object 
                     objCBDeu= BDeuClass(tdf, allNodeObjects, totalUniqueObservations, variableNames)
+                    
+                    print objCBDeu.df
                     
                     # compute initial bdeu score before adding any hidden variable
                     # update the parent configurations for all variables
