@@ -37,11 +37,12 @@ class BeneWrapper(object):
             null = open("/dev/null")
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
             benePwd= self.which('data2net.sh')
-            print "benePwd: %s" % benePwd
-            print "vdFile %s" % self.vdFile
-            print "dataFile %s" % self.dataFile
-            print "outDirectory %s" % self.outDirectory
-            print "score %s" % self.score
+            
+            print "benePwd:         %s" % benePwd
+            print "vdFile:          %s" % self.vdFile
+            print "dataFile:        %s" % self.dataFile
+            print "outDirectory:    %s" % self.outDirectory
+            print "score:           %s" % self.score
             
             
             if benePwd != None:
@@ -85,14 +86,9 @@ class BeneWrapper(object):
                     node.setName(varName)
                     node.setParents(parents)
                     allNodesObj[varName]=node
-            print optDag
             # taking transpose of list of list to get the required dag
             optDag=map(list, zip(*optDag))
-            print "optDag inside class beneWraper and function readBeneBnt()"
-            print optDag
-            return optDag, allNodesObj
-            
-            
         except IOError, e:
             print ("Class: beneWrapper; Function: readBeneBnt();  Error: " + str(e))
         
+        return optDag, allNodesObj

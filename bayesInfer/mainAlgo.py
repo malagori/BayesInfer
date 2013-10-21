@@ -173,8 +173,8 @@ class MainAlgo(object):
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
-        print "optDag inside class MainAlgo and function runAlgo()"
-        print optDag
+        #print "optDag inside class MainAlgo and function runAlgo()"
+        #print optDag
         
         HIDDEN_NAME= len(variableNames) +1
         
@@ -236,8 +236,8 @@ class MainAlgo(object):
             
                 #increment the iteration number
                 iterations +=1 
-                print "printing optDag"
-                print optDag
+                #print "printing optDag"
+                #print optDag
                 # pDag
                 cDag=objEC.generateCdag(optDag)
                 # generate all dags in pDag
@@ -371,7 +371,7 @@ class MainAlgo(object):
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
                                 objCBDeu.df= tmpDF
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
-                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: InitialBDeu: %f; CurrentBDeu: %f"    % (id,initialBDeuScore, totalPreviousBDeuScore)        
+                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process

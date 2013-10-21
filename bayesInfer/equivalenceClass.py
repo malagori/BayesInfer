@@ -59,7 +59,7 @@ class EquivalenceClass(object):
         
         varName=0
         allNodesObj={}
-        print dag
+
         # dag's traspose to get the parent set
         myDag=map(list, zip(*dag))
 
@@ -73,9 +73,7 @@ class EquivalenceClass(object):
                 if j == 1:
                     parents.append(idx)          
                 idx+=1# parent name starts from 1 not 0
-            print parents
             
-    
             node= Node()
             varName +=1
             node.setName(varName)
@@ -104,7 +102,3 @@ class EquivalenceClass(object):
             allDagsNetworkDict[i]= self.generateBnt(dagsDict[i], cardinality)
         
         return dagsDict, allDagsNetworkDict
-    
-        
-        
-    
