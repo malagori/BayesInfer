@@ -95,7 +95,8 @@ class EquivalenceClass(object):
         
         dagsDict= {} # each dag is represented as list of list
         allDagsNetworkDict= {} # network related to each dag is populated 
-        nDags, Dag_list = mlab.pdag_to_all_dags(cDag, nout=2)
+        signedPdag= mlab.pdag_unsigned_to_signed(cDag)
+        nDags, Dag_list = mlab.pdag_to_all_dags(signedPdag, nout=2)
         
         for i in xrange(0, nDags):
             npDagsArray= mlab.cell2mat(Dag_list[i]).astype(int)
