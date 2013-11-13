@@ -4,7 +4,7 @@ import time
 import random as rNumber
 import pandas as pd
 
-
+from math import exp
 from storeRetriveSeed import RandomSeed
 from readDataFile import convertBeneDataFile
 from readDataFile import readVdFile
@@ -60,24 +60,27 @@ class MainAlgo(object):
         
         return optDag, cardinality
 
-    def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore):
+    def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore, sIndex, iterations):
         '''
         This function do the steepest asent to compute local optimum bdeu score.
         '''
         
         rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
         # randomly shuffle the indexes 
-        rNumber.shuffle(rRecords)
-        for i in rRecords:
-            baseDFrame = objCBDeu.df.copy()
-            #print "baseDFrame"
-            #print baseDFrame
+        #rNumber.shuffle(rRecords)
+        temp                = rRecords[0]
+        rRecords[0]         = rRecords[sIndex]
+        rRecords[sIndex]    = temp
+        objCBDeuBestCopy    = objCBDeu
+        
+        for i in range(iterations):
+            
             # below loop is for the counts increment and decrement
-            for flag in [True, False]:
+            for j in rRecords:
                 
-                for j in rRecords:
-                                             
+                for flag in [True, False]:                         
                     # perturb the counts in 
+                    
                     objCBDeu.countPerturbation(h,j, incrementFlag=flag)
                     
                     nodesBDeuScore=[]
@@ -93,16 +96,17 @@ class MainAlgo(object):
                             objCBDeu.populateCounts(node)
                             node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
                         nodesBDeuScore.append(node.getLocalBDeu())
+                    
                     totalCurrentBDeuScore= sum(nodesBDeuScore)
                     if totalPreviousBDeuScore < totalCurrentBDeuScore:
-                        baseDFrame = objCBDeu.df.copy()
+                        objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
+                        objCBDeuBestCopy        = objCBDeu
                         print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-                        totalPreviousBDeuScore = totalCurrentBDeuScore
+                        totalPreviousBDeuScore  = totalCurrentBDeuScore
+                    else:
+                        objCBDeu    = objCBDeuBestCopy
                 
-                # copy the base dataframe to to data frame since the new base datafame is the one with high BDeuScore
-                objCBDeu.df = baseDFrame.copy()
-                
-        return totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu
+        return objCBDeuBestCopy
         
     def removeEdgesFromBnt(self, edges, previousBDeuScore, objCBDeu):
         '''
@@ -141,7 +145,80 @@ class MainAlgo(object):
  
         return maxObjCBDeu
                 
+    def temperature(self, k, kmax):
+        """
+            This function implements the temperature function of simulated anealing algorithm
+        """
+        temp= k/kmax
+        return temp
+    
+    def probAcceptance(self, e, enew, T):
+        """
+            this function compute the probability of acceptance 
+        """
+        prob=0.0
+        if (e < enew):
+            prob=1.0
+        else:
+            prob= exp(-(enew - e)/T)
+        return prob
         
+    def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
+        """
+            This function implements the simulated Anealing algorithm (wiki) 
+        """
+        e               = previousScore                                # Initial state, energy.
+        emax            = float('-inf') 
+        ebest           = e                                     # Initial "best" solution
+        k               = 0                                     # Energy evaluation count.
+        kmax            = iterations
+        objCBDeuBestState= objCBDeu
+        objCBDeuOldState = objCBDeu
+        j               = sIndex
+        
+        while k < kmax and e > emax:                    # While time left & not good enough
+            T =    self.temperature(k, kmax)              # Temperature calculation.
+            # randomly choose hidden state zero or one
+            num= rNumber.randint(0,1) 
+            if num == 0:
+                flag = False
+            else:
+                flag = True
+            
+            objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag)     
+            
+            j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+            
+            nodesBDeuScore= []
+            for n in objCBDeu.allNodeObjects:               # populate the counts for each node
+                tempNode    = Node()
+                tempNode    = objCBDeu.allNodeObjects[n]
+                objCBDeu.populateCounts(tempNode)
+            
+            for n in objCBDeu.allNodeObjects:
+                tempNode    = Node()
+                tempNode    = objCBDeu.allNodeObjects[n]
+                tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
+                nodesBDeuScore.append(tempScore)
+            objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
+             
+            #snew = objCBDeu.df.copy() 
+            enew = objCBDeu.dagBDeuScore                              # Compute its energy.
+            #NOTE Inverse logic here using  '<' instead of '>' as in org algo
+            if self.probAcceptance(e, enew, T) < rNumber.random():# reject the current state  
+                objCBDeu= objCBDeuOldState          # go back to the old state
+            else:  # accept the new state
+                objCBDeuOldState= objCBDeu
+                e               = enew
+                                                    
+            if enew < ebest:                              # Is this a new best?
+                objCBDeuBestState= objCBDeu
+                ebest = enew                              # Save 'new neighbour' to 'best found'.
+            k = k + 1                                     # One more evaluation done
+        return objCBDeuBestState                           # Return the best solution found.
+
+    
+    
     def runAlgo(self):
         '''
         This function run the main algorithm
@@ -210,16 +287,6 @@ class MainAlgo(object):
                 tmpNode= Node()
                 tmpNode=objCBDeu.allNodeObjects[n]
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-#                print "Node: %s , Score: %f" % (n, tmpScore)
-#                
-#                print "Name: %s" % tmpNode.getName()
-#                print "Cardinality: %d" % tmpNode.getR()
-#                print "LocalBDeu: %f" % tmpNode.getLocalBDeu()
-#                print "Parents: " 
-#                print tmpNode.getParents()
-#                print "pConfigurations: " 
-#                print tmpNode.getPaConfigurations()
-                
                 nodesBDeuScore.append(tmpScore)
             
             
@@ -336,7 +403,10 @@ class MainAlgo(object):
                             objCBDeu.populateCounts(h)
                             
                             if self.steepestAsent == True:
-                                totalPreviousBDeuScore, totalCurrentBDeuScore, h, objCBDeu= self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore)
+                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
+                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore, sIndex, self.iterations)
+                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                h                       = objCBDeu.allNodeObjects[h.getName]
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                                 
                             if initialBDeuScore < totalCurrentBDeuScore:
