@@ -16,7 +16,7 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag  ):
         '''
         Constructor
         '''
@@ -29,6 +29,7 @@ class MainAlgo(object):
         self.seedFile       = seedFile
         self.outputFile     = outPutFile
         self.iterations     = iterations
+        self.simAnealFlag   = simulatedAnealingFlag
         self.df             = pd.DataFrame(index=None, columns=None)
         
     def printDag(self,iterations, allNodesObjects):
@@ -408,6 +409,11 @@ class MainAlgo(object):
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName]
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                            elif self.simAnealFlag == True:
+                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
+                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, totalPreviousBDeuScore, sIndex, self.iterations)
+                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                h                       = objCBDeu.allNodeObjects[h.getName]
                                 
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
