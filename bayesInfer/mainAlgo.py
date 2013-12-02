@@ -241,7 +241,11 @@ class MainAlgo(object):
         
         # read vdFile
         variableNames, cardinality= readVdFile(self.vdFile)
-        
+        print "variables:"
+        print variableNames
+        print "cardinality: "
+        print cardinality
+
         # read data file
         self.df=convertBeneDataFile(self.dataFile, len(variableNames))
         
@@ -286,6 +290,8 @@ class MainAlgo(object):
             for n in objCBDeu.allNodeObjects:
                 tmpNode= Node()
                 tmpNode=objCBDeu.allNodeObjects[n]
+                print "name: %s" % tmpNode.getName()
+                print "nodecardinality: %d" % tmpNode.getR()
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
                 nodesBDeuScore.append(tmpScore)
             
