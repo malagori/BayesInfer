@@ -202,8 +202,7 @@ class MainAlgo(object):
                 tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
                 nodesBDeuScore.append(tempScore)
             objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
-             
-            #snew = objCBDeu.df.copy() 
+            
             enew = objCBDeu.dagBDeuScore                              # Compute its energy.
             #NOTE Inverse logic here using  '<' instead of '>' as in org algo
             if self.probAcceptance(e, enew, T) < rNumber.random():# reject the current state  
@@ -404,17 +403,20 @@ class MainAlgo(object):
                             objCBDeu.populateCounts(h)
                             
                             if self.steepestAsent == True:
+                                print "Steepest Asent Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName]
+                                print "Steepest Asent Algorithm finished ...." 
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             elif self.simAnealFlag == True:
+                                print "Simulated Anealing Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, totalPreviousBDeuScore, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName]
-                                
+                                print "Simulated Anealing Algorithm finished ...." 
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[edge]=h

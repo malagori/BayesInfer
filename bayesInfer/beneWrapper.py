@@ -5,6 +5,7 @@ __license__ = "GPL"
 __credits__ = ["Mehmood Alam Khan", "Pekka Parviainen"]
 
 import os
+import sys
 import subprocess
 from node import Node
 
@@ -38,7 +39,7 @@ class BeneWrapper(object):
             beneStdOut= os.path.join(self.outDirectory, "bene.stdout")
             benePwd= self.which('data2net.sh')
             
-            print "benePwd:         %s" % benePwd
+            print "bene Path:         %s" % benePwd
 #            print "vdFile:          %s" % self.vdFile
 #            print "dataFile:        %s" % self.dataFile
 #            print "outDirectory:    %s" % self.outDirectory
@@ -46,6 +47,9 @@ class BeneWrapper(object):
             
             if benePwd != None:
                 subprocess.call([ str(benePwd), str(self.vdFile), str(self.dataFile), str(self.score), str(self.outDirectory)])
+            else:
+                print ("Class: beneWrapper, Function: generateOptBnt(): Error: Path to Bene is not set ") 
+                sys.exit()
         except IOError, e:
             print ("Class: beneWrapper; Function: generateOptBnt();  Error: " + str(e))
             
