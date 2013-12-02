@@ -11,4 +11,5 @@ setup(
     scripts = ['fuv','scripts/dfToBeneFormat.py'],
     license='GPLv3',
     long_description=open('README.md').read(),
+    install_requires= ['numpy >=1.6.1'],
 )
