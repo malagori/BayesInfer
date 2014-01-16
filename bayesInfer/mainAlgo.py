@@ -150,7 +150,7 @@ class MainAlgo(object):
         """
             This function implements the temperature function of simulated anealing algorithm
         """
-        temp= k/kmax
+        temp= k/ float(kmax)
         return temp
     
     def probAcceptance(self, e, enew, T):
@@ -161,7 +161,7 @@ class MainAlgo(object):
         if (e < enew):
             prob=1.0
         else:
-            prob= exp(-(enew - e)/T)
+            prob= exp(-( -enew + e )/ float(T)) 
         return prob
         
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
@@ -171,7 +171,7 @@ class MainAlgo(object):
         e               = previousScore                                # Initial state, energy.
         emax            = float('-inf') 
         ebest           = e                                     # Initial "best" solution
-        k               = 0                                     # Energy evaluation count.
+        k               = 1                                     # Energy evaluation count.
         kmax            = iterations
         objCBDeuBestState= objCBDeu
         objCBDeuOldState = objCBDeu
@@ -179,6 +179,7 @@ class MainAlgo(object):
         
         while k < kmax and e > emax:                    # While time left & not good enough
             T =    self.temperature(k, kmax)              # Temperature calculation.
+            
             # randomly choose hidden state zero or one
             num= rNumber.randint(0,1) 
             if num == 0:
@@ -241,10 +242,7 @@ class MainAlgo(object):
         
         # read vdFile
         variableNames, cardinality= readVdFile(self.vdFile)
-        print "variables:"
-        print variableNames
-        print "cardinality: "
-        print cardinality
+
 
         # read data file
         self.df=convertBeneDataFile(self.dataFile, len(variableNames))
@@ -290,8 +288,6 @@ class MainAlgo(object):
             for n in objCBDeu.allNodeObjects:
                 tmpNode= Node()
                 tmpNode=objCBDeu.allNodeObjects[n]
-                print "name: %s" % tmpNode.getName()
-                print "nodecardinality: %d" % tmpNode.getR()
                 tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
                 nodesBDeuScore.append(tmpScore)
             
