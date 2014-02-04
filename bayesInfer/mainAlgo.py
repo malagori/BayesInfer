@@ -160,15 +160,17 @@ class MainAlgo(object):
         prob=0.0
         if (e < enew):
             prob=1.0
+            print "accept with prob = 1"
         else:
-            prob= exp(-( -enew + e )/ float(T)) 
+            prob= exp(-( -enew + e )/ float(T))
+            print "accept with prob = %f" % prob
         return prob
         
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
-        e               = previousScore                                # Initial state, energy.
+        e               = float('-inf')                                # Initial state, energy.
         emax            = float('-inf') 
         ebest           = e                                     # Initial "best" solution
         k               = 1                                     # Energy evaluation count.
