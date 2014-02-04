@@ -150,7 +150,7 @@ class MainAlgo(object):
         """
             This function implements the temperature function of simulated anealing algorithm
         """
-        temp= k/ float(kmax)
+        temp= (1 - k/ float(kmax))
         return temp
     
     def probAcceptance(self, e, enew, T):
