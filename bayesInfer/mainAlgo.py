@@ -212,7 +212,7 @@ class MainAlgo(object):
                 objCBDeuOldState= objCBDeu
                 e               = enew
                                                     
-            if enew < ebest:                              # Is this a new best?
+            if enew > ebest:                              # Is this a new best?
                 objCBDeuBestState= objCBDeu
                 ebest = enew                              # Save 'new neighbour' to 'best found'.
             k = k + 1
