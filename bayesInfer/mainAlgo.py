@@ -171,7 +171,7 @@ class MainAlgo(object):
             This function implements the simulated Anealing algorithm (wiki) 
         """
         
-        e               = float('-inf')                                # Initial state, energy.
+        e               = previousScore                               # Initial state, energy.
         emax            = float('-inf') 
         ebest           = e                                     # Initial "best" solution
         k               = 1                                     # Energy evaluation count.
@@ -221,7 +221,6 @@ class MainAlgo(object):
             k = k + 1
             print "--->iteration  %d " % k                                     # One more evaluation done
             print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-        print "similuated anealing this iteration is done"
         return objCBDeuBestState                           # Return the best solution found.
 
     
