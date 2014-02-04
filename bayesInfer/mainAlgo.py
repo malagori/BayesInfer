@@ -163,7 +163,7 @@ class MainAlgo(object):
             print "accept with prob = 1"
         else:
             prob= exp(-( -enew + e )/ float(T))
-            
+            print "e : %f  enew: %f" % (e, enew)
         return prob
         
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
@@ -410,11 +410,16 @@ class MainAlgo(object):
                             
                             # populate hidden value counts
                             objCBDeu.populateCounts(h)
+                            hiddenBDeuScore=[]
+                            for n in objCBDeu.allNodeObjects:
+                                hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+                    
+                            initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
                             
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
-                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore, sIndex, self.iterations)
+                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Steepest Asent Algorithm finished ...." 
@@ -422,7 +427,7 @@ class MainAlgo(object):
                             elif self.simAnealFlag == True:
                                 print "Simulated Anealing Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
-                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, totalPreviousBDeuScore, sIndex, self.iterations)
+                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Simulated Anealing Algorithm finished ...." 
