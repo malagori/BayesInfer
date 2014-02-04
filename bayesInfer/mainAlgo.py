@@ -170,6 +170,7 @@ class MainAlgo(object):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
+        
         e               = float('-inf')                                # Initial state, energy.
         emax            = float('-inf') 
         ebest           = e                                     # Initial "best" solution
@@ -220,7 +221,7 @@ class MainAlgo(object):
             k = k + 1
             print "--->iteration  %d " % k                                     # One more evaluation done
             print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-
+        print "similuated anealing this iteration is done"
         return objCBDeuBestState                           # Return the best solution found.
 
     
@@ -414,7 +415,7 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, totalPreviousBDeuScore, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
-                                h                       = objCBDeu.allNodeObjects[h.getName]
+                                h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Steepest Asent Algorithm finished ...." 
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             elif self.simAnealFlag == True:
@@ -422,7 +423,7 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, totalPreviousBDeuScore, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
-                                h                       = objCBDeu.allNodeObjects[h.getName]
+                                h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Simulated Anealing Algorithm finished ...." 
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
