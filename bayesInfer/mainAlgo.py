@@ -398,23 +398,27 @@ class MainAlgo(object):
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
                             # split the dataframe counts
-                            #print "data frame before adding hidden variable"
-                            #print objCBDeu.df
+                            print "data frame before adding hidden variable"
+                            print objCBDeu.df
                             objCBDeu.percentageHiddenCoutsSplit(h)
-                            #print "data frame after adding hidden variable"
-                            #print objCBDeu.df
+                            print "data frame after adding hidden variable"
+                            print objCBDeu.df
                             
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
                             #newDF.to_csv(outName+'.csv', sep=',')
                             
                             # populate hidden value counts
-                            objCBDeu.populateCounts(h)
+                            for n in objCBDeu.allNodeObjects:
+                                objCBDeu.getUpdatedQi(objCBDeu.allNodeObjects[n])
+                                objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
+                            #objCBDeu.populateCounts(h)
                             hiddenBDeuScore=[]
                             for n in objCBDeu.allNodeObjects:
                                 hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
                     
                             initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
+                            
                             
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
