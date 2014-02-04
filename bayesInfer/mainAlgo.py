@@ -163,7 +163,7 @@ class MainAlgo(object):
             print "accept with prob = 1"
         else:
             prob= exp(-( -enew + e )/ float(T))
-            print "accept with prob = %f" % prob
+            
         return prob
         
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
@@ -209,7 +209,9 @@ class MainAlgo(object):
             
             enew = objCBDeu.dagBDeuScore                              # Compute its energy.
             #NOTE Inverse logic here using  '<' instead of '>' as in org algo
-            if self.probAcceptance(e, enew, T) < rNumber.random():# reject the current state  
+            acceptprob= self.probAcceptance(e, enew, T)
+            if acceptprob < rNumber.random():# reject the current state 
+                print "accept with prob = %f" % acceptprob 
                 objCBDeu= objCBDeuOldState          # go back to the old state
             else:  # accept the new state
                 objCBDeuOldState= objCBDeu
