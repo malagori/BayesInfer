@@ -215,7 +215,10 @@ class MainAlgo(object):
             if enew < ebest:                              # Is this a new best?
                 objCBDeuBestState= objCBDeu
                 ebest = enew                              # Save 'new neighbour' to 'best found'.
-            k = k + 1                                     # One more evaluation done
+            k = k + 1
+            print "--->iteration  %d " % k                                     # One more evaluation done
+            print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+
         return objCBDeuBestState                           # Return the best solution found.
 
     
