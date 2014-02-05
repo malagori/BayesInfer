@@ -17,7 +17,7 @@ class EquivalenceClass(object):
         #print "os.path.abspath('matlab_lib/__init__.pyc') %s" % os.path.abspath('matlab_lib/__init__.pyc')
         #print "self.matlabLibPath: %s" % self.matlabLibPath
         self.matlabLibPath= '/home/mehmood/glob/projects/bayesian/code/BayesInfer/bayesInfer/matlab_lib'
-        print "self.matlabLibPath: %s" % self.matlabLibPath
+        #print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
           
     def __exit__(self,type, value, traceBack):

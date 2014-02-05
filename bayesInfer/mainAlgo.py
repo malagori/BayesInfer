@@ -160,10 +160,10 @@ class MainAlgo(object):
         prob=0.0
         if (e < enew):
             prob=1.0
-            print "accept with prob = 1"
+            #print "accept with prob = 1"
         else:
             prob= exp(-( -enew + e )/ float(T))
-            print "e : %f  enew: %f" % (e, enew)
+            #print "e : %f  enew: %f" % (e, enew)
         return prob
         
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
@@ -211,7 +211,6 @@ class MainAlgo(object):
             #NOTE Inverse logic here using  '<' instead of '>' as in org algo
             acceptprob= self.probAcceptance(e, enew, T)
             if acceptprob < rNumber.random():# reject the current state 
-                print "accept with prob = %f" % acceptprob 
                 objCBDeu= objCBDeuOldState          # go back to the old state
             else:  # accept the new state
                 objCBDeuOldState= objCBDeu
@@ -259,8 +258,8 @@ class MainAlgo(object):
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
-        print "optDag inside class MainAlgo and function runAlgo()"
-        print optDag
+        #print "optDag inside class MainAlgo and function runAlgo()"
+        #print optDag
         
         HIDDEN_NAME= len(variableNames) +1
         
@@ -279,8 +278,8 @@ class MainAlgo(object):
             nodesBDeuScore=[]
             totalUniqueObservations= self.df.shape[0]
             #print "totalUniqueObservations: %d" % totalUniqueObservations
-            print "df:"
-            print self.df
+            #print "df:"
+            #print self.df
             objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations, variableNames)
 
             # update the parent configurations for all variables
@@ -373,6 +372,7 @@ class MainAlgo(object):
                         # creating key for cachedBDeuDict dictionary
                         key=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
                         
+                        print "edge: %d ---> %d" % (edge[0], edge[1]) 
 
                         if edge in edgesDict.keys():
                             if key == edgesDict[edge]: # if true do not add hidden variable 
@@ -398,11 +398,11 @@ class MainAlgo(object):
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
                             # split the dataframe counts
-                            print "data frame before adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame before adding hidden variable"
+                            #print objCBDeu.df
                             objCBDeu.percentageHiddenCoutsSplit(h)
-                            print "data frame after adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame after adding hidden variable"
+                            #print objCBDeu.df
                             
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
@@ -429,12 +429,12 @@ class MainAlgo(object):
                                 print "Steepest Asent Algorithm finished ...." 
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             elif self.simAnealFlag == True:
-                                print "Simulated Anealing Algorithm started ...." 
+                                print "Simulated Annealing Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
-                                print "Simulated Anealing Algorithm finished ...." 
+                                print "Simulated Annealing Algorithm finished ...." 
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[edge]=h
