@@ -61,7 +61,7 @@ class MainAlgo(object):
         
         return optDag, cardinality
 
-    def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore, sIndex, iterations):
+    def computeBDeuUsingSteepestAsent(self,h ,objCBDeu, totalPreviousBDeuScore, sIndex, iterations, outFile):
         '''
         This function do the steepest asent to compute local optimum bdeu score.
         '''
@@ -73,39 +73,40 @@ class MainAlgo(object):
         rRecords[0]         = rRecords[sIndex]
         rRecords[sIndex]    = temp
         objCBDeuBestCopy    = objCBDeu
-        
-        for i in range(iterations):
-            
-            # below loop is for the counts increment and decrement
-            for j in rRecords:
+        with open(outFile, 'w') as wf:
+            for i in range(iterations):
                 
-                for flag in [True, False]:                         
-                    # perturb the counts in 
+                # below loop is for the counts increment and decrement
+                for j in rRecords:
                     
-                    objCBDeu.countPerturbation(h,j, incrementFlag=flag)
-                    
-                    nodesBDeuScore=[]
-                    # compute the BDeu score again after perturbations
-                    for n in objCBDeu.allNodeObjects:
-                        node=objCBDeu.allNodeObjects[n]
-                        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                            
-                            # change the counts of this node according to some criteria i.e.
-                            # for new parent configuration, assign the counts such that sum of counts of new parent
-                            # configurations is equal to counts of old parent configuration which we split
-                            # to get the new parent configuration. 
-                            objCBDeu.populateCounts(node)
-                            node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
-                        nodesBDeuScore.append(node.getLocalBDeu())
-                    
-                    totalCurrentBDeuScore= sum(nodesBDeuScore)
-                    if totalPreviousBDeuScore < totalCurrentBDeuScore:
-                        objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
-                        objCBDeuBestCopy        = objCBDeu
-                        print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-                        totalPreviousBDeuScore  = totalCurrentBDeuScore
-                    else:
-                        objCBDeu    = objCBDeuBestCopy
+                    for flag in [True, False]:                         
+                        # perturb the counts in 
+                        
+                        objCBDeu.countPerturbation(h,j, incrementFlag=flag)
+                        
+                        nodesBDeuScore=[]
+                        # compute the BDeu score again after perturbations
+                        for n in objCBDeu.allNodeObjects:
+                            node=objCBDeu.allNodeObjects[n]
+                            if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                                
+                                # change the counts of this node according to some criteria i.e.
+                                # for new parent configuration, assign the counts such that sum of counts of new parent
+                                # configurations is equal to counts of old parent configuration which we split
+                                # to get the new parent configuration. 
+                                objCBDeu.populateCounts(node)
+                                node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                            nodesBDeuScore.append(node.getLocalBDeu())
+                        
+                        totalCurrentBDeuScore= sum(nodesBDeuScore)
+                        if totalPreviousBDeuScore < totalCurrentBDeuScore:
+                            objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
+                            objCBDeuBestCopy        = objCBDeu
+                            wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
+                            print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                            totalPreviousBDeuScore  = totalCurrentBDeuScore
+                        else:
+                            objCBDeu    = objCBDeuBestCopy
                 
         return objCBDeuBestCopy
         
@@ -179,6 +180,7 @@ class MainAlgo(object):
         objCBDeuBestState= objCBDeu
         objCBDeuOldState = objCBDeu
         j               = sIndex
+        
         with open(outFile, 'w') as wf:
             
             while k < kmax and e > emax:                    # While time left & not good enough
@@ -427,7 +429,8 @@ class MainAlgo(object):
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
-                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations)
+                                output= "dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
+                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Steepest Asent Algorithm finished ...." 
