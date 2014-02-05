@@ -435,7 +435,7 @@ class MainAlgo(object):
                             elif self.simAnealFlag == True:
                                 print "Simulated Annealing Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
-                                output= "dag_"+str(id)+"edge_"+str(edge[0])+"_"+str(edge[0])+".sim" 
+                                output= "dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
