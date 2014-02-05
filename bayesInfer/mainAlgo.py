@@ -102,6 +102,7 @@ class MainAlgo(object):
                         if totalPreviousBDeuScore < totalCurrentBDeuScore:
                             objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
                             objCBDeuBestCopy        = objCBDeu
+                            objCBDeuBestCopy        = totalCurrentBDeuScore
                             totalPreviousBDeuScore  = totalCurrentBDeuScore
                             
                         else:
