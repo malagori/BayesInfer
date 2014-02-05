@@ -13,9 +13,9 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue)
     objMainAlgo.runAlgo()
     
 def main(argv):
@@ -29,6 +29,7 @@ def main(argv):
     parser.add_argument('-sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
     parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outFile', type=str, help='Specify the file to output the results. ', default= 'fuv_results.txt')
@@ -45,6 +46,7 @@ def main(argv):
     outPutFile      = args.o
     iterations      = args.i
     simAnealFlag    = args.SimAnnealing
+    decrementValue  = args.dc
 
     
     
@@ -56,7 +58,7 @@ def main(argv):
         print "seed:                %d" % seed
     print "outPutFile:                %s" % outPutFile
     
-    runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag)
+    runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue)
     
     
 if __name__== "__main__":

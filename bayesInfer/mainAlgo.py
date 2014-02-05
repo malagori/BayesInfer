@@ -16,7 +16,7 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue  ):
         '''
         Constructor
         '''
@@ -30,6 +30,7 @@ class MainAlgo(object):
         self.outputFile     = outPutFile
         self.iterations     = iterations
         self.simAnealFlag   = simulatedAnealingFlag
+        self.decrementValue = decrementValue
         self.df             = pd.DataFrame(index=None, columns=None)
         
     def printDag(self,iterations, allNodesObjects):
@@ -82,7 +83,7 @@ class MainAlgo(object):
                     for flag in [True, False]:                         
                         # perturb the counts in 
                         
-                        objCBDeu.countPerturbation(h,j, incrementFlag=flag)
+                        objCBDeu.countPerturbation(h,j, incrementFlag=flag, self.decrementValue)
                         
                         nodesBDeuScore=[]
                         # compute the BDeu score again after perturbations
@@ -169,7 +170,7 @@ class MainAlgo(object):
             #print "e : %f  enew: %f" % (e, enew)
         return prob
         
-    def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations, outFile):
+    def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations, outFile ):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
@@ -195,7 +196,7 @@ class MainAlgo(object):
                 else:
                     flag = True
                 
-                objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag)     
+                objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag, self.decrementValue)     
                 
                 j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
                 

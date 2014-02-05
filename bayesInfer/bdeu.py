@@ -313,14 +313,14 @@ class BDeuClass(object):
         self.allNodeObjects[h.getName()]= h  # adding h to the structure
         return h
        
-    def countPerturbation(self, h, rIndex, incrementFlag):
+    def countPerturbation(self, h, rIndex, incrementFlag, decrementedValue):
         #print "perturb the count here"
         hiddenName=h.getName()
         # pick a random index
         if incrementFlag == False:
             if self.df.Counts[rIndex] > 0:
                 #print "before decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-                self.df.Counts[rIndex] -= 1 # decrement by 1 
+                self.df.Counts[rIndex] -= decrementedValue # decrement by 1 
                 #print "after decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
         
             # select the hidden value at rIndex
@@ -340,11 +340,11 @@ class BDeuClass(object):
                 incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*self.totalUniqueObservations)
                 #print "incrementedDfIndex %d " % incrementedDfIndex
                 #print df.Counts[incrementedDfIndex]
-                self.df.Counts[incrementedDfIndex] += 1
+                self.df.Counts[incrementedDfIndex] += decrementedValue
                 #print df.Counts[incrementedDfIndex]
             else:
                 incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*self.totalUniqueObservations)
-                self.df.Counts[incrementedDfIndex] += 1
+                self.df.Counts[incrementedDfIndex] += decrementedValue
             #print "incremented Index %d " % incrementedDfIndex
         else:    
             # select the hidden value at rIndex
@@ -364,7 +364,7 @@ class BDeuClass(object):
                         noDecrement=True
                         continue
                     else:
-                        self.df.Counts[decrementedDfIndex] -= 1
+                        self.df.Counts[decrementedDfIndex] -= decrementedValue
                         noDecrement=False
                         break
                 else:
@@ -373,13 +373,13 @@ class BDeuClass(object):
                         noDecrement=True
                         continue
                     else:
-                        self.df.Counts[decrementedDfIndex] -= 1
+                        self.df.Counts[decrementedDfIndex] -= decrementedValue
                         noDecrement=False
                         break
          
             
             if noDecrement == False:
-                self.df.Counts[rIndex] += 1 # decrement by 1 
+                self.df.Counts[rIndex] += decrementedValue # decrement by 1 
             #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
 
         
