@@ -94,11 +94,13 @@ class MainAlgo(object):
                                 # for new parent configuration, assign the counts such that sum of counts of new parent
                                 # configurations is equal to counts of old parent configuration which we split
                                 # to get the new parent configuration. 
+                                objCBDeu.getUpdatedQi(node)
                                 objCBDeu.populateCounts(node)
                                 node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
                             nodesBDeuScore.append(node.getLocalBDeu())
                         
                         totalCurrentBDeuScore= sum(nodesBDeuScore)
+                        print "totalCurrentBDeuScore: %f" % totalCurrentBDeuScore
                         if totalPreviousBDeuScore < totalCurrentBDeuScore:
                             objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
                             objCBDeuBestCopy        = objCBDeu
@@ -110,7 +112,7 @@ class MainAlgo(object):
                             
                         wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
                         #print "Best bdeuscore: %f, Current bdeuscore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-                            
+        print "objCBDeuBestCopy.dagBDeuScore: %f" % objCBDeuBestCopy.dagBDeuScore
         return objCBDeuBestCopy
         
     def removeEdgesFromBnt(self, edges, previousBDeuScore, objCBDeu):
@@ -130,6 +132,7 @@ class MainAlgo(object):
             newParents= childNode.getParents()
             newParents.remove(edge[0]) # remove the parent from the parent set of child node
             childNode.setParents(newParents)
+            objCBDeu.getUpdatedQi(childNode)
             objCBDeu.populateCounts(childNode)
             childNode.setLocalBDeu(objCBDeu.getBDeu(childNode, self.alpha))
             
@@ -205,6 +208,7 @@ class MainAlgo(object):
                 for n in objCBDeu.allNodeObjects:               # populate the counts for each node
                     tempNode    = Node()
                     tempNode    = objCBDeu.allNodeObjects[n]
+                    objCBDeu.getUpdatedQi(tempNode)
                     objCBDeu.populateCounts(tempNode)
                 
                 for n in objCBDeu.allNodeObjects:
