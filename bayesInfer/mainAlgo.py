@@ -82,8 +82,7 @@ class MainAlgo(object):
                     
                     for flag in [True, False]:                         
                         # perturb the counts in 
-                        
-                        objCBDeu.countPerturbation(h,j, incrementFlag=flag, self.decrementValue)
+                        objCBDeu.countPerturbation(h, j, self.decrementValue, incrementFlag=flag )
                         
                         nodesBDeuScore=[]
                         # compute the BDeu score again after perturbations
@@ -195,8 +194,8 @@ class MainAlgo(object):
                     flag = False
                 else:
                     flag = True
-                
-                objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag, self.decrementValue)     
+
+                objCBDeu.countPerturbation(hiddenVar, j, self.decrementValue, incrementFlag=flag)     
                 
                 j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
                 

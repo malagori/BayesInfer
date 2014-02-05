@@ -313,7 +313,7 @@ class BDeuClass(object):
         self.allNodeObjects[h.getName()]= h  # adding h to the structure
         return h
        
-    def countPerturbation(self, h, rIndex, incrementFlag, decrementedValue):
+    def countPerturbation(self, h, rIndex, decrementedValue, incrementFlag):
         #print "perturb the count here"
         hiddenName=h.getName()
         # pick a random index
