@@ -166,7 +166,7 @@ class MainAlgo(object):
             #print "e : %f  enew: %f" % (e, enew)
         return prob
         
-    def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations):
+    def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations, outFile):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
@@ -179,49 +179,51 @@ class MainAlgo(object):
         objCBDeuBestState= objCBDeu
         objCBDeuOldState = objCBDeu
         j               = sIndex
-        
-        while k < kmax and e > emax:                    # While time left & not good enough
-            T =    self.temperature(k, kmax)              # Temperature calculation.
+        with open(outFile, 'w') as wf:
             
-            # randomly choose hidden state zero or one
-            num= rNumber.randint(0,1) 
-            if num == 0:
-                flag = False
-            else:
-                flag = True
-            
-            objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag)     
-            
-            j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
-            
-            nodesBDeuScore= []
-            for n in objCBDeu.allNodeObjects:               # populate the counts for each node
-                tempNode    = Node()
-                tempNode    = objCBDeu.allNodeObjects[n]
-                objCBDeu.populateCounts(tempNode)
-            
-            for n in objCBDeu.allNodeObjects:
-                tempNode    = Node()
-                tempNode    = objCBDeu.allNodeObjects[n]
-                tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-                nodesBDeuScore.append(tempScore)
-            objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
-            
-            enew = objCBDeu.dagBDeuScore                              # Compute its energy.
-            #NOTE Inverse logic here using  '<' instead of '>' as in org algo
-            acceptprob= self.probAcceptance(e, enew, T)
-            if acceptprob < rNumber.random():# reject the current state 
-                objCBDeu= objCBDeuOldState          # go back to the old state
-            else:  # accept the new state
-                objCBDeuOldState= objCBDeu
-                e               = enew
-                                                    
-            if enew > ebest:                              # Is this a new best?
-                objCBDeuBestState= objCBDeu
-                ebest = enew                              # Save 'new neighbour' to 'best found'.
-            k = k + 1
-            print "--->iteration  %d " % k                                     # One more evaluation done
-            print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+            while k < kmax and e > emax:                    # While time left & not good enough
+                T =    self.temperature(k, kmax)              # Temperature calculation.
+                
+                # randomly choose hidden state zero or one
+                num= rNumber.randint(0,1) 
+                if num == 0:
+                    flag = False
+                else:
+                    flag = True
+                
+                objCBDeu.countPerturbation(hiddenVar, j, incrementFlag=flag)     
+                
+                j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+                
+                nodesBDeuScore= []
+                for n in objCBDeu.allNodeObjects:               # populate the counts for each node
+                    tempNode    = Node()
+                    tempNode    = objCBDeu.allNodeObjects[n]
+                    objCBDeu.populateCounts(tempNode)
+                
+                for n in objCBDeu.allNodeObjects:
+                    tempNode    = Node()
+                    tempNode    = objCBDeu.allNodeObjects[n]
+                    tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
+                    nodesBDeuScore.append(tempScore)
+                objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
+                
+                enew = objCBDeu.dagBDeuScore                              # Compute its energy.
+                #NOTE Inverse logic here using  '<' instead of '>' as in org algo
+                acceptprob= self.probAcceptance(e, enew, T)
+                if acceptprob < rNumber.random():# reject the current state 
+                    objCBDeu= objCBDeuOldState          # go back to the old state
+                else:  # accept the new state
+                    objCBDeuOldState= objCBDeu
+                    e               = enew
+                                                        
+                if enew > ebest:                              # Is this a new best?
+                    objCBDeuBestState= objCBDeu
+                    ebest = enew                              # Save 'new neighbour' to 'best found'.
+                k = k + 1
+                #print "--->iteration  %d " % k                                     # One more evaluation done
+                #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+                wf.write("Best bdeuscore: %f, Current bdeuscore %f :" % (ebest, enew))
         return objCBDeuBestState                           # Return the best solution found.
 
     
@@ -331,7 +333,7 @@ class MainAlgo(object):
                     # instantiate CalculateBDeuClass's object 
                     objCBDeu= BDeuClass(tdf, allNodeObjects, totalUniqueObservations, variableNames)
                     
-                    print objCBDeu.df
+                    #print objCBDeu.df
                     
                     # compute initial bdeu score before adding any hidden variable
                     # update the parent configurations for all variables
@@ -373,6 +375,8 @@ class MainAlgo(object):
                         key=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
                         
                         print "edge: %d ---> %d" % (edge[0], edge[1]) 
+                        
+                        
 
                         if edge in edgesDict.keys():
                             if key == edgesDict[edge]: # if true do not add hidden variable 
@@ -430,8 +434,9 @@ class MainAlgo(object):
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             elif self.simAnealFlag == True:
                                 print "Simulated Annealing Algorithm started ...." 
-                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
-                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations)
+                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
+                                output= "dag_"+str(id)+"edge_"+str(edge[0])+"_"+str(edge[0])+".sim" 
+                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Simulated Annealing Algorithm finished ...." 
