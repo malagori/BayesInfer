@@ -102,7 +102,7 @@ class MainAlgo(object):
                         if totalPreviousBDeuScore < totalCurrentBDeuScore:
                             objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
                             objCBDeuBestCopy        = objCBDeu
-                            objCBDeuBestCopy        = totalCurrentBDeuScore
+                            objCBDeuBestCopy.dagBDeuScore= totalCurrentBDeuScore
                             totalPreviousBDeuScore  = totalCurrentBDeuScore
                             
                         else:
@@ -310,8 +310,9 @@ class MainAlgo(object):
             #print initial data frame 
             self.df.to_csv('initialDF_bene'+'.csv', sep=',')
             # print the state for the random number generator
-            stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
-            rs.storeSate(stateOutFile)
+            if self.seed != None:
+                stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
+                rs.storeSate(stateOutFile)
             wf.write("BDeuScore for optimal dag from Bene, %f" % sum(nodesBDeuScore))
             
             # Repeat until adding a hidden variable does not increase the score
