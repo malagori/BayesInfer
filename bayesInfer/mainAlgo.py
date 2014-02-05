@@ -69,6 +69,9 @@ class MainAlgo(object):
         rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
         # randomly shuffle the indexes 
         #rNumber.shuffle(rRecords)
+        print "rRecords"
+        print rRecords
+        print "random index of rRecords: %d" % sIndex
         temp                = rRecords[0]
         rRecords[0]         = rRecords[sIndex]
         rRecords[sIndex]    = temp
@@ -102,12 +105,14 @@ class MainAlgo(object):
                         if totalPreviousBDeuScore < totalCurrentBDeuScore:
                             objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
                             objCBDeuBestCopy        = objCBDeu
-                            wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
-                            print "inside if :totalPreviousBDeuScore: %f, totalCurrentBDeuScore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             totalPreviousBDeuScore  = totalCurrentBDeuScore
+                            
                         else:
                             objCBDeu    = objCBDeuBestCopy
-                
+                            
+                        wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
+                        print "Best bdeuscore: %f, Current bdeuscore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                            
         return objCBDeuBestCopy
         
     def removeEdgesFromBnt(self, edges, previousBDeuScore, objCBDeu):
