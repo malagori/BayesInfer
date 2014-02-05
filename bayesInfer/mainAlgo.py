@@ -273,7 +273,7 @@ class MainAlgo(object):
         cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
         edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
         hiddenNodesDict={} # keys: edge tuple (parent, child): values: hidden node objects
-        iterations=0
+        algoIteratios=0
         totalPreviousBDeuScore= float("-inf")
         totalCurrentBDeuScore= float("-inf")
         currentMaxBDeu= float("-inf")
@@ -308,7 +308,7 @@ class MainAlgo(object):
             #print initial data frame 
             self.df.to_csv('initialDF_bene'+'.csv', sep=',')
             # print the state for the random number generator
-            stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
+            stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
             rs.storeSate(stateOutFile)
             wf.write("BDeuScore for optimal dag from Bene, %f" % sum(nodesBDeuScore))
             
@@ -316,7 +316,7 @@ class MainAlgo(object):
             while True:
             
                 #increment the iteration number
-                iterations +=1 
+                algoIteratios +=1 
                 #print "printing optDag"
                 #print optDag
                 # pDag
@@ -431,7 +431,7 @@ class MainAlgo(object):
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
-                                output= "dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
+                                output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
@@ -440,7 +440,7 @@ class MainAlgo(object):
                             elif self.simAnealFlag == True:
                                 print "Simulated Annealing Algorithm started ...." 
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
-                                output= "dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
+                                output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
@@ -506,7 +506,7 @@ class MainAlgo(object):
                     #print optdag
                     optDag, cardinality = self.printDag(currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
-                    print "Iteration: %d , BDeu Score: %f" % (iterations, currentMaxBDeu)
+                    print "Iteration: %d , BDeu Score: %f" % (algoIteratios, currentMaxBDeu)
                     hValues= h.getKvalues().keys()
                     for i in xrange(0,len(hValues)-1):
                         count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
@@ -515,7 +515,7 @@ class MainAlgo(object):
                         del count
                     wf.write(str(currentMaxBDeu) + "\n")
                     # print the state for the random number generator
-                    stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
+                    stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
                     rs.storeSate(stateOutFile)
                 else: 
                     break
