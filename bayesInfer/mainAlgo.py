@@ -111,7 +111,7 @@ class MainAlgo(object):
                             objCBDeu    = objCBDeuBestCopy
                             
                         wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
-                        print "Best bdeuscore: %f, Current bdeuscore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                        #print "Best bdeuscore: %f, Current bdeuscore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
                             
         return objCBDeuBestCopy
         
@@ -433,7 +433,7 @@ class MainAlgo(object):
                             
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
-                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1) 
+                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
                                 output= "dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
                                 totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
