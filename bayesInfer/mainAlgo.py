@@ -100,8 +100,9 @@ class MainAlgo(object):
                             nodesBDeuScore.append(node.getLocalBDeu())
                         
                         totalCurrentBDeuScore= sum(nodesBDeuScore)
-                        print "totalCurrentBDeuScore: %f" % totalCurrentBDeuScore
-                        if totalPreviousBDeuScore < totalCurrentBDeuScore:
+                        
+                        if totalPreviousBDeuScore <= totalCurrentBDeuScore:
+                           
                             objCBDeu.dagBDeuScore   = totalCurrentBDeuScore
                             objCBDeuBestCopy        = objCBDeu
                             objCBDeuBestCopy.dagBDeuScore= totalCurrentBDeuScore
@@ -112,7 +113,7 @@ class MainAlgo(object):
                             
                         wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (totalPreviousBDeuScore, totalCurrentBDeuScore))
                         #print "Best bdeuscore: %f, Current bdeuscore: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-        print "objCBDeuBestCopy.dagBDeuScore: %f" % objCBDeuBestCopy.dagBDeuScore
+       
         return objCBDeuBestCopy
         
     def removeEdgesFromBnt(self, edges, previousBDeuScore, objCBDeu):
@@ -143,7 +144,7 @@ class MainAlgo(object):
                 node= objCBDeu.allNodeObjects[n]
                 currentBDeuScore+=node.getLocalBDeu()
                 
-            if previousBDeuScore < currentBDeuScore:
+            if previousBDeuScore <= currentBDeuScore:
                 print "removing edge from bnt improves the bdeu scores"
                 previousBDeuScore   = currentBDeuScore
                 objCBDeu.dagBDeuScore= currentBDeuScore
