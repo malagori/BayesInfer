@@ -223,7 +223,7 @@ class MainAlgo(object):
                 k = k + 1
                 #print "--->iteration  %d " % k                                     # One more evaluation done
                 #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-                wf.write("Best bdeuscore: %f, Current bdeuscore %f :" % (ebest, enew))
+                wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (ebest, enew))
         return objCBDeuBestState                           # Return the best solution found.
 
     
@@ -475,7 +475,7 @@ class MainAlgo(object):
                                 objCBDeu.allNodeObjects= tmpAllNodesObj
                                 objCBDeu.df= tmpDF.copy()
                                 objCBDeu.dagBDeuScore=tmpDagBDeuScore
-                                print "BDeu Score for dad %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
+                                print "BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
