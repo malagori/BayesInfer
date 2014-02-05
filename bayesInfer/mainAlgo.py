@@ -69,9 +69,6 @@ class MainAlgo(object):
         rRecords=[i for i in xrange(0, objCBDeu.df.shape[0]-1)]
         # randomly shuffle the indexes 
         #rNumber.shuffle(rRecords)
-        print "rRecords"
-        print rRecords
-        print "random index of rRecords: %d" % sIndex
         temp                = rRecords[0]
         rRecords[0]         = rRecords[sIndex]
         rRecords[sIndex]    = temp
