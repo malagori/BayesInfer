@@ -31,7 +31,7 @@ def main(argv):
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
-    parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
+    parser.add_argument('-l', metavar='loadSeed',type=str , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outFile', type=str, help='Specify the file to output the results. ', default= 'fuv_results.txt')
     parser.add_argument('-od', metavar='outDir', type=str, help='Specify Path to the directory to write the results. ', default= 'fuv_dir_results')
     args = parser.parse_args()

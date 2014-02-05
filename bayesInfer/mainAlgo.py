@@ -144,6 +144,7 @@ class MainAlgo(object):
                 previousBDeuScore   = currentBDeuScore
                 objCBDeu.dagBDeuScore= currentBDeuScore
                 maxObjCBDeu         = objCBDeu
+                maxObjCBDeu.dagBDeuScore= currentBDeuScore
             else:
                 objCBDeu= objCBDeuCopy
  

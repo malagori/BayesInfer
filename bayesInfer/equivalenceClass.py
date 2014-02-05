@@ -20,8 +20,8 @@ class EquivalenceClass(object):
         #print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
           
-    def __exit__(self,type, value, traceBack):
-        mlab.close()
+    #def __exit__(self,type, value, traceBack):
+        #mlab.close()
         
         
     def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality):
