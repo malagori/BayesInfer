@@ -23,6 +23,7 @@ def checkDir(dirPath):
     
 def findMatlabLibDir():
     for p in os.environ["PATH"].split(os.pathsep):
+        p=os.path.dirname(p)
         if p:
             tok=[]
             tok= p.split('/')
