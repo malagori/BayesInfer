@@ -8,15 +8,17 @@ import os
 import numpy as np
 from mlabwrap import mlab
 from node import Node
+import matlab_lib
 from beneWrapper import BeneWrapper
 
 class EquivalenceClass(object):
     
     def __init__(self):
+        self.matlabLibPath=os.path.abspath('matlab_lib')
         #self.matlabLibPath= os.path.dirname(os.path.abspath('matlab_lib/__init__.pyc'))
         #print "os.path.abspath('matlab_lib/__init__.pyc') %s" % os.path.abspath('matlab_lib/__init__.pyc')
         #print "self.matlabLibPath: %s" % self.matlabLibPath
-        self.matlabLibPath= '/home/mehmood/glob/projects/bayesian/code/BayesInfer/bayesInfer/matlab_lib'
+        #self.matlabLibPath= '/home/mehmood/glob/projects/bayesian/code/BayesInfer/bayesInfer/matlab_lib'
         #print "self.matlabLibPath: %s" % self.matlabLibPath
         mlab.addpath(self.matlabLibPath)
           
