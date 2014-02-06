@@ -13,11 +13,24 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath)
     objMainAlgo.runAlgo()
+
+def checkDir(dirPath):
+        return os.path.isdir(dirPath) and os.access(dirPath, os.X_OK)
     
+def findMatlabLibDir():
+    for p in os.environ["PATH"].split(os.pathsep):
+        if p:
+            tok=[]
+            tok= p.split('/')
+            if tok[-1] == "matlab_lib":
+                if checkDir(p):
+                    return p   
+    return None
+
 def main(argv):
     
      
@@ -58,8 +71,14 @@ def main(argv):
         print "seed:                %d" % seed
     print "outPutFile:                %s" % outPutFile
     
-    runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue)
     
+    mlabPath= findMatlabLibDir()
+    
+    if mlabPath != None:
+        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, mlabPath)
+    else:
+        print "Error: Path to matlab_lib folder is not set"
+        sys.exit()
     
 if __name__== "__main__":
     if not sys.argv[1:]:

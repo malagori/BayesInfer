@@ -16,10 +16,11 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath  ):
         '''
         Constructor
         '''
+        self.mlabPath       = mlabPath
         self.vdFile         = vdFile
         self.dataFile       = dataFile
         self.outdir         = outdir
@@ -267,7 +268,7 @@ class MainAlgo(object):
         self.df=convertBeneDataFile(self.dataFile, len(variableNames))
         
         # create object of EquivalenceClass
-        objEC= EquivalenceClass()
+        objEC= EquivalenceClass(self.mlabPath)
         # get the opt bnt from bene
         optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
         
