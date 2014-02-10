@@ -81,8 +81,7 @@ def main(argv):
     
     mlabPath= findMatlabLibDir()
     vdPath= checkFile(vdFile)
-    print vdPath
-    if  vdPath:
+    if  vdPath != True:
         print "Error: Path to vd file is not correct"
         sys.exit()
         
