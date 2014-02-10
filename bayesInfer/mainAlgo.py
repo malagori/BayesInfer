@@ -175,7 +175,8 @@ class MainAlgo(object):
             prob= exp(-( -enew + e )/ float(T))
             #print "e : %f  enew: %f" % (e, enew)
         return prob
-        
+    
+    @profile    
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations, outFile ):
         """
             This function implements the simulated Anealing algorithm (wiki) 

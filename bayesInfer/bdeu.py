@@ -26,7 +26,8 @@ class BDeuClass(object):
     
     def setVariableNames(self, name):
         self.variableNames.append(name)
-        
+    
+    @profile    
     # total parent configurations
     def getUpdatedQi(self,node):
         """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""
@@ -102,7 +103,7 @@ class BDeuClass(object):
         # return the row count satisfiying the conditions
         return sum(localDframe.Counts)
         
-        
+    @profile    
     # calculate BDeu score for one variable
     def getBDeu(self, node, alpha):
         
@@ -135,6 +136,7 @@ class BDeuClass(object):
         
         return node.localBDeu
     
+    @profile
     def calculateBDeuParentNode(self, node, alpha):
         """ calculate bdeu score for parent node"""
         a= math.lgamma(alpha)
@@ -149,7 +151,7 @@ class BDeuClass(object):
         localBDeu = a -b + c
         
         return localBDeu
-        
+    @profile    
     def calculateLocalBDeu(self, qi, node, alpha):
         # traverse all values of qi
         # compute the following
@@ -312,7 +314,8 @@ class BDeuClass(object):
         self.getUpdatedQi(self.allNodeObjects[child2]) 
         self.allNodeObjects[h.getName()]= h  # adding h to the structure
         return h
-       
+    
+    @profile   
     def countPerturbation(self, h, rIndex, decrementedValue, incrementFlag):
         #print "perturb the count here"
         hiddenName=h.getName()
