@@ -21,7 +21,7 @@ def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations,
 
 
 def checkFile(filePath):
-        return os.path.isfile(filePath) and os.access(filePath, os.X_OK)
+        return os.path.isfile(os.path.abspath(filePath)) 
 
 
 def checkDir(dirPath):
@@ -80,7 +80,9 @@ def main(argv):
     
     
     mlabPath= findMatlabLibDir()
-    if checkFile(vdFile) != True:
+    vdPath= checkFile(vdFile)
+    print vdPath
+    if  vdPath:
         print "Error: Path to vd file is not correct"
         sys.exit()
         
