@@ -16,6 +16,7 @@ from pandas import Series
 from node import Node
 
 class BDeuClass(object):
+    
     def __init__(self, df, allNodeObjects, totalUniqueObservations, variableNames):
         self.df                         = df
         self.allNodeObjects             = allNodeObjects
@@ -26,10 +27,9 @@ class BDeuClass(object):
     
     def setVariableNames(self, name):
         self.variableNames.append(name)
-    
-    @profile    
-    # total parent configurations
+      
     def getUpdatedQi(self,node):
+        # total parent configurations
         """ if node is a parent then it has no parent configuration, return the function other wise compute parent configurations"""
         #print "Function: getUpdatedQi; Node Name: %s" % node.getName()
         if len(node.getParents())==0:
@@ -102,11 +102,9 @@ class BDeuClass(object):
                 idx+=1
         # return the row count satisfiying the conditions
         return sum(localDframe.Counts)
-        
-    @profile    
-    # calculate BDeu score for one variable
+          
     def getBDeu(self, node, alpha):
-        
+        # calculate BDeu score for one variable
         localBDeu=0.0
         # if node.valueCountFlag is true, then do the following computation
         #if node.parentUpdateFlag == True:
@@ -136,7 +134,7 @@ class BDeuClass(object):
         
         return node.localBDeu
     
-    @profile
+
     def calculateBDeuParentNode(self, node, alpha):
         """ calculate bdeu score for parent node"""
         a= math.lgamma(alpha)
@@ -151,7 +149,7 @@ class BDeuClass(object):
         localBDeu = a -b + c
         
         return localBDeu
-    @profile    
+   
     def calculateLocalBDeu(self, qi, node, alpha):
         # traverse all values of qi
         # compute the following
@@ -315,7 +313,7 @@ class BDeuClass(object):
         self.allNodeObjects[h.getName()]= h  # adding h to the structure
         return h
     
-    @profile   
+ 
     def countPerturbation(self, h, rIndex, decrementedValue, incrementFlag):
         #print "perturb the count here"
         hiddenName=h.getName()

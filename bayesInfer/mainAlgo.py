@@ -3,6 +3,7 @@ from __future__ import division
 import time
 import random as rNumber
 import pandas as pd
+import cProfile
 
 from math import exp
 from storeRetriveSeed import RandomSeed
@@ -176,7 +177,7 @@ class MainAlgo(object):
             #print "e : %f  enew: %f" % (e, enew)
         return prob
     
-    @profile    
+        
     def simulatedAnealing(self, objCBDeu, hiddenVar, previousScore, sIndex, iterations, outFile ):
         """
             This function implements the simulated Anealing algorithm (wiki) 
