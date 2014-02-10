@@ -237,7 +237,7 @@ class MainAlgo(object):
                 k = k + 1
                 #print "--->iteration  %d " % k                                     # One more evaluation done
                 #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-                wf.write("Best bdeuscore: %f, Current bdeuscore: %f \n" % (ebest, enew))
+                wf.write("Best bdeuscore: %f, Current bdeuscore: %f , temp: %f, prob: %f\n" % (ebest, enew,T, acceptprob))
         return objCBDeuBestState                           # Return the best solution found.
 
     
