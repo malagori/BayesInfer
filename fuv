@@ -18,12 +18,18 @@ def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations,
     objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath)
     objMainAlgo.runAlgo()
 
+
+
+def checkFile(filePath):
+        return os.path.isfile(filePath) and os.access(filePath, os.X_OK)
+
+
 def checkDir(dirPath):
         return os.path.isdir(dirPath) and os.access(dirPath, os.X_OK)
     
 def findMatlabLibDir():
     for p in os.environ["PATH"].split(os.pathsep):
-        p=os.path.dirname(p)
+        #p=os.path.dirname(p)
         if p:
             tok=[]
             tok= p.split('/')
@@ -74,6 +80,13 @@ def main(argv):
     
     
     mlabPath= findMatlabLibDir()
+    if checkFile(vdFile) != True:
+        print "Error: Path to vd file is not correct"
+        sys.exit()
+        
+    if checkFile(dataFile) != True:
+        print "Error: Path to data file is not correct"
+        sys.exit()
     
     if mlabPath != None:
         runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, mlabPath)
