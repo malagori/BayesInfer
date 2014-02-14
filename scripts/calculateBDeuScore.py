@@ -585,7 +585,6 @@ def main(argv):
     # open file to write the results
     wf= open(outputFile, 'w')
     
-    iterations=0
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
@@ -610,15 +609,15 @@ def main(argv):
             wf.write(str(j)+',')
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
+    stateOutFile= 'state_initialSeed_'+ str(seed) +'_'+outputFile
     
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
         sIndex                  = rNumber.randint(0,df.shape[0]-2)
-        simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, iterations, outputFile+"sim", decrementValue, alpha )
+        simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+"sim", decrementValue, alpha )
         
     elif steepestAsent == True:
-
+        iterations=0
         rRecords=[i for i in xrange(0, df.shape[0]-1)]
         # randomly shuffle the indexes 
         rNumber.shuffle(rRecords)
@@ -635,7 +634,6 @@ def main(argv):
                     # perturb the counts in 
                     countPerturbation(h,j, incrementFlag=flag)
 
-                    
                     nodesBDeuScore=[]
                     # compute the BDeu score again after perturbations
                     for n in allNodeObjects:
