@@ -12,6 +12,7 @@ import itertools
 import math
 import datetime
 import time
+from math import exp
 import argparse
 import random as rNumber
 import numpy as np
@@ -614,7 +615,7 @@ def main(argv):
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
         sIndex                  = rNumber.randint(0,df.shape[0]-2)
-        simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+"sim", decrementValue, alpha )
+        simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
         
     elif steepestAsent == True:
         iterations=0
