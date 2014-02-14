@@ -452,17 +452,13 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
             
             nodesBDeuScore= []
-            for n in allNodeObjects:               # populate the counts for each node
-                tempNode    = Node()
-                tempNode    = allNodeObjects[n]
-                getUpdatedQi(tempNode)
-                populateCounts(tempNode)
-            
             for n in allNodeObjects:
-                tempNode    = Node()
-                tempNode    = allNodeObjects[n]
-                tempScore   = getBDeu(allNodeObjects[n], alpha)
-                nodesBDeuScore.append(tempScore)
+                node=allNodeObjects[n]
+                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                    populateCounts(node)
+                    node.setLocalBDeu(getBDeu(node, alpha))
+                nodesBDeuScore.append(node.getLocalBDeu())
+
             dagBDeuScore= sum(nodesBDeuScore)
             
             enew = dagBDeuScore                              # Compute its energy.
@@ -504,6 +500,7 @@ def main(argv):
     parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
     parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
+    parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
@@ -528,6 +525,7 @@ def main(argv):
     steepestAsent   = args.SteepestAsent
     simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
+    decrementValue  = args.dc
     
     # instanciate RandomSeed object
     rs=RandomSeed()
@@ -616,7 +614,8 @@ def main(argv):
     
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
-        
+        sIndex                  = rNumber.randint(0,df.shape[0]-2)
+        simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, iterations, outputFile+"sim", decrementValue, alpha )
         
     elif steepestAsent == True:
 
