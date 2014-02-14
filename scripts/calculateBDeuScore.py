@@ -332,14 +332,14 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
    
-def countPerturbation( h, rIndex, incrementFlag):
+def countPerturbation( h, rIndex,decrementValue, incrementFlag):
     #print "perturb the count here"
     hiddenName=h.getName()
     # pick a random index
     if incrementFlag == False:
         if df.Counts[rIndex] > 0:
             #print "before decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-            df.Counts[rIndex] -= 1 # decrement by 1 
+            df.Counts[rIndex] -= decrementValue # decrement by 1 
             #print "after decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
     
         # select the hidden value at rIndex
@@ -359,11 +359,11 @@ def countPerturbation( h, rIndex, incrementFlag):
             incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalUniqueObservations)
             #print "incrementedDfIndex %d " % incrementedDfIndex
             #print df.Counts[incrementedDfIndex]
-            df.Counts[incrementedDfIndex] += 1
+            df.Counts[incrementedDfIndex] += decrementValue
             #print df.Counts[incrementedDfIndex]
         else:
             incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
-            df.Counts[incrementedDfIndex] += 1
+            df.Counts[incrementedDfIndex] += decrementValue
         #print "incremented Index %d " % incrementedDfIndex
     else:    
         # select the hidden value at rIndex
@@ -383,7 +383,7 @@ def countPerturbation( h, rIndex, incrementFlag):
                     noDecrement=True
                     continue
                 else:
-                    df.Counts[decrementedDfIndex] -= 1
+                    df.Counts[decrementedDfIndex] -= decrementValue
                     noDecrement=False
                     break
             else:
@@ -392,15 +392,105 @@ def countPerturbation( h, rIndex, incrementFlag):
                     noDecrement=True
                     continue
                 else:
-                    df.Counts[decrementedDfIndex] -= 1
+                    df.Counts[decrementedDfIndex] -= decrementValue
                     noDecrement=False
                     break
      
         
         if noDecrement == False:
-            df.Counts[rIndex] += 1 # decrement by 1 
+            df.Counts[rIndex] += decrementValue # decrement by 1 
         #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
+
+def temperature( k, kmax):
+    """
+        This function implements the temperature function of simulated anealing algorithm
+    """
+    temp= (1 - k/ float(kmax))
+    return temp
+
+def probAcceptance( e, enew, T):
+    """
+        this function compute the probability of acceptance 
+    """
+    prob=0.0
+    if (e < enew):
+        prob=1.0
+        #print "accept with prob = 1"
+    else:
+        prob= exp(-( -enew + e )/ float(T))
+        #print "e : %f  enew: %f" % (e, enew)
+    return prob        
+
+def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterations, outFile, decrementValue, alpha ):
+    """
+        This function implements the simulated Anealing algorithm (wiki) 
+    """
+    
+    e               = previousScore                               # Initial state, energy.
+    emax            = float('-inf') 
+    ebest           = e                                     # Initial "best" solution
+    k               = 1                                     # Energy evaluation count.
+    kmax            = iterations
+    objCBDeuBestState= allNodeObjects
+    objCBDeuOldState = allNodeObjects
+    j               = sIndex
+    
+    with open(outFile, 'w') as wf:
+        
+        while k < kmax and e > emax:                    # While time left & not good enough
+            T =    temperature(k, kmax)              # Temperature calculation.
             
+            # randomly choose hidden state zero or one
+            num= rNumber.randint(0,1) 
+            if num == 0:
+                flag = False
+            else:
+                flag = True
+
+            countPerturbation(hiddenVar, j, decrementValue, incrementFlag=flag)     
+            
+            j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
+            
+            nodesBDeuScore= []
+            for n in allNodeObjects:               # populate the counts for each node
+                tempNode    = Node()
+                tempNode    = allNodeObjects[n]
+                getUpdatedQi(tempNode)
+                populateCounts(tempNode)
+            
+            for n in allNodeObjects:
+                tempNode    = Node()
+                tempNode    = allNodeObjects[n]
+                tempScore   = getBDeu(allNodeObjects[n], alpha)
+                nodesBDeuScore.append(tempScore)
+            dagBDeuScore= sum(nodesBDeuScore)
+            
+            enew = dagBDeuScore                              # Compute its energy.
+            #NOTE Inverse logic here using  '<' instead of '>' as in org algo
+            acceptprob= probAcceptance(e, enew, T)
+            if acceptprob < rNumber.random():# reject the current state 
+                allNodeObjects= objCBDeuOldState          # go back to the old state
+            else:  # accept the new state
+                objCBDeuOldState= allNodeObjects
+                e               = enew
+                                                    
+            if enew > ebest:                              # Is this a new best?
+                objCBDeuBestState= allNodeObjects
+                bestDf = df.copy()
+                ebest = enew                              # Save 'new neighbour' to 'best found'.
+            k = k + 1
+            #print "--->iteration  %d " % k                                     # One more evaluation done
+            #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+            wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))
+        print "Best score count configurations:"
+        print bestDf
+        bestDf.to_csv('BestScoreCountConfig_'+outFile+'.csv', sep=',')
+        print "Current score count configurations:"
+        print df
+        bestDf.to_csv('CurrentScoreCountConfig_'+outFile+'.csv', sep=',')
+            
+            
+
 def main(argv):
     # global variables 
     global df, allNodeObjects, totalUniqueObservations
@@ -416,6 +506,7 @@ def main(argv):
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
+    parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
@@ -435,6 +526,7 @@ def main(argv):
     child2          = args.c2
     seed            = args.s
     steepestAsent   = args.SteepestAsent
+    simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
     
     # instanciate RandomSeed object
@@ -485,7 +577,7 @@ def main(argv):
     #df=addHiddenNodeToDf(h, df)
     df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
-    outName= outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+    outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep=',')
     # populate hidden value counts
     populateCounts(h)
@@ -521,8 +613,12 @@ def main(argv):
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
-
-    if steepestAsent == True:
+    
+    if simAnealFlag == True:
+        print "Simulated Anealing starts now"
+        
+        
+    elif steepestAsent == True:
 
         rRecords=[i for i in xrange(0, df.shape[0]-1)]
         # randomly shuffle the indexes 

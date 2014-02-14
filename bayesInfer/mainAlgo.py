@@ -209,17 +209,24 @@ class MainAlgo(object):
                 j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
-                for n in objCBDeu.allNodeObjects:               # populate the counts for each node
-                    tempNode    = Node()
-                    tempNode    = objCBDeu.allNodeObjects[n]
-                    objCBDeu.getUpdatedQi(tempNode)
-                    objCBDeu.populateCounts(tempNode)
-                
+                # compute the BDeu score again after perturbations
                 for n in objCBDeu.allNodeObjects:
-                    tempNode    = Node()
-                    tempNode    = objCBDeu.allNodeObjects[n]
-                    tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-                    nodesBDeuScore.append(tempScore)
+                    node=objCBDeu.allNodeObjects[n]
+                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                        objCBDeu.populateCounts(node)
+                        node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                    nodesBDeuScore.append(node.getLocalBDeu())
+#                for n in objCBDeu.allNodeObjects:               # populate the counts for each node
+#                    tempNode    = Node()
+#                    tempNode    = objCBDeu.allNodeObjects[n]
+#                    objCBDeu.getUpdatedQi(tempNode)
+#                    objCBDeu.populateCounts(tempNode)
+#                
+#                for n in objCBDeu.allNodeObjects:
+#                    tempNode    = Node()
+#                    tempNode    = objCBDeu.allNodeObjects[n]
+#                    tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
+#                    nodesBDeuScore.append(tempScore)
                 objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
                 
                 enew = objCBDeu.dagBDeuScore                              # Compute its energy.
@@ -240,7 +247,6 @@ class MainAlgo(object):
                 wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))
         return objCBDeuBestState                           # Return the best solution found.
 
-    
     
     def runAlgo(self):
         '''
@@ -428,13 +434,17 @@ class MainAlgo(object):
                             #newDF.to_csv(outName+'.csv', sep=',')
                             
                             # populate hidden value counts
-                            for n in objCBDeu.allNodeObjects:
-                                objCBDeu.getUpdatedQi(objCBDeu.allNodeObjects[n])
-                                objCBDeu.populateCounts(objCBDeu.allNodeObjects[n])
-                            #objCBDeu.populateCounts(h)
                             hiddenBDeuScore=[]
                             for n in objCBDeu.allNodeObjects:
-                                hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+                                node= objCBDeu.allNodeObjects[n]
+                                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True:
+                                    objCBDeu.populateCounts(node)
+                                    node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                                hiddenBDeuScore.append(objCBDeu.getBDeu(node, self.alpha))
+                            #objCBDeu.populateCounts(h)
+                            
+                            ##for n in objCBDeu.allNodeObjects:
+                            ##    hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
                     
                             initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
                             
