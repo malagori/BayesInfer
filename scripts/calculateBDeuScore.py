@@ -483,7 +483,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
         bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
-        print "Current score (%f) count configurations:" % e
+        print "Current score (%f) count configurations:" % enew
         print df
         df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
             
