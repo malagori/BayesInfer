@@ -471,6 +471,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
+                df= dfCurrent.copy()
                 wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
