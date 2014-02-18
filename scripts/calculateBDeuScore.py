@@ -479,11 +479,11 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             #print "--->iteration  %d " % k                                     # One more evaluation done
             #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
             wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))
-        print "Best score count configurations:"
+        print "Best score (%f) count configurations:" % ebest
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
         bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
-        print "Current score count configurations:"
+        print "Current score (%f) count configurations:" % e
         print df
         df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
             
