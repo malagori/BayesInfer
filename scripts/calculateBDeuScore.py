@@ -471,10 +471,12 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
+                wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
                 e               = enew
                 dfCurrent       = df.copy()
+                wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
                                                     
             if enew > ebest:                              # Is this a new best?
                 objCBDeuBestState= allNodeObjects
@@ -483,7 +485,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             k = k + 1
             #print "--->iteration  %d " % k                                     # One more evaluation done
             #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-            wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+            
         print "Best score (%f) count configurations:" % ebest
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
