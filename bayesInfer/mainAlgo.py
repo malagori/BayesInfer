@@ -215,6 +215,7 @@ class MainAlgo(object):
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
                         objCBDeu.populateCounts(node)
                         node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                        objCBDeu.allNodeObjects[n]= node
                     nodesBDeuScore.append(node.getLocalBDeu())
 #                for n in objCBDeu.allNodeObjects:               # populate the counts for each node
 #                    tempNode    = Node()
