@@ -555,7 +555,7 @@ def main(argv):
         print "Error: Specify either data file or initial hidden counts configuration file, not both."
         sys.exit()
     elif hiddenConf != None and dataFile == None:
-        df=readDataFrame(hiddenConf)
+        df=readInitialHiddenConfig(hiddenConf)
         totalUniqueObservations= df.shape[0] / 2
     else:
         # read data file
