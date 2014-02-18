@@ -467,11 +467,14 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             enew = dagBDeuScore                              # Compute its energy.
             #NOTE Inverse logic here using  '<' instead of '>' as in org algo
             acceptprob= probAcceptance(e, enew, T)
-            if acceptprob < rNumber.random():# reject the current state 
+            rnum= rNumber.random()
+            
+            if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
                 e               = enew
+                dfCurrent       = df.copy()
                                                     
             if enew > ebest:                              # Is this a new best?
                 objCBDeuBestState= allNodeObjects
@@ -480,13 +483,13 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             k = k + 1
             #print "--->iteration  %d " % k                                     # One more evaluation done
             #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-            wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))
+            wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
         print "Best score (%f) count configurations:" % ebest
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
         bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
-        print "Current score (%f) count configurations:" % enew
-        print df
+        print "Current score (%f) count configurations:" % e
+        print dfCurrent
         df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
             
             
