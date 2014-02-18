@@ -436,6 +436,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
     objCBDeuOldState = allNodeObjects
     j               = sIndex
     bestDf          = df.copy()
+    
     with open(outFile, 'w') as wf:
         
         while k < kmax and e > emax:                    # While time left & not good enough
@@ -458,6 +459,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
                 if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
                     populateCounts(node)
                     node.setLocalBDeu(getBDeu(node, alpha))
+                    allNodeObjects[n]= node
                 nodesBDeuScore.append(node.getLocalBDeu())
 
             dagBDeuScore= sum(nodesBDeuScore)
