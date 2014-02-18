@@ -21,7 +21,7 @@ from pandas import Series
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
-from bayesInfer.readDataFile import readDataFrame
+from bayesInfer.readDataFile import readDataFrame, readInitialHiddenConfig
 from bayesInfer.storeRetriveSeed import RandomSeed
 
 
@@ -482,7 +482,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
         print "Best score count configurations:"
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-        bestDf.to_csv('BestScoreCountConfig_'+outFile+timeStamp+'.csv', sep=',')
+        bestDf.to_pickle('BestScoreCountConfig_'+outFile+timeStamp)
         print "Current score count configurations:"
         print df
         df.to_csv('CurrentScoreCountConfig_'+outFile+timeStamp+'.csv', sep=',')
@@ -555,7 +555,7 @@ def main(argv):
         print "Error: Specify either data file or initial hidden counts configuration file, not both."
         sys.exit()
     elif hiddenConf != None and dataFile == None:
-        df=readDataFrame(hiddenConf)
+        df=readInitialHiddenConfig(hiddenConf)
         totalUniqueObservations= df.shape[0] / 2
     else:
         # read data file

@@ -36,6 +36,25 @@ def readDataFrame(infile):
 
     return df
 
+def readInitialHiddenConfig(infile):
+    """
+    Read data from file containing dataframe in following format:
+        A  B  C  D Counts h
+        0  0  1  0  0    0
+        1  1  1  1  1    0
+        2  1  0  0  0    1
+    
+    returns dataframe, number of variables
+    """
+    try:
+        df=pd.read_pickle(infile)
+        
+             
+    except IOError:
+        print "Class: readDataFile; Function readDataFrame(); Error: could not read dataframe"
+
+    return df
+
 def convertBeneDataFile(infile, columns):
     """
     Read data from file contain data in following format:
