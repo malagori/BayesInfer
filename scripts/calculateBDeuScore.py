@@ -588,7 +588,7 @@ def main(argv):
         df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
     outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv(outName+'.csv', sep=',')
+    df.to_csv(outName+'.csv', sep='\t')
     # populate hidden value counts
     populateCounts(h)
     
