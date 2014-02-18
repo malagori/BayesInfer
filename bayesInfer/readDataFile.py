@@ -28,7 +28,7 @@ def readDataFrame(infile):
     # we will have separate datasets but sum of counts for different datasets should be equal to the original counts.
     # accessing specific columns: df.A
     try:
-        df=pd.read_csv(infile, sep='\t')
+        df=pd.read_csv(infile)
         
              
     except IOError:

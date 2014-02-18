@@ -482,10 +482,10 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
         print "Best score count configurations:"
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-        bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index_col=False)
+        bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
         print "Current score count configurations:"
         print df
-        df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index_col=False)
+        df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
             
             
 
@@ -589,7 +589,7 @@ def main(argv):
         df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
     outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv(outName+'.csv', sep='\t')
+    df.to_csv(outName+'.csv', sep='\t', index=False)
     # populate hidden value counts
     populateCounts(h)
     

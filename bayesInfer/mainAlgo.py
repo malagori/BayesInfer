@@ -244,7 +244,7 @@ class MainAlgo(object):
                 k = k + 1
                 #print "--->iteration  %d " % k                                     # One more evaluation done
                 #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-                wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))
+                wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))  
         return objCBDeuBestState                           # Return the best solution found.
 
     
@@ -322,7 +322,7 @@ class MainAlgo(object):
             
             print "BDeu Score for optimal dag from Bene: %f" % sum(nodesBDeuScore)
             #print initial data frame 
-            self.df.to_csv('initialDF_bene'+'.csv', sep=',')
+            self.df.to_csv('initialDF_bene'+'.csv', sep=',', index=False)
             # print the state for the random number generator
             if self.seed != None:
                 stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
