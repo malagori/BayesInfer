@@ -498,6 +498,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
     parser.add_argument('-b', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
+    parser.add_argument('-dh', metavar='iniHiddenConfigFile',type=str, help='Specify path to the file containing initial hidden counts configurations.')
     parser.add_argument('-x', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
     parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
     parser.add_argument('-c1', metavar='child1',type=str, help='Specify Name for first child variable')
@@ -516,6 +517,7 @@ def main(argv):
     structureFile   = args.b
     outputFile      = args.o
     dataFile        = args.d
+    hiddenConf      = args.dh
     alpha           = args.a
     maxIter         = args.i
     thining         = args.t
@@ -543,15 +545,23 @@ def main(argv):
     print "structure: %s" % structureFile
     print "outputFile %s" % outputFile
     print "dataFile %s" % dataFile
+    print "Initial Hidden Configurations %s" % hiddenConf
     print "alpha %f" % alpha
     print "maxIter %d" % maxIter 
     print "seed %d" % seed
     
-    # set the state
     
-    # read data file
-    df=readDataFrame(dataFile)
-    totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
+    if hiddenConf != None and dataFile != None:
+        print "Error: Specify either data file or initial hidden counts configuration file, not both."
+        sys.exit()
+    elif hiddenConf != None and dataFile == None:
+        df=readDataFrame(hiddenConf)
+        totalUniqueObservations= df.shape[0] / 2
+    else:
+        # read data file
+        df=readDataFrame(dataFile)
+        totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
+        
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
     
@@ -574,8 +584,8 @@ def main(argv):
     h=addHiddenNode(name, cardinality, child1, child2)
 
     # add hidden variable to the dataframe and  split almost counts equally:
-    #df=addHiddenNodeToDf(h, df)
-    df=percentageHiddenCoutsSplit(h,df)
+    if hiddenConf == None:
+        df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
     outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep=',')
@@ -613,9 +623,11 @@ def main(argv):
     wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= 'state_initialSeed_'+ str(seed) +'_'+outputFile
     
+    
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
         sIndex                  = rNumber.randint(0,df.shape[0]-2)
+        rs.storeSate(stateOutFile)
         simulatedAnealing( allNodeObjects, h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
         
     elif steepestAsent == True:
