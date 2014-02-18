@@ -482,10 +482,10 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
         print "Best score count configurations:"
         print bestDf
         timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-        bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t')
+        bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index_col=False)
         print "Current score count configurations:"
         print df
-        df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t')
+        df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index_col=False)
             
             
 
@@ -556,6 +556,7 @@ def main(argv):
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
+        print df
         totalUniqueObservations= df.shape[0] / 2
     else:
         # read data file
