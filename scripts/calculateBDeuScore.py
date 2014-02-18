@@ -436,7 +436,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
     objCBDeuOldState = allNodeObjects
     j               = sIndex
     bestDf          = df.copy()
-    
+    dfCurrent       = df.copy()
     with open(outFile, 'w') as wf:
         
         while k < kmax and e > emax:                    # While time left & not good enough
