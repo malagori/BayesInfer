@@ -17,7 +17,7 @@ import argparse
 import random as rNumber
 import numpy as np
 from pandas import Series
-
+import pandas as pd
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -435,8 +435,10 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
     objCBDeuBestState= allNodeObjects
     objCBDeuOldState = allNodeObjects
     j               = sIndex
-    bestDf          = df.copy()
+    bestDf          = pd.DataFrame(index=None, columns=None)
     dfCurrent       = df.copy()
+#    bestDf          = df.copy()
+#    dfCurrent       = df.copy()
     with open(outFile, 'w') as wf:
         
         while k < kmax and e > emax:                    # While time left & not good enough
@@ -471,7 +473,7 @@ def simulatedAnealing( allNodeObjects, hiddenVar, previousScore, sIndex, iterati
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
-                df= dfCurrent.copy()
+                df = dfCurrent.copy()
                 wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
