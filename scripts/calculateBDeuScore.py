@@ -452,8 +452,10 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
                 flag = False
             else:
                 flag = True
-            
+            print "before perturbation"
+            print df
             countPerturbation(hiddenVar, j, decrementValue, incrementFlag=flag)     
+            print "after perturbation"
             print df
             j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
             
@@ -475,13 +477,7 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
-                print "dfCurrent"
-                print dfCurrent
-                print "df"
-                print df
                 df = dfCurrent.copy()
-                print "df after reseting to dfCurrent"
-                print df
                 wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
