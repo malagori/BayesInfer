@@ -333,7 +333,7 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
  
-def countPerturbation(dfCopy, h, rIndex,decrementValue, incrementFlag):
+def countPerturbation( h, rIndex,decrementValue, incrementFlag):
     
     hiddenName=h.getName()
     # decrement the record
@@ -356,8 +356,7 @@ def countPerturbation(dfCopy, h, rIndex,decrementValue, incrementFlag):
         else:
             decrementedDfIndex  = rIndex - totalUniqueObservations
             dfCopyIndex         = rIndex - totalUniqueObservations
-            
-        if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex]:
+        if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             df.Counts[decrementedDfIndex]   -= decrementValue
             df.Counts[rIndex]               += decrementValue
  
@@ -626,14 +625,14 @@ def main(argv):
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
-        dfCopy= df.copy()
+        
         print df
         totalUniqueObservations= df.shape[0] / 2
     else:
         # read data file
         df=readDataFrame(dataFile)
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
-        
+    dfCopy= df.copy()
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
     
@@ -728,7 +727,7 @@ def main(argv):
                     flag = True
                 print "before perturbation"
                 print df
-                countPerturbation(dfCopy, h, j, decrementValue, incrementFlag=flag)     
+                countPerturbation(h, j, decrementValue, incrementFlag=flag)     
                 print "after perturbation"
                 print df
                 j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
