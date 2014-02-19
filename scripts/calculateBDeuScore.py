@@ -422,7 +422,7 @@ def probAcceptance( e, enew, T):
         #print "e : %f  enew: %f" % (e, enew)
     return prob        
 
-def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, iterations, outFile, decrementValue, alpha ):
+def simulatedAnealing(hiddenVar, previousScore, sIndex, iterations, outFile, decrementValue, alpha ):
     """
         This function implements the simulated Anealing algorithm (wiki) 
     """
@@ -477,7 +477,7 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
-                df = dfCurrent.copy()
+                #df = dfCurrent.copy()
                 wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
@@ -644,7 +644,7 @@ def main(argv):
         print "Simulated Anealing starts now"
         sIndex                  = rNumber.randint(0,df.shape[0]-2)
         rs.storeSate(stateOutFile)
-        simulatedAnealing( df, allNodeObjects, h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
+        simulatedAnealing( h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
         
     elif steepestAsent == True:
         iterations=0
