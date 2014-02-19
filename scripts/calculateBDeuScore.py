@@ -50,7 +50,7 @@ def getUpdatedQi(node):
         allNodeObjects[node.getName()]=node
         
     
-def populateCounts(df, node):
+def populateCounts(node):
     """populate the counts for this variable for different parent configurations"""
     kValueDict= node.getKvalues()
     
@@ -76,7 +76,7 @@ def populateCounts(df, node):
         node.setKvalues(kValueDict)
         allNodeObjects[node.getName()]=node
     
-def getDataCount(df, k, j, node):
+def getDataCount(k, j, node):
     # remember: j here is a list not tuple
      
     # subset data according to parent nodes
@@ -197,7 +197,7 @@ def calculateLocalBDeu(qi, node, alpha):
 #            newJ=genNewJandSplitEqually(j, countDict[j], allNodeObjects[node.parents[-1]]) # send the last parent which is hidden parent
 #            newKValueDict[newJ]= countDict[j]
        
-def randomCountPerturbation(h, totalUniqueObservations):
+def randomCountPerturbation(h):
     #print "perturb the count here"
     
     hiddenName=h.getName()
@@ -233,7 +233,7 @@ def randomCountPerturbation(h, totalUniqueObservations):
         df.Counts[incrementedDfIndex] += 1
     #print "incremented Index %d " % incrementedDfIndex
     
-def percentageHiddenCoutsSplit(h,df, totalUniqueObservations):
+def percentageHiddenCoutsSplit(h,df):
     # old dataframe was:
     # A B C Counts 
     # 0 1 1 10          
@@ -272,7 +272,7 @@ def percentageHiddenCoutsSplit(h,df, totalUniqueObservations):
             df= df.append(df_temp, ignore_index=True)
     return df  # delete the temporary data frame to save memory
 
-def addHiddenNodeToDf(h,df, totalUniqueObservations):
+def addHiddenNodeToDf(h,df):
     # old dataframe was:
     # A B C Counts 
     # 0 1 1 10          
@@ -331,9 +331,9 @@ def addHiddenNode(name, cardinality, child1, child2):
     getUpdatedQi(allNodeObjects[child1]) 
     getUpdatedQi(allNodeObjects[child2]) 
     allNodeObjects[h.getName()]= h  # adding h to the structure
-    return h, allNodeObjects
+    return h
    
-def countPerturbation(df,totalUniqueObservations, h, rIndex,decrementValue, incrementFlag):
+def countPerturbation( h, rIndex,decrementValue, incrementFlag):
     #print "perturb the count here"
     hiddenName=h.getName()
     # pick a random index
@@ -454,7 +454,7 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
                 flag = True
             print "before perturbation"
             print df
-            countPerturbation(df, hiddenVar, j, decrementValue, incrementFlag=flag)     
+            countPerturbation(hiddenVar, j, decrementValue, incrementFlag=flag)     
             print "after perturbation"
             print df
             j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
@@ -505,7 +505,7 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
 
 def main(argv):
     # global variables 
-    #global df, allNodeObjects, totalUniqueObservations
+    global df, allNodeObjects, totalUniqueObservations
     nodesBDeuScore=[]
      
     # Take care of input
@@ -544,6 +544,7 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
     decrementValue  = args.dc
+    print "decrementValue %d" % decrementValue
     
     # instanciate RandomSeed object
     rs=RandomSeed()
@@ -588,7 +589,7 @@ def main(argv):
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
         getUpdatedQi(allNodeObjects[n])
-        populateCounts(df, allNodeObjects[n])
+        populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
@@ -596,7 +597,7 @@ def main(argv):
     print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
     
     # enter information about hidden variable
-    h, allNodeObjects=addHiddenNode(name, cardinality, child1, child2)
+    h=addHiddenNode(name, cardinality, child1, child2)
 
     # add hidden variable to the dataframe and  split almost counts equally:
     if hiddenConf == None:
@@ -605,7 +606,7 @@ def main(argv):
     outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outName+'.csv', sep='\t', index=False)
     # populate hidden value counts
-    populateCounts(df,h)
+    populateCounts(h)
     
     
     
@@ -623,7 +624,7 @@ def main(argv):
             # for new parent configuration, assign the counts such that sum of counts of new parent
             # configurations is equal to counts of old parent configuration which we split
             # to get the new parent configuration. 
-            populateCounts(df,node)
+            populateCounts(node)
             node.setLocalBDeu(getBDeu(node, alpha))
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
@@ -661,7 +662,7 @@ def main(argv):
                     #increment the iteration number
                     iterations +=1                          
                     # perturb the counts in 
-                    countPerturbation(df, h,j, incrementFlag=flag)
+                    countPerturbation(h,j, incrementFlag=flag)
 
                     nodesBDeuScore=[]
                     # compute the BDeu score again after perturbations
