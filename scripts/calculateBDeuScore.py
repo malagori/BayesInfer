@@ -332,74 +332,129 @@ def addHiddenNode(name, cardinality, child1, child2):
     getUpdatedQi(allNodeObjects[child2]) 
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
-   
+ 
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
+    
+    hiddenName=h.getName()
+    # decrement the record
+    if incrementFlag == False:
+        if (df.Counts[rIndex]- decrementValue) > 0:
+            if rIndex <= totalUniqueObservations:
+                incrementedDfIndex  = rIndex + totalUniqueObservations
+                dfCopyIndex         = rIndex
+            else:
+                incrementedDfIndex  = rIndex - totalUniqueObservations
+                dfCopyIndex         = rIndex - totalUniqueObservations
+                
+            df.Counts[incrementedDfIndex] += decrementValue
+            df.Counts[rIndex] -= decrementValue
+    else:
+        # increment the record by decrementValue
+        if rIndex <= totalUniqueObservations:
+            decrementedDfIndex  = rIndex  + totalUniqueObservations
+            dfCopyIndex         = rIndex
+        else:
+            decrementedDfIndex  = rIndex - totalUniqueObservations
+            dfCopyIndex         = rIndex - totalUniqueObservations
+            
+        if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex]:
+            df.Counts[decrementedDfIndex]   -= decrementValue
+            df.Counts[rIndex]               += decrementValue
+ 
+      
+def countPerturbationOld( h, rIndex,decrementValue, incrementFlag):
     #print "perturb the count here"
     hiddenName=h.getName()
     # pick a random index
     if incrementFlag == False:
-        if df.Counts[rIndex] > 0:
-            #print "before decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-            df.Counts[rIndex] -= decrementValue # decrement by 1 
-            #print "after decrementing index %d %d: " % (rIndex, df.Counts[rIndex])
-    
-        # select the hidden value at rIndex
-        valueH=df[hiddenName][rIndex]
-        # choose other values of Hidden variable other then
-        hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
-        
-        # choose one of the hValuesWithoutValueH values to be incremented by 1
-        incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
-        #print "hidden value %d " % valueH
-        #print "incrementedHvalue %d " % incrementedHvalue
-        #print "decremented index %d" % rIndex
-        #print "totalUniqueObservations %d" % totalUniqueObservations
-        if incrementedHvalue <  valueH:
-            #print "rIndex %d" % rIndex
-            # compute the index of record in df to be incremented
-            incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalUniqueObservations)
-            #print "incrementedDfIndex %d " % incrementedDfIndex
-            #print df.Counts[incrementedDfIndex]
-            df.Counts[incrementedDfIndex] += decrementValue
-            #print df.Counts[incrementedDfIndex]
-        else:
-            incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
-            df.Counts[incrementedDfIndex] += decrementValue
-        #print "incremented Index %d " % incrementedDfIndex
-    else:    
-        # select the hidden value at rIndex
-        valueH=df[hiddenName][rIndex]
-        # choose other values of Hidden variable other then
-        hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
-        
-        # choose one of the hValuesWithoutValueH values to be incremented by 1
-        decrementedHvalue=rNumber.choice(hValuesWithoutValueH)
-        
-        #  loop until valid case occur other wise exit with doing nothing
+        noIncrement= True
+        if (df.Counts[rIndex]- decrementValue) > 0: # check if record after decrementation is above zero.  
+            # select the hidden value at rIndex
+            valueH=df[hiddenName][rIndex]
+            # choose other values of Hidden variable other then
+            hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
+            
+            # choose one of the hValuesWithoutValueH values to be incremented by 1
+            incrementedHvalue=rNumber.choice(hValuesWithoutValueH)
 
-        for i in xrange(0,len(hValuesWithoutValueH)):
-            if decrementedHvalue <  valueH:
-                decrementedDfIndex=rIndex-((valueH-decrementedHvalue)*totalUniqueObservations)
-                if df.Counts[decrementedDfIndex] == 0:
-                    noDecrement=True
-                    continue
+            for i in xrange(0,len(hValuesWithoutValueH)):
+                if incrementedHvalue <  valueH:
+                    # compute the index of record in df to be incremented
+                    incrementedDfIndex=rIndex-((valueH-incrementedHvalue)*totalUniqueObservations)
+                    # compute the index of record in dfCopy to check for constraint
+                    if incrementedDfIndex <= totalUniqueObservations:
+                        dfCopyIndex= incrementedDfIndex
+                    else:
+                        dfCopyIndex=incrementedDfIndex - totalUniqueObservations
+                        
+                    if (df.Counts[incrementedDfIndex] + decrementValue) > dfCopy.Counts[dfCopyIndex]:
+                        noIncrement=True
+                        continue
+                    else:
+                        df.Counts[incrementedDfIndex] += decrementValue
+                        noIncrement=False
+                        break
                 else:
-                    df.Counts[decrementedDfIndex] -= decrementValue
-                    noDecrement=False
-                    break
-            else:
-                decrementedDfIndex = rIndex + ((decrementedHvalue- valueH)*totalUniqueObservations)
-                if df.Counts[decrementedDfIndex] == 0:
-                    noDecrement=True
-                    continue
+                    
+                    incrementedDfIndex = rIndex + ((incrementedHvalue- valueH)*totalUniqueObservations)
+                    
+                    if incrementedDfIndex <= totalUniqueObservations:
+                        dfCopyIndex= incrementedDfIndex
+                    else:
+                        dfCopyIndex=incrementedDfIndex - totalUniqueObservations
+                        
+                    if (df.Counts[incrementedDfIndex] + decrementValue) > dfCopy.Counts[dfCopyIndex]:
+                        noIncrement=True
+                        continue
+                    else:
+                        df.Counts[incrementedDfIndex] += decrementValue
+                        noIncrement=False
+                        break
+                    
+            if noIncrement == False:
+                df.Counts[rIndex] -= decrementValue # decrement by 1
+    else:    
+        # compute the index of record in dfCopy to check for constraint
+        if rIndex <= totalUniqueObservations:
+            dfCopyIndex= rIndex
+        else:
+            dfCopyIndex=rIndex - totalUniqueObservations
+            
+        if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex]:
+            noDecrement= True
+            # select the hidden value at rIndex
+            valueH=df[hiddenName][rIndex]
+            # choose other values of Hidden variable other then
+            hValuesWithoutValueH=[i for i in h.getKvalues().keys() if i != valueH] # hidden value with out the privously selected valueH
+            
+            # choose one of the hValuesWithoutValueH values to be incremented by 1
+            decrementedHvalue=rNumber.choice(hValuesWithoutValueH)
+            
+            #  loop until valid case occur other wise exit with doing nothing
+    
+            for i in xrange(0,len(hValuesWithoutValueH)):
+                if decrementedHvalue <  valueH:
+                    decrementedDfIndex=rIndex-((valueH-decrementedHvalue)*totalUniqueObservations)
+                    if df.Counts[decrementedDfIndex] == 0:
+                        noDecrement=True
+                        continue
+                    else:
+                        df.Counts[decrementedDfIndex] -= decrementValue
+                        noDecrement=False
+                        break
                 else:
-                    df.Counts[decrementedDfIndex] -= decrementValue
-                    noDecrement=False
-                    break
-     
-        
-        if noDecrement == False:
-            df.Counts[rIndex] += decrementValue # decrement by 1 
+                    decrementedDfIndex = rIndex + ((decrementedHvalue- valueH)*totalUniqueObservations)
+                    if df.Counts[decrementedDfIndex] == 0:
+                        noDecrement=True
+                        continue
+                    else:
+                        df.Counts[decrementedDfIndex] -= decrementValue
+                        noDecrement=False
+                        break
+         
+            
+            if noDecrement == False:
+                df.Counts[rIndex] += decrementValue # decrement by 1 
         #print "after incrementing index %d %d: " % (rIndex, df.Counts[rIndex])
 
 def temperature( k, kmax):
@@ -505,7 +560,7 @@ def simulatedAnealing(hiddenVar, previousScore, sIndex, iterations, outFile, dec
 
 def main(argv):
     # global variables 
-    global df, allNodeObjects, totalUniqueObservations
+    global df, dfCopy, allNodeObjects, totalUniqueObservations
     nodesBDeuScore=[]
      
     # Take care of input
@@ -571,6 +626,7 @@ def main(argv):
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
+        dfCopy= df.copy()
         print df
         totalUniqueObservations= df.shape[0] / 2
     else:
@@ -695,7 +751,7 @@ def main(argv):
                 
                 if acceptprob < rnum:# reject the current state 
                     allNodeObjects= objCBDeuOldState          # go back to the old state
-                    #df = dfCurrent.copy()
+                    df = dfCurrent.copy()
                     wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
                 else:  # accept the new state
                     objCBDeuOldState= allNodeObjects
