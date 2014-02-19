@@ -644,7 +644,80 @@ def main(argv):
         print "Simulated Anealing starts now"
         sIndex                  = rNumber.randint(0,df.shape[0]-2)
         rs.storeSate(stateOutFile)
-        simulatedAnealing( h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
+        #simulatedAnealing( h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
+        e               = totalPreviousBDeuScore                               # Initial state, energy.
+        emax            = float('-inf') 
+        ebest           = e                                     # Initial "best" solution
+        k               = 1                                     # Energy evaluation count.
+        kmax            = maxIter
+        objCBDeuBestState= allNodeObjects
+        objCBDeuOldState = allNodeObjects
+        j               = sIndex
+        bestDf          = pd.DataFrame(index=None, columns=None)
+        
+        dfCurrent       = df.copy()
+        
+    #    bestDf          = df.copy()
+    #    dfCurrent       = df.copy()
+        with open(outputFile+".sim", 'w') as wf:
+            
+            while k < kmax and e > emax:                    # While time left & not good enough
+                T =    temperature(k, kmax)              # Temperature calculation.
+                
+                # randomly choose hidden state zero or one
+                num= rNumber.randint(0,1) 
+                if num == 0:
+                    flag = False
+                else:
+                    flag = True
+                print "before perturbation"
+                print df
+                countPerturbation(h, j, decrementValue, incrementFlag=flag)     
+                print "after perturbation"
+                print df
+                j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
+                
+                nodesBDeuScore= []
+                for n in allNodeObjects:
+                    node=allNodeObjects[n]
+                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                        populateCounts(node)
+                        node.setLocalBDeu(getBDeu(node, alpha))
+                        allNodeObjects[n]= node
+                    nodesBDeuScore.append(node.getLocalBDeu())
+    
+                dagBDeuScore= sum(nodesBDeuScore)
+                
+                enew = dagBDeuScore                              # Compute its energy.
+                #NOTE Inverse logic here using  '<' instead of '>' as in org algo
+                acceptprob= probAcceptance(e, enew, T)
+                rnum= rNumber.random()
+                
+                if acceptprob < rnum:# reject the current state 
+                    allNodeObjects= objCBDeuOldState          # go back to the old state
+                    #df = dfCurrent.copy()
+                    wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+                else:  # accept the new state
+                    objCBDeuOldState= allNodeObjects
+                    e               = enew
+                    dfCurrent       = df.copy()
+                    wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+                                                        
+                if enew > ebest:                              # Is this a new best?
+                    objCBDeuBestState= allNodeObjects
+                    bestDf = df.copy()
+                    ebest = enew                              # Save 'new neighbour' to 'best found'.
+                k = k + 1
+                #print "--->iteration  %d " % k                                     # One more evaluation done
+                #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+                
+            print "Best score (%f) count configurations:" % ebest
+            print bestDf
+            timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+            bestDf.to_csv('BestCounts_'+outputFile+timeStamp+'.csv', sep='\t', index=False)
+            print "Current score (%f) count configurations:" % e
+            print dfCurrent
+            df.to_csv('CurrentCounts_'+outputFile+timeStamp+'.csv', sep='\t', index=False)
         
     elif steepestAsent == True:
         iterations=0
