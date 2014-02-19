@@ -438,8 +438,7 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
     bestDf          = pd.DataFrame(index=None, columns=None)
     
     dfCurrent       = df.copy()
-    print "dfCurrent"
-    print dfCurrent
+    
 #    bestDf          = df.copy()
 #    dfCurrent       = df.copy()
     with open(outFile, 'w') as wf:
@@ -476,8 +475,13 @@ def simulatedAnealing( df, allNodeObjects, hiddenVar, previousScore, sIndex, ite
             
             if acceptprob < rnum:# reject the current state 
                 allNodeObjects= objCBDeuOldState          # go back to the old state
-                #global df
-                #df = dfCurrent.copy()
+                print "dfCurrent"
+                print dfCurrent
+                print "df"
+                print df
+                df = dfCurrent.copy()
+                print "df after reseting to dfCurrent"
+                print df
                 wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
             else:  # accept the new state
                 objCBDeuOldState= allNodeObjects
