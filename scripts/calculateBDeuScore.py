@@ -334,8 +334,7 @@ def addHiddenNode(name, cardinality, child1, child2):
     return h
  
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
-    
-    hiddenName=h.getName()
+
     # decrement the record
     if incrementFlag == False:
         if (df.Counts[rIndex]- decrementValue) > 0:
@@ -343,9 +342,10 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
                 incrementedDfIndex  = rIndex + totalUniqueObservations
                 dfCopyIndex         = rIndex
             else:
-                incrementedDfIndex  = rIndex - totalUniqueObservations
+                incrementedDfIndex  = rIndex - totalUniqueObservations - 1
                 dfCopyIndex         = rIndex - totalUniqueObservations
                 
+            print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
             df.Counts[incrementedDfIndex] += decrementValue
             df.Counts[rIndex] -= decrementValue
     else:
@@ -356,6 +356,7 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
         else:
             decrementedDfIndex  = rIndex - totalUniqueObservations
             dfCopyIndex         = rIndex - totalUniqueObservations
+        print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
         if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             df.Counts[decrementedDfIndex]   -= decrementValue
             df.Counts[rIndex]               += decrementValue
