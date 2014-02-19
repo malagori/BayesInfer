@@ -333,7 +333,7 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
  
-def countPerturbation( h, rIndex,decrementValue, incrementFlag):
+def countPerturbation(dfCopy, h, rIndex,decrementValue, incrementFlag):
     
     hiddenName=h.getName()
     # decrement the record
@@ -728,7 +728,7 @@ def main(argv):
                     flag = True
                 print "before perturbation"
                 print df
-                countPerturbation(h, j, decrementValue, incrementFlag=flag)     
+                countPerturbation(dfCopy, h, j, decrementValue, incrementFlag=flag)     
                 print "after perturbation"
                 print df
                 j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
