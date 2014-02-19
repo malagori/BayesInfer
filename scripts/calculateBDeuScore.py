@@ -338,11 +338,11 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
     # decrement the record
     if incrementFlag == False:
         if (df.Counts[rIndex]- decrementValue) > 0:
-            if rIndex <= totalUniqueObservations:
+            if rIndex < totalUniqueObservations:
                 incrementedDfIndex  = rIndex + totalUniqueObservations
                 dfCopyIndex         = rIndex
             else:
-                incrementedDfIndex  = rIndex - totalUniqueObservations - 1
+                incrementedDfIndex  = rIndex - totalUniqueObservations 
                 dfCopyIndex         = rIndex - totalUniqueObservations
                 
             print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
@@ -350,7 +350,7 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
             df.Counts[rIndex] -= decrementValue
     else:
         # increment the record by decrementValue
-        if rIndex <= totalUniqueObservations:
+        if rIndex < totalUniqueObservations:
             decrementedDfIndex  = rIndex  + totalUniqueObservations
             dfCopyIndex         = rIndex
         else:
