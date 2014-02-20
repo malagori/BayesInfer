@@ -507,11 +507,11 @@ def simulatedAnealing(hiddenVar, previousScore, sIndex, iterations, outFile, dec
                 flag = False
             else:
                 flag = True
-            print "before perturbation"
-            print df
+#            print "before perturbation"
+#            print df
             countPerturbation(hiddenVar, j, decrementValue, incrementFlag=flag)     
-            print "after perturbation"
-            print df
+#            print "after perturbation"
+#            print df
             j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
             
             nodesBDeuScore= []

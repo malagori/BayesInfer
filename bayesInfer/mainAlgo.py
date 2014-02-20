@@ -34,6 +34,7 @@ class MainAlgo(object):
         self.simAnealFlag   = simulatedAnealingFlag
         self.decrementValue = decrementValue
         self.df             = pd.DataFrame(index=None, columns=None)
+        self.dfOriginal     = pd.DataFrame(index=None, columns=None)
         
     def printDag(self,iterations, allNodesObjects):
         '''
@@ -275,7 +276,7 @@ class MainAlgo(object):
 
         # read data file
         self.df=convertBeneDataFile(self.dataFile, len(variableNames))
-        
+        self.dfOriginal = self.df.copy()
         # create object of EquivalenceClass
         objEC= EquivalenceClass(self.mlabPath)
         # get the opt bnt from bene
@@ -303,7 +304,7 @@ class MainAlgo(object):
             #print "totalUniqueObservations: %d" % totalUniqueObservations
             #print "df:"
             #print self.df
-            objCBDeu= BDeuClass(self.df, allNodesObj, totalUniqueObservations, variableNames)
+            objCBDeu= BDeuClass(self.df, self.dfOriginal, allNodesObj, totalUniqueObservations, variableNames)
 
             # update the parent configurations for all variables
             # and the counts associated with the each parent configuration for each value of X
@@ -353,7 +354,7 @@ class MainAlgo(object):
                     tdf= self.df.copy()
                     print tdf
                     # instantiate CalculateBDeuClass's object 
-                    objCBDeu= BDeuClass(tdf, allNodeObjects, totalUniqueObservations, variableNames)
+                    objCBDeu= BDeuClass(tdf, self.dfOriginal, allNodeObjects, totalUniqueObservations, variableNames)
                     
                     #print objCBDeu.df
                     
