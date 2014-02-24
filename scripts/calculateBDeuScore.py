@@ -550,11 +550,11 @@ def simulatedAnealing(hiddenVar, previousScore, sIndex, iterations, outFile, dec
             
         print "Best score (%f) count configurations:" % ebest
         print bestDf
-        timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-        bestDf.to_csv('BestCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
+        #timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+        bestDf.to_csv('BestCounts_'+outFile+'.csv', sep='\t', index=False)
         print "Current score (%f) count configurations:" % e
         print dfCurrent
-        df.to_csv('CurrentCounts_'+outFile+timeStamp+'.csv', sep='\t', index=False)
+        df.to_csv('CurrentCounts_'+outFile+'.csv', sep='\t', index=False)
             
             
 
@@ -659,8 +659,8 @@ def main(argv):
     if hiddenConf == None:
         df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
-    outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv(outName+'.csv', sep='\t', index=False)
+    #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+    df.to_csv(outputFile+'initialHiddenCount.csv', sep='\t', index=False)
     # populate hidden value counts
     populateCounts(h)
     
@@ -693,7 +693,7 @@ def main(argv):
             wf.write(str(j)+',')
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= 'state_initialSeed_'+ str(seed) +'_'+outputFile
+    stateOutFile= 'state_Seed_'+ str(seed) +'_'+outputFile
     
     
     if simAnealFlag == True:
@@ -726,11 +726,9 @@ def main(argv):
                     flag = False
                 else:
                     flag = True
-                print "before perturbation"
-                print df
+                    
                 countPerturbation(h, j, decrementValue, incrementFlag=flag)     
-                print "after perturbation"
-                print df
+               
                 j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
@@ -767,14 +765,14 @@ def main(argv):
                 #print "--->iteration  %d " % k                                     # One more evaluation done
                 #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
                 
-            print "Best score (%f) count configurations:" % ebest
-            print bestDf
-            timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-            bestDf.to_csv('BestCounts_'+outputFile+timeStamp+'.csv', sep='\t', index=False)
-            print "Current score (%f) count configurations:" % e
-            print dfCurrent
-            df.to_csv('CurrentCounts_'+outputFile+timeStamp+'.csv', sep='\t', index=False)
-        
+            #print "Best score (%f) count configurations:" % ebest
+            #print bestDf
+            #timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+            bestDf.to_csv('BestCounts_'+outputFile+'.csv', sep='\t', index=False)
+            #print "Current score (%f) count configurations:" % e
+            #print dfCurrent
+            df.to_csv('CurrentCounts_'+outputFile+'.csv', sep='\t', index=False)
+        print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
         rRecords=[i for i in xrange(0, df.shape[0]-1)]
