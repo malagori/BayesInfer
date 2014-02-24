@@ -620,26 +620,24 @@ def main(argv):
     print "maxIter %d" % maxIter 
     print "seed %d" % seed
     
+    # read initial structure
+    allNodeObjects=readInitialStructure(structureFile)
     
     if hiddenConf != None and dataFile != None:
         print "Error: Specify either data file or initial hidden counts configuration file, not both."
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
-        
         print df
         totalUniqueObservations= df.shape[0] / 2
     else:
         # read data file
         df=readDataFrame(dataFile)
+        if len(df.columns)-1 != len(allNodeObjects):
+            print "Error: Wrong input data file"
+            sys.exit()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
     dfCopy= df.copy()
-    # read initial structure
-    allNodeObjects=readInitialStructure(structureFile)
-    
-    # draw initial structure when you get time .. future work
-    # you can update the structure here....       future work
-    
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
@@ -654,10 +652,15 @@ def main(argv):
     
     # enter information about hidden variable
     h=addHiddenNode(name, cardinality, child1, child2)
-
+    
     # add hidden variable to the dataframe and  split almost counts equally:
     if hiddenConf == None:
         df=percentageHiddenCoutsSplit(h,df)
+    else:
+        print "len(allNodeObjects): %d " % (len(allNodeObjects))
+        if len(df.columns)-1 == len(allNodeObjects):
+            print "Error: Wrong Initial hidden configuration file"
+            sys.exit()
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outputFile+'.initialHiddenCount', sep='\t', index=False)
