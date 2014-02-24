@@ -693,7 +693,7 @@ def main(argv):
             wf.write(str(j)+',')
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= outputFile+'.state_Seed_'+ str(seed)
+    stateOutFile= outputFile+'.stateSeed.'+ str(seed)
     
     
     if simAnealFlag == True:
