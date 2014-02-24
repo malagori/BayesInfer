@@ -47,7 +47,7 @@ def readInitialHiddenConfig(infile):
     returns dataframe, number of variables
     """
     try:
-        df=pd.read_csv(infile, sep='\t', index_col=False)
+        df=pd.read_csv(infile, sep= ',' ,index_col=False)
         
              
     except IOError:

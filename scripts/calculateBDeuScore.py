@@ -551,10 +551,10 @@ def simulatedAnealing(hiddenVar, previousScore, sIndex, iterations, outFile, dec
         print "Best score (%f) count configurations:" % ebest
         print bestDf
         #timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-        bestDf.to_csv('BestCounts_'+outFile+'.csv', sep='\t', index=False)
+        bestDf.to_csv('BestCounts_'+outFile+'.csv', sep=',', index=False)
         print "Current score (%f) count configurations:" % e
         print dfCurrent
-        df.to_csv('CurrentCounts_'+outFile+'.csv', sep='\t', index=False)
+        df.to_csv('CurrentCounts_'+outFile+'.csv', sep=',', index=False)
             
             
 
@@ -629,6 +629,7 @@ def main(argv):
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
         print "len(allNodeObjects): %d " % (len(allNodeObjects))
+        print "len(df.columns)-1: %d " % len(df.columns)-1
         if len(df.columns)-1 == len(allNodeObjects):
             print "Error: Wrong Initial hidden configuration file"
             sys.exit()
@@ -637,6 +638,8 @@ def main(argv):
     else:
         # read data file
         df=readDataFrame(dataFile)
+        print "len(allNodeObjects): %d " % (len(allNodeObjects))
+        print "len(df.columns)-1: %d " % len(df.columns)-1
         if len(df.columns)-1 != len(allNodeObjects):
             print "Error: Wrong input data file"
             sys.exit()
