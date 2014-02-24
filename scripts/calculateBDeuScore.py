@@ -549,8 +549,6 @@ def main(argv):
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
-        print "len(allNodeObjects): %d " % (len(allNodeObjects))
-        print "len(df.columns)-1: %d " % (len(df.columns)-1)
         if len(df.columns)-1 == len(allNodeObjects):
             print "Error: Wrong Initial hidden configuration file"
             sys.exit()
@@ -559,8 +557,6 @@ def main(argv):
     else:
         # read data file
         df=readDataFrame(dataFile)
-        print "len(allNodeObjects): %d " % (len(allNodeObjects))
-        print "len(df.columns)-1: %d " % (len(df.columns)-1)
         if len(df.columns)-1 != len(allNodeObjects):
             print "Error: Wrong input data file"
             sys.exit()
@@ -575,8 +571,8 @@ def main(argv):
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
-        
-    print "BDeu Score for Initial Structure: %f" % sum(nodesBDeuScore)
+    
+    print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
     
     # enter information about hidden variable
     h=addHiddenNode(name, cardinality, child1, child2)
@@ -587,7 +583,7 @@ def main(argv):
         
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv(outputFile+'.initialHiddenCount', sep='\t', index=False)
+    df.to_csv(outputFile+'.initialHiddenCount', sep=',', index=False)
     # populate hidden value counts
     populateCounts(h)
     
@@ -611,8 +607,10 @@ def main(argv):
             node.setLocalBDeu(getBDeu(node, alpha))
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
-    
-    print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
+    if hiddenConf != None:
+        print "Initial BDeu Score with Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
+    else:
+        print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
     hValues=node.getKvalues().keys()
     for i in xrange(0,len(hValues)-1):
         count=df[df[h.getName()]==hValues[i]].Counts
@@ -699,6 +697,7 @@ def main(argv):
             #print "Current score (%f) count configurations:" % e
             #print dfCurrent
             df.to_csv(outputFile+'.currentCounts', sep=',', index=False)
+        print "Best BDeu Score: %f" % ( ebest)
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
