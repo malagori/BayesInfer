@@ -660,7 +660,7 @@ def main(argv):
         df=percentageHiddenCoutsSplit(h,df)
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv('initialHiddenCount_'+outputFile+'.csv', sep='\t', index=False)
+    df.to_csv(outputFile+'.initialHiddenCount', sep='\t', index=False)
     # populate hidden value counts
     populateCounts(h)
     
@@ -693,7 +693,7 @@ def main(argv):
             wf.write(str(j)+',')
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= 'state_Seed_'+ str(seed) +'_'+outputFile
+    stateOutFile= outputFile+'.state_Seed_'+ str(seed)
     
     
     if simAnealFlag == True:
@@ -768,10 +768,10 @@ def main(argv):
             #print "Best score (%f) count configurations:" % ebest
             #print bestDf
             #timeStamp=str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-            bestDf.to_csv('BestCounts_'+outputFile+'.csv', sep='\t', index=False)
+            bestDf.to_csv(outputFile+'.bestCounts', sep='\t', index=False)
             #print "Current score (%f) count configurations:" % e
             #print dfCurrent
-            df.to_csv('CurrentCounts_'+outputFile+'.csv', sep='\t', index=False)
+            df.to_csv(outputFile+'.currentCounts', sep='\t', index=False)
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
