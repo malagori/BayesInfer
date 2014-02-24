@@ -628,6 +628,10 @@ def main(argv):
         sys.exit()
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
+        print "len(allNodeObjects): %d " % (len(allNodeObjects))
+        if len(df.columns)-1 == len(allNodeObjects):
+            print "Error: Wrong Initial hidden configuration file"
+            sys.exit()
         print df
         totalUniqueObservations= df.shape[0] / 2
     else:
@@ -656,11 +660,7 @@ def main(argv):
     # add hidden variable to the dataframe and  split almost counts equally:
     if hiddenConf == None:
         df=percentageHiddenCoutsSplit(h,df)
-    else:
-        print "len(allNodeObjects): %d " % (len(allNodeObjects))
-        if len(df.columns)-1 == len(allNodeObjects):
-            print "Error: Wrong Initial hidden configuration file"
-            sys.exit()
+        
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
     df.to_csv(outputFile+'.initialHiddenCount', sep='\t', index=False)
