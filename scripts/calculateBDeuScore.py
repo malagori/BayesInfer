@@ -629,7 +629,7 @@ def main(argv):
     elif hiddenConf != None and dataFile == None:
         df=readInitialHiddenConfig(hiddenConf)
         print "len(allNodeObjects): %d " % (len(allNodeObjects))
-        print "len(df.columns)-1: %d " % len(df.columns)-1
+        print "len(df.columns)-1: %d " % (len(df.columns)-1)
         if len(df.columns)-1 == len(allNodeObjects):
             print "Error: Wrong Initial hidden configuration file"
             sys.exit()
@@ -639,7 +639,7 @@ def main(argv):
         # read data file
         df=readDataFrame(dataFile)
         print "len(allNodeObjects): %d " % (len(allNodeObjects))
-        print "len(df.columns)-1: %d " % len(df.columns)-1
+        print "len(df.columns)-1: %d " % (len(df.columns)-1)
         if len(df.columns)-1 != len(allNodeObjects):
             print "Error: Wrong input data file"
             sys.exit()
