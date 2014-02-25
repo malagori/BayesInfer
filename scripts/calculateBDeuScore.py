@@ -337,7 +337,7 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
 
     # decrement the record
     if incrementFlag == False:
-        if (df.Counts[rIndex]- decrementValue) > 0:
+        if (df.Counts[rIndex]- decrementValue) >= 0:
             if rIndex < totalUniqueObservations:
                 incrementedDfIndex  = rIndex + totalUniqueObservations
                 dfCopyIndex         = rIndex
@@ -634,11 +634,10 @@ def main(argv):
         objCBDeuBestState= allNodeObjects
         objCBDeuOldState = allNodeObjects
         j               = sIndex
-        bestDf          = pd.DataFrame(index=None, columns=None)
+        #bestDf          = pd.DataFrame(index=None, columns=None)
         
-        dfCurrent       = df.copy()
-        
-    #    bestDf          = df.copy()
+        dfCurrent       = df.copy()    
+        bestDf          = df.copy()
     #    dfCurrent       = df.copy()
         with open(outputFile+".sim", 'w') as wf:
             
