@@ -360,8 +360,60 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
         if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             df.Counts[decrementedDfIndex]   -= decrementValue
             df.Counts[rIndex]               += decrementValue
- 
-      
+
+def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, incrementFlag):
+
+    # decrement the record
+    if incrementFlag == False:
+        if (df.Counts[firstRowIndex]- decrementValue) >= 0:
+            if firstRowIndex < totalUniqueObservations:
+                incrementedDfIndex  = firstRowIndex + totalUniqueObservations
+                dfCopyIndex         = firstRowIndex
+            else:
+                incrementedDfIndex  = firstRowIndex - totalUniqueObservations 
+                dfCopyIndex         = firstRowIndex - totalUniqueObservations
+                
+            #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
+            df.Counts[incrementedDfIndex] += decrementValue
+            df.Counts[firstRowIndex] -= decrementValue
+            
+        # increment the record by decrementValue
+        if secondRowIndex < totalUniqueObservations:
+            decrementedDfIndex  = secondRowIndex  + totalUniqueObservations
+            dfCopyIndex         = secondRowIndex
+        else:
+            decrementedDfIndex  = secondRowIndex - totalUniqueObservations
+            dfCopyIndex         = secondRowIndex - totalUniqueObservations
+        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+        if (df.Counts[secondRowIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
+            df.Counts[decrementedDfIndex]   -= decrementValue
+            df.Counts[secondRowIndex]               += decrementValue 
+                       
+    else:
+        # increment the record by decrementValue
+        if firstRowIndex < totalUniqueObservations:
+            decrementedDfIndex  = firstRowIndex  + totalUniqueObservations
+            dfCopyIndex         = firstRowIndex
+        else:
+            decrementedDfIndex  = firstRowIndex - totalUniqueObservations
+            dfCopyIndex         = firstRowIndex - totalUniqueObservations
+        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+        if (df.Counts[firstRowIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
+            df.Counts[decrementedDfIndex]   -= decrementValue
+            df.Counts[firstRowIndex]               += decrementValue 
+        
+        if (df.Counts[secondRowIndex]- decrementValue) >= 0:
+            if secondRowIndex < totalUniqueObservations:
+                incrementedDfIndex  = secondRowIndex + totalUniqueObservations
+                dfCopyIndex         = secondRowIndex
+            else:
+                incrementedDfIndex  = secondRowIndex - totalUniqueObservations 
+                dfCopyIndex         = secondRowIndex - totalUniqueObservations
+                
+            #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
+            df.Counts[incrementedDfIndex] += decrementValue
+            df.Counts[secondRowIndex] -= decrementValue
+  
 def countPerturbationOld( h, rIndex,decrementValue, incrementFlag):
     #print "perturb the count here"
     hiddenName=h.getName()
@@ -496,6 +548,7 @@ def main(argv):
     parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
+    parser.add_argument('-hx', dest='excludeHidBDeu',action="store_true", help='BDeu score for hidden variable will be excluded from total bnt score if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
@@ -520,6 +573,7 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
     decrementValue  = args.dc
+    exHiddenBdeu    = args.hx
     print "decrementValue %d" % decrementValue
     
     # instanciate RandomSeed object
@@ -595,21 +649,18 @@ def main(argv):
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
+        if n == h.getName and exHiddenBdeu == True:
+            continue
         node=allNodeObjects[n]
 
-        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-            
-            # change the counts of this node according to some criteria i.e.
-            # for new parent configuration, assign the counts such that sum of counts of new parent
-            # configurations is equal to counts of old parent configuration which we split
-            # to get the new parent configuration. 
+        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again 
             populateCounts(node)
             node.setLocalBDeu(getBDeu(node, alpha))
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
     if hiddenConf != None:
         print "Initial BDeu Score with Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
-    else:
+    else :
         print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
     hValues=node.getKvalues().keys()
     for i in xrange(0,len(hValues)-1):
@@ -657,6 +708,8 @@ def main(argv):
                 
                 nodesBDeuScore= []
                 for n in allNodeObjects:
+                    if n == h.getName and exHiddenBdeu == True:
+                        continue
                     node=allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
                         populateCounts(node)
