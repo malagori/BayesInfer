@@ -547,9 +547,10 @@ def main(argv):
     parser.add_argument('-c2', metavar='child2',type=str, help='Specify Name for second child variable')
     parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
-    parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
+    parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Ascent is used if set to True ')
     parser.add_argument('-hx', dest='excludeHidBDeu',action="store_true", help='BDeu score for hidden variable will be excluded from total bnt score if set to True ')
-    parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
+    parser.add_argument('-p', dest='perturbTwoRecods',action="store_true", help='Uses two-record- perturbation function if set to True ')
+    parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated annealing is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
@@ -573,7 +574,9 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
     decrementValue  = args.dc
-    exHiddenBdeu    = args.hx
+    exHiddenBdeuFlag= args.hx
+    pertTowRecFlag  = args.perturbTwoRecods
+    
     print "decrementValue %d" % decrementValue
     
     # instanciate RandomSeed object
@@ -649,7 +652,7 @@ def main(argv):
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
-        if n == h.getName and exHiddenBdeu == True:
+        if n == h.getName and exHiddenBdeuFlag == True:
             continue
         node=allNodeObjects[n]
 
@@ -674,7 +677,7 @@ def main(argv):
     
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
-        sIndex                  = rNumber.randint(0,df.shape[0]-2)
+        firstRowIndex                  = rNumber.randint(0,df.shape[0]-2)
         rs.storeSate(stateOutFile)
         #simulatedAnealing( h, totalPreviousBDeuScore, sIndex, maxIter, outputFile+".sim", decrementValue, alpha )
         e               = totalPreviousBDeuScore                               # Initial state, energy.
@@ -684,7 +687,7 @@ def main(argv):
         kmax            = maxIter
         objCBDeuBestState= allNodeObjects
         objCBDeuOldState = allNodeObjects
-        j               = sIndex
+
         #bestDf          = pd.DataFrame(index=None, columns=None)
         
         dfCurrent       = df.copy()    
@@ -702,13 +705,18 @@ def main(argv):
                 else:
                     flag = True
                     
-                countPerturbation(h, j, decrementValue, incrementFlag=flag)     
+                if pertTowRecFlag == True:
+                    secondRowIndex = rNumber.randint(0, df.shape[0]-1)
+                    twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, flag)
+                    secondRowIndex = rNumber.randint(0, df.shape[0]-1)
+                else:
+                    countPerturbation(h, firstRowIndex, decrementValue, flag)     
                
-                j=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
+                firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
                 for n in allNodeObjects:
-                    if n == h.getName and exHiddenBdeu == True:
+                    if n == h.getName and exHiddenBdeuFlag == True:
                         continue
                     node=allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
