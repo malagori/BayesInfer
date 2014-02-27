@@ -334,7 +334,8 @@ def addHiddenNode(name, cardinality, child1, child2):
     return h
  
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
-
+    print "df before peruturbation"
+    print df
     # decrement the record
     if incrementFlag == False:
         if (df.Counts[rIndex]- decrementValue) >= 0:
@@ -360,9 +361,13 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
         if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             df.Counts[decrementedDfIndex]   -= decrementValue
             df.Counts[rIndex]               += decrementValue
+    print "df after perturbation"
+    print df
 
 def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, incrementFlag):
 
+    print "df before peruturbation"
+    print df
     # decrement the record
     if incrementFlag == False:
         if (df.Counts[firstRowIndex]- decrementValue) >= 0:
@@ -413,7 +418,8 @@ def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, i
             #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
             df.Counts[incrementedDfIndex] += decrementValue
             df.Counts[secondRowIndex] -= decrementValue
-  
+    print "df after peruturbation"
+    print df
 def countPerturbationOld( h, rIndex,decrementValue, incrementFlag):
     #print "perturb the count here"
     hiddenName=h.getName()
@@ -652,8 +658,8 @@ def main(argv):
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
-        #if n == h.getName and exHiddenBdeuFlag == True:
-        #    continue
+        if n == h.getName() and exHiddenBdeuFlag == True:
+            continue
         node=allNodeObjects[n]
 
         if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again 
@@ -719,13 +725,12 @@ def main(argv):
                 for n in allNodeObjects:
                     if n == h.getName() and exHiddenBdeuFlag == True:
                         continue
-                    else:
-                        node=allNodeObjects[n]
-                        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                            populateCounts(node)
-                            node.setLocalBDeu(getBDeu(node, alpha))
-                            allNodeObjects[n]= node
-                        nodesBDeuScore.append(node.getLocalBDeu())
+                    node=allNodeObjects[n]
+                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                        populateCounts(node)
+                        node.setLocalBDeu(getBDeu(node, alpha))
+                        allNodeObjects[n]= node
+                    nodesBDeuScore.append(node.getLocalBDeu())
     
                 dagBDeuScore= sum(nodesBDeuScore)
                 
