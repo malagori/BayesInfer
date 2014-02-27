@@ -658,8 +658,6 @@ def main(argv):
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
-        if n == h.getName() and exHiddenBdeuFlag == True:
-            continue
         node=allNodeObjects[n]
 
         if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again 
