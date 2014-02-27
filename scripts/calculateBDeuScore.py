@@ -574,7 +574,7 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     seedFile        = args.l
     decrementValue  = args.dc
-    exHiddenBdeuFlag= args.hx
+    exHiddenBdeuFlag= args.excludeHidBDeu
     pertTowRecFlag  = args.perturbTwoRecods
     
     print "decrementValue %d" % decrementValue
@@ -757,7 +757,10 @@ def main(argv):
             #print "Current score (%f) count configurations:" % e
             #print dfCurrent
             df.to_csv(outputFile+'.currentCounts', sep=',', index=False)
-        print "Best BDeu Score: %f" % ( ebest)
+        if exHiddenBdeuFlag == True:
+            print "Best BDeu Score without penalty: %f" % ( ebest)
+        else:
+            print "Best BDeu Score: %f" % ( ebest)
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
