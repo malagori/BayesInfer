@@ -693,6 +693,7 @@ def main(argv):
         dfCurrent       = df.copy()    
         bestDf          = df.copy()
     #    dfCurrent       = df.copy()
+        iCount= 1
         with open(outputFile+".sim", 'w') as wf:
             
             while k < kmax and e > emax:                    # While time left & not good enough
@@ -715,8 +716,11 @@ def main(argv):
                 firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
+                
                 for n in allNodeObjects:
                     if n == h.getName and exHiddenBdeuFlag == True:
+                        print "hi: " % iCount
+                        iCount +=1
                         continue
                     node=allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
