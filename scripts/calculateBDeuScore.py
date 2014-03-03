@@ -714,8 +714,11 @@ def main(argv):
                 if pertTowRecFlag == True:
                     secondRowIndex = rNumber.randint(0, df.shape[0]-1)
                     while(True):
+                        # loop untill first row and second row are different
                         if secondRowIndex != firstRowIndex:
                             break
+                        secondRowIndex = rNumber.randint(0, df.shape[0]-1)
+                    
                     twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, flag)
                 else:
                     countPerturbation(h, firstRowIndex, decrementValue, flag)     
