@@ -334,8 +334,8 @@ def addHiddenNode(name, cardinality, child1, child2):
     return h
  
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
-    print "df before peruturbation"
-    print df
+    #print "df before peruturbation"
+    #print df
     # decrement the record
     if incrementFlag == False:
         if (df.Counts[rIndex]- decrementValue) >= 0:
@@ -361,13 +361,13 @@ def countPerturbation( h, rIndex,decrementValue, incrementFlag):
         if (df.Counts[rIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             df.Counts[decrementedDfIndex]   -= decrementValue
             df.Counts[rIndex]               += decrementValue
-    print "df after perturbation"
-    print df
+    #print "df after perturbation"
+    #print df
 
 def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, incrementFlag):
 
-    print "df before peruturbation"
-    print df
+    #print "df before peruturbation"
+    #print df
     # decrement the record
     if incrementFlag == False:
         
@@ -416,8 +416,8 @@ def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, i
                 df.Counts[firstRowIndex]        += decrementValue 
                 df.Counts[incrementedDfIndex]   += decrementValue
                 df.Counts[secondRowIndex]       -= decrementValue
-    print "df after peruturbation"
-    print df
+    #print "df after peruturbation"
+    #print df
     
     
     
