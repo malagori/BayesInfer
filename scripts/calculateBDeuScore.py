@@ -792,9 +792,9 @@ def main(argv):
         if exHiddenBdeuFlag == True:
             print "Best BDeu Score without penalty: %f" % ( ebest)
         else:
-            for i in objCBDeuBestState:
-                print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
             print "Best BDeu Score: %f" % ( ebest)
+        for i in objCBDeuBestState:
+            print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
