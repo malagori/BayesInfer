@@ -328,8 +328,16 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].setParentUpdateFlag( True)
     # compute new parent configuration set for both the children
+    print "allNodeObjects[child1] config before:"
+    print allNodeObjects[child1].getPaConfigurations()
     getUpdatedQi(allNodeObjects[child1]) 
+    print "allNodeObjects[child1] config after:"
+    print allNodeObjects[child1].getPaConfigurations()
+    print "allNodeObjects[child2] config before:"
+    print allNodeObjects[child2].getPaConfigurations()
     getUpdatedQi(allNodeObjects[child2]) 
+    print "allNodeObjects[child2] config after:"
+    print allNodeObjects[child2].getPaConfigurations() 
     allNodeObjects[h.getName()]= h  # adding h to the structure
     return h
  
