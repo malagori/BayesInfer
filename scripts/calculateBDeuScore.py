@@ -705,8 +705,8 @@ def main(argv):
         with open(outputFile+".sim", 'w') as wf:
             
             while k < kmax and e > emax:                    # While time left & not good enough
+                print "iterations number: %d" % (k)
                 T =    temperature(k, kmax)              # Temperature calculation.
-                
                 # randomly choose hidden state zero or one
                 num= rNumber.randint(0,1) 
                 if num == 0:
