@@ -663,8 +663,10 @@ def main(argv):
         node=allNodeObjects[n]
 
         if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again 
+            print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
             populateCounts(node)
             node.setLocalBDeu(getBDeu(node, alpha))
+            print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
     if hiddenConf != None:
