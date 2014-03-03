@@ -645,11 +645,11 @@ def main(argv):
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
-        print "allNodeObjects[n] config before:"
-        print allNodeObjects[n].getPaConfigurations()
+        #print "allNodeObjects[n] config before: %s" % n
+        #print allNodeObjects[n].getPaConfigurations()
         getUpdatedQi(allNodeObjects[n])
-        print "allNodeObjects[n] config after:"
-        print allNodeObjects[n].getPaConfigurations()
+        #print "allNodeObjects[n] config after: %s" % n
+        #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
@@ -679,10 +679,10 @@ def main(argv):
         node=allNodeObjects[n]
 
         if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again 
-            print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
+            #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
             populateCounts(node)
             node.setLocalBDeu(getBDeu(node, alpha))
-            print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
+            #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
         nodesBDeuScore.append(node.getLocalBDeu())
     totalPreviousBDeuScore= sum(nodesBDeuScore)
     if hiddenConf != None:
@@ -750,10 +750,10 @@ def main(argv):
                         continue
                     node=allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                        print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
+                        #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
                         populateCounts(node)
                         node.setLocalBDeu(getBDeu(node, alpha))
-                        print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
+                        #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
                         allNodeObjects[n]= node
                     nodesBDeuScore.append(node.getLocalBDeu())
     

@@ -79,7 +79,7 @@ class Node(object):
 	def setParents(self,pList):
 		self.parents=pList
 	def addParent(self, singleParent):
-		self.parents= singleParent
+		self.parents.append(singleParent)
 	def setName(self,name):
 		self.name= name
 	def setKvalues(self,kdict):
