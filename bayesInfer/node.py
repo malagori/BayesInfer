@@ -78,6 +78,8 @@ class Node(object):
 		self.localBDeu= bdeuScore
 	def setParents(self,pList):
 		self.parents=pList
+	def addParent(self, singleParent):
+		self.parents= singleParent
 	def setName(self,name):
 		self.name= name
 	def setKvalues(self,kdict):

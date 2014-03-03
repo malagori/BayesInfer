@@ -327,6 +327,8 @@ def addHiddenNode(name, cardinality, child1, child2):
     h.setChildrenUpdateFlag(True)
     allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].setParentUpdateFlag( True)
+    allNodeObjects[child1].addParent(name) # get the children nodes and update the parentUpdateFlag
+    allNodeObjects[child2].addParent(name)
     # compute new parent configuration set for both the children
     print "allNodeObjects[child1] config before:"
     print allNodeObjects[child1].getPaConfigurations()
