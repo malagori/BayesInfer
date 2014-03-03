@@ -329,18 +329,20 @@ def addHiddenNode(name, cardinality, child1, child2):
     allNodeObjects[child2].setParentUpdateFlag( True)
     allNodeObjects[child1].addParent(name) # get the children nodes and update the parentUpdateFlag
     allNodeObjects[child2].addParent(name)
+    allNodeObjects[h.getName()]= h 
+    
     # compute new parent configuration set for both the children
-    print "allNodeObjects[child1] config before:"
-    print allNodeObjects[child1].getPaConfigurations()
+    #print "allNodeObjects[child1] config before:"
+    #print allNodeObjects[child1].getPaConfigurations()
     getUpdatedQi(allNodeObjects[child1]) 
-    print "allNodeObjects[child1] config after:"
-    print allNodeObjects[child1].getPaConfigurations()
-    print "allNodeObjects[child2] config before:"
-    print allNodeObjects[child2].getPaConfigurations()
+    #print "allNodeObjects[child1] config after:"
+    #print allNodeObjects[child1].getPaConfigurations()
+    #print "allNodeObjects[child2] config before:"
+    #print allNodeObjects[child2].getPaConfigurations()
     getUpdatedQi(allNodeObjects[child2]) 
-    print "allNodeObjects[child2] config after:"
-    print allNodeObjects[child2].getPaConfigurations() 
-    allNodeObjects[h.getName()]= h  # adding h to the structure
+    #print "allNodeObjects[child2] config after:"
+    #print allNodeObjects[child2].getPaConfigurations() 
+    
     return h
  
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
@@ -643,7 +645,11 @@ def main(argv):
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
+        print "allNodeObjects[n] config before:"
+        print allNodeObjects[n].getPaConfigurations()
         getUpdatedQi(allNodeObjects[n])
+        print "allNodeObjects[n] config after:"
+        print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
     for n in allNodeObjects:
