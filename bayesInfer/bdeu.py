@@ -306,12 +306,15 @@ class BDeuClass(object):
         h.addChild(child1) # add children to hidden variable
         h.addChild(child2)
         h.setChildrenUpdateFlag(True)
+        self.allNodeObjects[h.getName()]= h 
         self.allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
         self.allNodeObjects[child2].setParentUpdateFlag( True)
+        self.allNodeObjects[child1].addParent(name)
+        self.allNodeObjects[child2].addParent(name)
         # compute new parent configuration set for both the children
         self.getUpdatedQi(self.allNodeObjects[child1]) 
         self.getUpdatedQi(self.allNodeObjects[child2]) 
-        self.allNodeObjects[h.getName()]= h  # adding h to the structure
+
         return h
     
     def countPerturbation(self, h, rIndex,decrementValue, incrementFlag):
