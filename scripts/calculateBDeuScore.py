@@ -379,7 +379,8 @@ def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, i
             else:
                 decrementedDfIndex  = secondRowIndex - totalUniqueObservations
                 dfCopyIndex         = secondRowIndex - totalUniqueObservations
-            #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+            print "firstRowIndex: %d, secondRowIndex: %d" % (firstRowIndex, secondRowIndex)
+            print "(df.Counts[secondRowIndex] + decrementValue): %d <= dfCopy.Counts[dfCopyIndex]: %d and (df.Counts[decrementedDfIndex] - decrementValue) >= 0 %d" % ((df.Counts[secondRowIndex] + decrementValue), dfCopy.Counts[dfCopyIndex], (df.Counts[decrementedDfIndex] - decrementValue))
             if (df.Counts[secondRowIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
                 
                 
@@ -401,15 +402,14 @@ def twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, i
         else:
             decrementedDfIndex  = firstRowIndex - totalUniqueObservations
             dfCopyIndex         = firstRowIndex - totalUniqueObservations
-        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+        print "firstRowIndex: %d, secondRowIndex: %d" % (firstRowIndex, secondRowIndex)
+        print "(df.Counts[firstRowIndex] + decrementValue): %d <= dfCopy.Counts[dfCopyIndex]: %d and (df.Counts[decrementedDfIndex] - decrementValue) >= 0 %d" % ((df.Counts[firstRowIndex] + decrementValue), dfCopy.Counts[dfCopyIndex], (df.Counts[decrementedDfIndex] - decrementValue))
         if (df.Counts[firstRowIndex] + decrementValue) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - decrementValue) >= 0:
             if (df.Counts[secondRowIndex]- decrementValue) >= 0:
                 if secondRowIndex < totalUniqueObservations:
                     incrementedDfIndex  = secondRowIndex + totalUniqueObservations
-                    dfCopyIndex         = secondRowIndex
                 else:
                     incrementedDfIndex  = secondRowIndex - totalUniqueObservations 
-                    dfCopyIndex         = secondRowIndex - totalUniqueObservations
                     
                 #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
                 df.Counts[decrementedDfIndex]   -= decrementValue
