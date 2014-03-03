@@ -654,8 +654,6 @@ def main(argv):
     # populate hidden value counts
     populateCounts(h)
     
-    
-    
     # open file to write the results
     wf= open(outputFile, 'w')
     
@@ -681,7 +679,6 @@ def main(argv):
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= outputFile+'.stateSeed.'+ str(seed)
-    
     
     if simAnealFlag == True:
         print "Simulated Anealing starts now"
@@ -735,8 +732,10 @@ def main(argv):
                         continue
                     node=allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                        print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
                         populateCounts(node)
                         node.setLocalBDeu(getBDeu(node, alpha))
+                        print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
                         allNodeObjects[n]= node
                     nodesBDeuScore.append(node.getLocalBDeu())
     
