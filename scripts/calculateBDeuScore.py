@@ -346,17 +346,19 @@ def addHiddenNode(name, cardinality, child1, child2):
     if child2 in childParents1:
         childParents1.remove(child2)
         # add hidden parent to the parentset
-        childParents1.addParent(name)
-        childParents2.addParent(name)
+        childParents1.append(name)
+        childParents2.append(name)
     elif child1 in childParents2:
         childParents2.remove(child1)
         # add hidden parent to the parentset
-        childParents1.addParent(name)
-        childParents2.addParent(name)
+        childParents1.append(name)
+        childParents2.append(name)
     else:
-        childParents1.addParent(name)
-        childParents2.addParent(name)
+        childParents1.append(name)
+        childParents2.append(name)
         
+    childNode1.setParents(childParents1)
+    childNode2.setParents(childParents2)
     
     allNodeObjects[child1]= childNode1
     allNodeObjects[child2]= childNode2
