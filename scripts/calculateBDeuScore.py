@@ -325,10 +325,41 @@ def addHiddenNode(name, cardinality, child1, child2):
     h.addChild(child1) # add children to hidden variable
     h.addChild(child2)
     h.setChildrenUpdateFlag(True)
-    allNodeObjects[child1].setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
-    allNodeObjects[child2].setParentUpdateFlag( True)
-    allNodeObjects[child1].addParent(name) # get the children nodes and update the parentUpdateFlag
-    allNodeObjects[child2].addParent(name)
+    
+    childNode1= allNodeObjects[child1]
+    childNode2= allNodeObjects[child2]
+    
+    childNode1.setParentUpdateFlag( True) # get the children nodes and update the parentUpdateFlag
+    childNode2.setParentUpdateFlag( True)
+    
+    childParents1= childNode1.getParents()
+    childParents2= childNode2.getParents()
+    
+    # remove the current edge  
+    #      hidden
+    #    /    \
+    #  a/      \
+    #   \      /
+    #    \--->/
+    #     <---
+    
+    if child2 in childParents1:
+        childParents1.remove(child2)
+        # add hidden parent to the parentset
+        childParents1.addParent(name)
+        childParents2.addParent(name)
+    elif child1 in childParents2:
+        childParents2.remove(child1)
+        # add hidden parent to the parentset
+        childParents1.addParent(name)
+        childParents2.addParent(name)
+    else:
+        childParents1.addParent(name)
+        childParents2.addParent(name)
+        
+    
+    allNodeObjects[child1]= childNode1
+    allNodeObjects[child2]= childNode2
     allNodeObjects[h.getName()]= h 
     
     # compute new parent configuration set for both the children
