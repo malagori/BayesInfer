@@ -272,13 +272,13 @@ def binaryHiddenCountSplit(h, df):
     #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
     i = rNumber.sample(h.getKvalues().keys(),1)
     
-    if i == 1: # rows with hidden value not equal to zero are add here
-        col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+    if i[0] == 1: # rows with hidden value not equal to zero are add here
+        col=[i[0]]*df_temp.shape[0]  # fastest way to create list ;)
         df_temp[hiddenName]=col
         df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
         df= df.append(df_temp, ignore_index=True)
-    elif i == 0:
-        col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+    elif i[0] == 0:
+        col=[1]*df_temp.shape[0]  # generate list containing all 1's
         df_temp[hiddenName]=col
         df_temp.Counts[0:totalUniqueObservations]= df_temp.Counts[0:totalUniqueObservations]-df.Counts
         df= df.append(df_temp, ignore_index=True)
@@ -861,7 +861,8 @@ def main(argv):
                     
                     twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, flag)
                 else:
-                    countPerturbation(h, firstRowIndex, decrementValue, flag)     
+                    #countPerturbation(h, firstRowIndex, decrementValue, flag)
+                    binaryPurterbation(h, firstRowIndex, flag)     
                
                 firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
