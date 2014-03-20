@@ -18,6 +18,7 @@ import random as rNumber
 import numpy as np
 from pandas import Series
 import pandas as pd
+import copy
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -830,8 +831,8 @@ def main(argv):
         ebest           = e                                     # Initial "best" solution
         k               = 1                                     # Energy evaluation count.
         kmax            = maxIter
-        objCBDeuBestState= allNodeObjects
-        objCBDeuOldState = allNodeObjects
+        objCBDeuBestState= copy.deepcopy(allNodeObjects)
+        objCBDeuOldState = copy.deepcopy(allNodeObjects)
 
         #bestDf          = pd.DataFrame(index=None, columns=None)
         
@@ -863,7 +864,7 @@ def main(argv):
                 else:
                     #countPerturbation(h, firstRowIndex, decrementValue, flag)
                     binaryPurterbation(h, firstRowIndex, flag)     
-               
+                
                 firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
@@ -888,17 +889,17 @@ def main(argv):
                 rnum= rNumber.random()
                 
                 if acceptprob < rnum:# reject the current state 
-                    allNodeObjects= objCBDeuOldState          # go back to the old state
+                    allNodeObjects= copy.deepcopy(objCBDeuOldState)          # go back to the old state
                     df = dfCurrent.copy()
                     wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
                 else:  # accept the new state
-                    objCBDeuOldState= allNodeObjects
+                    objCBDeuOldState= copy.deepcopy(allNodeObjects)
                     e               = enew
                     dfCurrent       = df.copy()
                     wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
                                                         
                 if enew > ebest:                              # Is this a new best?
-                    objCBDeuBestState= allNodeObjects
+                    objCBDeuBestState= copy.deepcopy(allNodeObjects)
                     bestDf = df.copy()
                     ebest = enew                              # Save 'new neighbour' to 'best found'.
                 k = k + 1
@@ -916,8 +917,11 @@ def main(argv):
             print "Best BDeu Score without penalty: %f" % ( ebest)
         else:
             print "Best BDeu Score: %f" % ( ebest)
+        bestScore=[]
         for i in objCBDeuBestState:
             print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
+            bestScore.append(objCBDeuBestState[i].getLocalBDeu())
+        print "Best Score agian: %f" % (sum(objCBDeuBestState[i].getLocalBDeu()))
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
