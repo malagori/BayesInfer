@@ -233,6 +233,58 @@ def randomCountPerturbation(h):
         df.Counts[incrementedDfIndex] += 1
     #print "incremented Index %d " % incrementedDfIndex
     
+def binaryHiddenCountSplit(h, df):
+    '''
+    This funciton will split the counts of dataframe in a binary fashion when we introduce hidden variable
+    # old dataframe was:
+    # A B C Counts 
+    # 0 1 1 10          
+    # 0 0 1 4           
+    # 0 1 0 4      
+    #
+    # and 
+    #  the new counts for will be randomly split
+    # A B C Counts H
+    # 0 1 1 10     0     
+    # 0 0 1 4      0     
+    # 0 1 0 4      0
+    # 0 1 1 0      1    
+    # 0 0 1 0      1     
+    # 0 1 0 0      1 
+    
+    Or 
+    #  the new counts for will be randomly split
+    # A B C Counts H
+    # 0 1 1 0      0     
+    # 0 0 1 0      0     
+    # 0 1 0 0      0
+    # 0 1 1 10     1    
+    # 0 0 1 4      1     
+    # 0 1 0 4      1
+     
+    '''
+    hiddenName=h.name
+    hiddenColumn=Series(np.zeros(df.shape[0]), index=df.index)
+    df[hiddenName]=hiddenColumn
+    df_temp= df.copy()
+    
+    
+    #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
+    i = rNumber.sample(h.getKvalues().keys(),1)
+    
+    if i == 1: # rows with hidden value not equal to zero are add here
+        col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+        df_temp[hiddenName]=col
+        df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
+        df= df.append(df_temp, ignore_index=True)
+    elif i == 0:
+        col=[i]*df_temp.shape[0]  # fastest way to create list ;)
+        df_temp[hiddenName]=col
+        df_temp.Counts[0:totalUniqueObservations]= df_temp.Counts[0:totalUniqueObservations]-df.Counts
+        df= df.append(df_temp, ignore_index=True)
+    return df  # delete the temporary data frame to save memory
+    
+
 def percentageHiddenCoutsSplit(h,df):
     # old dataframe was:
     # A B C Counts 
@@ -378,6 +430,41 @@ def addHiddenNode(name, cardinality, child1, child2):
     
     return h
  
+ 
+def binaryPurterbation(h, rIndex, incrementFlag):
+    '''
+    This function will swap the counts of an observation to zero or K-count for the given value of hidden variable
+    '''
+    
+    if incrementFlag == False:
+        if (df.Counts[rIndex]) > 0:
+            if rIndex < totalUniqueObservations:
+                incrementedDfIndex  = rIndex + totalUniqueObservations
+                #dfCopyIndex         = rIndex
+            else:
+                incrementedDfIndex  = rIndex - totalUniqueObservations 
+                #dfCopyIndex         = rIndex - totalUniqueObservations
+                
+            #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
+            tmp= df.Counts[incrementedDfIndex]
+            df.Counts[incrementedDfIndex] += df.Counts[rIndex]
+            df.Counts[rIndex] = tmp
+    else:
+        # increment the record by decrementValue
+        if rIndex < totalUniqueObservations:
+            decrementedDfIndex  = rIndex  + totalUniqueObservations
+            dfCopyIndex         = rIndex
+        else:
+            decrementedDfIndex  = rIndex - totalUniqueObservations
+            dfCopyIndex         = rIndex - totalUniqueObservations
+        
+        tmp= df.Counts[decrementedDfIndex]
+        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+        if (df.Counts[rIndex] + tmp) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - tmp) >= 0:
+            df.Counts[decrementedDfIndex]   -= tmp
+            df.Counts[rIndex]               += tmp
+
+    
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
     #print "df before peruturbation"
     #print df
@@ -695,7 +782,9 @@ def main(argv):
     
     # add hidden variable to the dataframe and  split almost counts equally:
     if hiddenConf == None:
-        df=percentageHiddenCoutsSplit(h,df)
+        #df=percentageHiddenCoutsSplit(h,df)
+        df= binaryHiddenCountSplit(h, df)
+        print df
         
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
