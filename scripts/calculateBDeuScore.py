@@ -921,7 +921,7 @@ def main(argv):
         for i in objCBDeuBestState:
             print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
             bestScore.append(objCBDeuBestState[i].getLocalBDeu())
-        print "Best Score agian: %f" % (sum(objCBDeuBestState[i].getLocalBDeu()))
+        print "Best Score agian: %f" % (sum(bestScore))
         print "Simulated Anealing Done.."
     elif steepestAsent == True:
         iterations=0
