@@ -280,10 +280,7 @@ def binaryHiddenCountSplit(h, df):
     df= df.append(df_temp, ignore_index=True)
     
     for i in xrange(2*df.shape[0], 0, -1):
-        idx= rNumber.randint(0,df.shape-1)
-        #if coin == 1:
-        
-        print "i %d idx %d" % (i, idx)
+        idx= rNumber.randint(0,df.shape[0]-1)
         if idx >=  totalUniqueObservations:
             if df.Counts[idx] == 0:
                 df.Counts[idx] = df.Counts[idx-totalUniqueObservations]
@@ -294,7 +291,7 @@ def binaryHiddenCountSplit(h, df):
         else:
             if df.Counts[idx] == 0:
                 df.Counts[idx] = df.Counts[idx + totalUniqueObservations]
-                df.Counts[idx-totalUniqueObservations] = 0
+                df.Counts[idx + totalUniqueObservations] = 0
             else:
                 df.Counts[idx + totalUniqueObservations] = df.Counts[idx]
                 df.Counts[idx] = 0
