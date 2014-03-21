@@ -453,38 +453,36 @@ def addHiddenNode(name, cardinality, child1, child2):
     return h
  
  
-def binaryPurterbation(h, rIndex, incrementFlag):
+def binaryPurterbation(h, firstRIndex):
     '''
     This function will swap the counts of an observation to zero or K-count for the given value of hidden variable
     '''
-    
-    if incrementFlag == False:
-        if (df.Counts[rIndex]) > 0:
-            if rIndex < totalUniqueObservations:
-                incrementedDfIndex  = rIndex + totalUniqueObservations
-                #dfCopyIndex         = rIndex
-            else:
-                incrementedDfIndex  = rIndex - totalUniqueObservations 
-                #dfCopyIndex         = rIndex - totalUniqueObservations
-                
-            #print "rindex: %d, incrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, incrementedDfIndex, totalUniqueObservations)
-            tmp= df.Counts[incrementedDfIndex]
-            df.Counts[incrementedDfIndex] += df.Counts[rIndex]
-            df.Counts[rIndex] = tmp
+    if firstRIndex < totalUniqueObservations:
+        secondRIndex  = rIndex + totalUniqueObservations
     else:
-        # increment the record by decrementValue
-        if rIndex < totalUniqueObservations:
-            decrementedDfIndex  = rIndex  + totalUniqueObservations
-            dfCopyIndex         = rIndex
-        else:
-            decrementedDfIndex  = rIndex - totalUniqueObservations
-            dfCopyIndex         = rIndex - totalUniqueObservations
-        
-        tmp= df.Counts[decrementedDfIndex]
-        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
-        if (df.Counts[rIndex] + tmp) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - tmp) >= 0:
-            df.Counts[decrementedDfIndex]   -= tmp
-            df.Counts[rIndex]               += tmp
+        secondRIndex  = rIndex - totalUniqueObservations 
+
+    if df.Counts[firstRIndex] == 0:
+        df.Counts[firstRIndex] = df.Counts[secondRIndex]
+        df.Counts[secondRIndex] = 0
+    else:
+        df.Counts[secondRIndex]= df.Counts[firstRIndex]
+        df.Counts[firstRIndex]= 0
+
+#    else:
+#        # increment the record by decrementValue
+#        if rIndex < totalUniqueObservations:
+#            decrementedDfIndex  = rIndex  + totalUniqueObservations
+#            dfCopyIndex         = rIndex
+#        else:
+#            decrementedDfIndex  = rIndex - totalUniqueObservations
+#            dfCopyIndex         = rIndex - totalUniqueObservations
+#        
+#        tmp= df.Counts[decrementedDfIndex]
+#        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
+#        if (df.Counts[rIndex] + tmp) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - tmp) >= 0:
+#            df.Counts[decrementedDfIndex]   -= tmp
+#            df.Counts[rIndex]               += tmp
 
     
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
