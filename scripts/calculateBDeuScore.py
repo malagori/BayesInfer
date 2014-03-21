@@ -271,18 +271,28 @@ def binaryHiddenCountSplit(h, df):
     
     
     #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
-    i = rNumber.sample(h.getKvalues().keys(),1)
+    #i = rNumber.sample(h.getKvalues().keys(),1)
     
-    if i[0] == 1: # rows with hidden value not equal to zero are add here
-        col=[i[0]]*df_temp.shape[0]  # fastest way to create list ;)
-        df_temp[hiddenName]=col
-        df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
-        df= df.append(df_temp, ignore_index=True)
-    elif i[0] == 0:
-        col=[1]*df_temp.shape[0]  # generate list containing all 1's
-        df_temp[hiddenName]=col
-        df_temp.Counts[0:totalUniqueObservations]= df_temp.Counts[0:totalUniqueObservations]-df.Counts
-        df= df.append(df_temp, ignore_index=True)
+    #if i[0] == 1: # rows with hidden value not equal to zero are add here
+    col=[1]*df_temp.shape[0]  # fastest way to create list ;)
+    df_temp[hiddenName]=col
+    df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
+    df= df.append(df_temp, ignore_index=True)
+    
+    for i in xrange(0, df.shape[0]):
+        coin= rNumber.randint(0,1)
+        if coin == 1:
+            idx= i+ totalUniqueObservations
+            df.Counts[idx] = df.Counts[i]
+            df.Counts[i]= 0
+
+#    elif i[0] == 0:
+#        col=[1]*df_temp.shape[0]  # generate list containing all 1's
+#        df_temp[hiddenName]=col
+#        df_temp.Counts[0:totalUniqueObservations]= df_temp.Counts[0:totalUniqueObservations]-df.Counts
+#        df= df.append(df_temp, ignore_index=True)
+#    randomCounts= rNumber.sample(df.Counts, (df.shape[0])
+#    df.Counts= df.Counts-randomCounts
     return df  # delete the temporary data frame to save memory
     
 
@@ -362,6 +372,7 @@ def addHiddenNodeToDf(h,df):
             df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-copyCountList
             df= df.append(df_temp, ignore_index=True)
     del df_temp # delete the temporary data frame to save memory
+    
     return df  
 
 def addHiddenNode(name, cardinality, child1, child2):
@@ -863,6 +874,7 @@ def main(argv):
                     twoRowsCountPerturbation( h, firstRowIndex, secondRowIndex,decrementValue, flag)
                 else:
                     #countPerturbation(h, firstRowIndex, decrementValue, flag)
+                    
                     binaryPurterbation(h, firstRowIndex, flag)     
                 
                 firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
