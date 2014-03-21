@@ -687,6 +687,7 @@ def probAcceptance( e, enew, T):
         prob=1.0
         #print "accept with prob = 1"
     else:
+        #prob= float(T)
         prob= exp(-( -enew + e )/ float(T))
         #print "e : %f  enew: %f" % (e, enew)
     return prob        
@@ -710,6 +711,7 @@ def main(argv):
     parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify path to the data file ', default=1.0)
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Ascent is used if set to True ')
+    parser.add_argument('-bf', dest='bruteForce',action="store_true", help='Brute Force is used if set to True ')
     parser.add_argument('-hx', dest='excludeHidBDeu',action="store_true", help='BDeu score for hidden variable will be excluded from total bnt score if set to True ')
     parser.add_argument('-p', dest='perturbTwoRecods',action="store_true", help='Uses two-record- perturbation function if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated annealing is used if set to True ')
@@ -738,7 +740,7 @@ def main(argv):
     decrementValue  = args.dc
     exHiddenBdeuFlag= args.excludeHidBDeu
     pertTowRecFlag  = args.perturbTwoRecods
-    
+    bruteForceFlag  = args.bf
     print "decrementValue %d" % decrementValue
     
     # instanciate RandomSeed object
@@ -840,7 +842,65 @@ def main(argv):
     wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= outputFile+'.stateSeed.'+ str(seed)
     
-    if simAnealFlag == True:
+    
+    if bruteForceFlag == True:
+        print "Brute Force starts now"
+        
+        previousScore   = float('-inf')
+        bestScore       = float('-inf')
+        rs.storeSate(stateOutFile)
+        numberOfVariables = df.shape[1]-2
+        print "numberOfVariables: " % (numberOfVariables)
+        
+        variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
+        
+        int2bin= '{0:0'+str(variableConfigurations)+'b}'
+        tmp_df= df.copy()
+        for i in xrange(1, (2**variableConfigurations)-1):
+            strIter=int2bin.format(i)
+            newCounts = [0]*df.shape[0]
+            k=0
+            for j in xrange( len(strIter)-1, 0, -1):
+                if strIter[j] == 1:
+                    if df.Counts[k] == 0:
+                        if k >= totalUniqueObservations:
+                            newCounts[k]= df.Counts[k-totalUniqueObservations]
+                        else:
+                            newCounts[k]= df.Counts[k+totalUniqueObservations]
+                    else:
+                        newCounts[k]= df.Counts[k]
+                else:
+                    newCounts[k]=0
+                k+=1
+            df.Counts= newCounts
+            
+            print df
+            currentScore=0.0
+            nodesBDeuScore= []  
+            for n in allNodeObjects:
+                node=allNodeObjects[n]
+                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                    #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
+                    populateCounts(node)
+                    node.setLocalBDeu(getBDeu(node, alpha))
+                    #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
+                    allNodeObjects[n]= node
+                nodesBDeuScore.append(node.getLocalBDeu())
+
+            currentScore= sum(nodesBDeuScore)
+            
+            if currentScore >= bestScore:
+                bestScore= currentScore
+                bestDf= df.Copy()
+                bestIter= i
+        print "iteration i= %d, bestScore: %f" % (bestIter, bestScore)
+            
+                
+                
+            
+            
+    
+    elif simAnealFlag == True:
         print "Simulated Anealing starts now"
         firstRowIndex                  = rNumber.randint(0,df.shape[0]-2)
         rs.storeSate(stateOutFile)
