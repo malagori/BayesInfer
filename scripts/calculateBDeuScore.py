@@ -279,14 +279,25 @@ def binaryHiddenCountSplit(h, df):
     df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
     df= df.append(df_temp, ignore_index=True)
     
-    idx=0
-    for i in xrange(totalUniqueObservations, 0, -1):
-        coin= rNumber.randint(0,1)
-        if coin == 1:
-            print "i %d idx %d" % (i, idx) 
-            df.Counts[idx] = df.Counts[i]
-            df.Counts[i]= 0
-        idx += idx
+    for i in xrange(2*df.shape[0], 0, -1):
+        idx= rNumber.randint(0,df.shape-1)
+        #if coin == 1:
+        
+        print "i %d idx %d" % (i, idx)
+        if idx >=  totalUniqueObservations:
+            if df.Counts[idx] == 0:
+                df.Counts[idx] = df.Counts[idx-totalUniqueObservations]
+                df.Counts[idx-totalUniqueObservations] = 0
+            else:
+                df.Counts[idx - totalUniqueObservations] = df.Counts[idx]
+                df.Counts[idx] = 0
+        else:
+            if df.Counts[idx] == 0:
+                df.Counts[idx] = df.Counts[idx + totalUniqueObservations]
+                df.Counts[idx-totalUniqueObservations] = 0
+            else:
+                df.Counts[idx + totalUniqueObservations] = df.Counts[idx]
+                df.Counts[idx] = 0
 
 #    elif i[0] == 0:
 #        col=[1]*df_temp.shape[0]  # generate list containing all 1's
