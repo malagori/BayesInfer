@@ -458,9 +458,9 @@ def binaryPurterbation(h, firstRIndex):
     This function will swap the counts of an observation to zero or K-count for the given value of hidden variable
     '''
     if firstRIndex < totalUniqueObservations:
-        secondRIndex  = rIndex + totalUniqueObservations
+        secondRIndex  = firstRIndex + totalUniqueObservations
     else:
-        secondRIndex  = rIndex - totalUniqueObservations 
+        secondRIndex  = firstRIndex - totalUniqueObservations 
 
     if df.Counts[firstRIndex] == 0:
         df.Counts[firstRIndex] = df.Counts[secondRIndex]
@@ -883,7 +883,7 @@ def main(argv):
                 else:
                     #countPerturbation(h, firstRowIndex, decrementValue, flag)
                     
-                    binaryPurterbation(h, firstRowIndex, flag)     
+                    binaryPurterbation(h, firstRowIndex)     
                 
                 firstRowIndex=rNumber.randint(0, df.shape[0]-1) # randomly select another record for next iteration
                 
