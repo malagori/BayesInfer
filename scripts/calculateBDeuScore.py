@@ -845,7 +845,7 @@ def main(argv):
     
     if bruteForceFlag == True:
         print "Brute Force starts now"
-        
+        bestIter =0
         previousScore   = float('-inf')
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
@@ -858,7 +858,7 @@ def main(argv):
         #for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
         for i in xrange(0,10):
             strIter=int2bin.format(i)
-            print "i: %d, binary: %s" % (i,strIter)
+            #print "i: %d, binary: %s" % (i,strIter)
             newCounts = [-1]*df.shape[0]
             k=0
             for j in xrange( len(strIter)-1, 0, -1):
@@ -877,7 +877,7 @@ def main(argv):
                 k+=1
             df.Counts= newCounts
             
-            print df
+            #print df
             currentScore=0.0
             nodesBDeuScore= []  
             for n in allNodeObjects:
@@ -896,7 +896,8 @@ def main(argv):
                 bestScore= currentScore
                 bestDf= df.copy()
                 bestIter= i
-        print "iteration i= %d, bestScore: %f" % (bestIter, bestScore)
+            print "iteration i= %d, currentScore: %f, bestScore: %f" % (i, currentScore, bestScore)
+        print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
             
                 
                 
