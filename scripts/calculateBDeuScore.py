@@ -740,7 +740,7 @@ def main(argv):
     decrementValue  = args.dc
     exHiddenBdeuFlag= args.excludeHidBDeu
     pertTowRecFlag  = args.perturbTwoRecods
-    bruteForceFlag  = args.bf
+    bruteForceFlag  = args.bruteForce
     print "decrementValue %d" % decrementValue
     
     # instanciate RandomSeed object
@@ -850,7 +850,7 @@ def main(argv):
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
         numberOfVariables = df.shape[1]-2
-        print "numberOfVariables: " % (numberOfVariables)
+        print "numberOfVariables: %d" % (numberOfVariables)
         
         variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
         
@@ -858,20 +858,27 @@ def main(argv):
         tmp_df= df.copy()
         for i in xrange(1, (2**variableConfigurations)-1):
             strIter=int2bin.format(i)
+            print "i: %d, binary: %s" % (i,strIter)
             newCounts = [0]*df.shape[0]
             k=0
             for j in xrange( len(strIter)-1, 0, -1):
-                if strIter[j] == 1:
-                    if df.Counts[k] == 0:
-                        if k >= totalUniqueObservations:
-                            newCounts[k]= df.Counts[k-totalUniqueObservations]
-                        else:
-                            newCounts[k]= df.Counts[k+totalUniqueObservations]
+                if int(strIter[j]) == 1:
+                    if k >= totalUniqueObservations:
+                        newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
                     else:
-                        newCounts[k]= df.Counts[k]
+                        newCounts[k]= dfCopy.Counts[k]
                 else:
                     newCounts[k]=0
+                    
+#                    if df.Counts[k] == 0:
+#                        if k >= totalUniqueObservations:
+#                            newCounts[k]= df.Counts[k-totalUniqueObservations]
+#                        else:
+#                            newCounts[k]= df.Counts[k+totalUniqueObservations]
+#                    else:
+#                        newCounts[k]= df.Counts[k]
                 k+=1
+            print newCounts
             df.Counts= newCounts
             
             print df
@@ -891,7 +898,7 @@ def main(argv):
             
             if currentScore >= bestScore:
                 bestScore= currentScore
-                bestDf= df.Copy()
+                bestDf= df.copy()
                 bestIter= i
         print "iteration i= %d, bestScore: %f" % (bestIter, bestScore)
             
