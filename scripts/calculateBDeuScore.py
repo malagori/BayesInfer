@@ -857,8 +857,8 @@ def main(argv):
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
         with open(outputFile+".bruteforce", 'w') as wf:
-            #for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
-            for i in xrange(0,10):
+            for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
+            #for i in xrange(0,10):
                 strIter=int2bin.format(i)
                 #print "i: %d, binary: %s" % (i,strIter)
                 newCounts = [-1]*df.shape[0]
