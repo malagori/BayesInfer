@@ -803,10 +803,11 @@ def main(argv):
     h=addHiddenNode(name, cardinality, child1, child2)
     
     # add hidden variable to the dataframe and  split almost counts equally:
-    if hiddenConf == None:
+    if hiddenConf == None :
         #df=percentageHiddenCoutsSplit(h,df)
         df= binaryHiddenCountSplit(h, df)
-        print df
+        if bruteForceFlag == False:
+            print df
         
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
@@ -844,6 +845,7 @@ def main(argv):
     
     
     if bruteForceFlag == True:
+        print df
         print "Brute Force starts now"
         bestIter =0
         previousScore   = float('-inf')
