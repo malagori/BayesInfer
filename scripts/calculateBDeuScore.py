@@ -856,27 +856,25 @@ def main(argv):
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
         tmp_df= df.copy()
-        for i in xrange(1, (2**variableConfigurations)-1):
+        #for i in xrange(0, (2**variableConfigurations)-1):
+        for i in xrange(0,10):
             strIter=int2bin.format(i)
             print "i: %d, binary: %s" % (i,strIter)
             newCounts = [0]*df.shape[0]
             k=0
             for j in xrange( len(strIter)-1, 0, -1):
-                if int(strIter[j]) == 1:
-                    if k >= totalUniqueObservations:
-                        newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
-                    else:
-                        newCounts[k]= dfCopy.Counts[k]
-                else:
+                if int(strIter[j]) == 1 and k < totalUniqueObservations:
+                    newCounts[k]= 0
+                    newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
+                elif int(strIter[j]) == 0 and k < totalUniqueObservations:
+                    newCounts[k]= dfCopy.Counts[k]
+                    newCounts[k+totalUniqueObservations]=0 
+                elif int(strIter[j]) == 1 and k >= totalUniqueObservations:
+                    newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
+                    newCounts[k-totalUniqueObservations]= 0
+                elif int(strIter[j]) == 0 and k >= totalUniqueObservations:
                     newCounts[k]=0
-                    
-#                    if df.Counts[k] == 0:
-#                        if k >= totalUniqueObservations:
-#                            newCounts[k]= df.Counts[k-totalUniqueObservations]
-#                        else:
-#                            newCounts[k]= df.Counts[k+totalUniqueObservations]
-#                    else:
-#                        newCounts[k]= df.Counts[k]
+                    newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
                 k+=1
             print newCounts
             df.Counts= newCounts
