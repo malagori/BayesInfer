@@ -855,28 +855,26 @@ def main(argv):
         variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
-        tmp_df= df.copy()
-        #for i in xrange(0, (2**variableConfigurations)-1):
+        #for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
         for i in xrange(0,10):
             strIter=int2bin.format(i)
             print "i: %d, binary: %s" % (i,strIter)
-            newCounts = [0]*df.shape[0]
+            newCounts = [-1]*df.shape[0]
             k=0
             for j in xrange( len(strIter)-1, 0, -1):
-                if int(strIter[j]) == 1 and k < totalUniqueObservations:
+                if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
                     newCounts[k]= 0
                     newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
-                elif int(strIter[j]) == 0 and k < totalUniqueObservations:
+                elif int(strIter[j]) == 0 and k < totalUniqueObservations and newCounts[k] == -1:
                     newCounts[k]= dfCopy.Counts[k]
-                    newCounts[k+totalUniqueObservations]=0 
-                elif int(strIter[j]) == 1 and k >= totalUniqueObservations:
+                    newCounts[k+totalUniqueObservations]=0
+                elif int(strIter[j]) == 1 and k >= totalUniqueObservations and newCounts[k] == -1:
                     newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
                     newCounts[k-totalUniqueObservations]= 0
-                elif int(strIter[j]) == 0 and k >= totalUniqueObservations:
+                elif int(strIter[j]) == 0 and k >= totalUniqueObservations and newCounts[k] == -1:
                     newCounts[k]=0
                     newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
                 k+=1
-            print newCounts
             df.Counts= newCounts
             
             print df
