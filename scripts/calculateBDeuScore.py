@@ -845,10 +845,9 @@ def main(argv):
     
     
     if bruteForceFlag == True:
-        print df
+        print dfCopy
         print "Brute Force starts now"
         bestIter =0
-        previousScore   = float('-inf')
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
         numberOfVariables = df.shape[1]-2
@@ -857,54 +856,52 @@ def main(argv):
         variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
-        #for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
-        for i in xrange(0,10):
-            strIter=int2bin.format(i)
-            #print "i: %d, binary: %s" % (i,strIter)
-            newCounts = [-1]*df.shape[0]
-            k=0
-            for j in xrange( len(strIter)-1, 0, -1):
-                if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
-                    newCounts[k]= 0
-                    newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
-                elif int(strIter[j]) == 0 and k < totalUniqueObservations and newCounts[k] == -1:
-                    newCounts[k]= dfCopy.Counts[k]
-                    newCounts[k+totalUniqueObservations]=0
-                elif int(strIter[j]) == 1 and k >= totalUniqueObservations and newCounts[k] == -1:
-                    newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
-                    newCounts[k-totalUniqueObservations]= 0
-                elif int(strIter[j]) == 0 and k >= totalUniqueObservations and newCounts[k] == -1:
-                    newCounts[k]=0
-                    newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
-                k+=1
-            df.Counts= newCounts
-            
-            #print df
-            currentScore=0.0
-            nodesBDeuScore= []  
-            for n in allNodeObjects:
-                node=allNodeObjects[n]
-                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                    #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
-                    populateCounts(node)
-                    node.setLocalBDeu(getBDeu(node, alpha))
-                    #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
-                    allNodeObjects[n]= node
-                nodesBDeuScore.append(node.getLocalBDeu())
-
-            currentScore= sum(nodesBDeuScore)
-            
-            if currentScore >= bestScore:
-                bestScore= currentScore
-                bestDf= df.copy()
-                bestIter= i
-            print "iteration i= %d, currentScore: %f, bestScore: %f" % (i, currentScore, bestScore)
+        with open(outputFile+".bruteforce", 'w') as wf:
+            #for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
+            for i in xrange(0,10):
+                strIter=int2bin.format(i)
+                #print "i: %d, binary: %s" % (i,strIter)
+                newCounts = [-1]*df.shape[0]
+                k=0
+                for j in xrange( len(strIter)-1, 0, -1):
+                    if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
+                        newCounts[k]= 0
+                        newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
+                    elif int(strIter[j]) == 0 and k < totalUniqueObservations and newCounts[k] == -1:
+                        newCounts[k]= dfCopy.Counts[k]
+                        newCounts[k+totalUniqueObservations]=0
+                    elif int(strIter[j]) == 1 and k >= totalUniqueObservations and newCounts[k] == -1:
+                        newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
+                        newCounts[k-totalUniqueObservations]= 0
+                    elif int(strIter[j]) == 0 and k >= totalUniqueObservations and newCounts[k] == -1:
+                        newCounts[k]=0
+                        newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
+                    k+=1
+                df.Counts= newCounts
+                
+                #print df
+                currentScore=0.0
+                nodesBDeuScore= []  
+                for n in allNodeObjects:
+                    node=allNodeObjects[n]
+                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                        #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
+                        populateCounts(node)
+                        node.setLocalBDeu(getBDeu(node, alpha))
+                        #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
+                        allNodeObjects[n]= node
+                    nodesBDeuScore.append(node.getLocalBDeu())
+    
+                currentScore= sum(nodesBDeuScore)
+                
+                if currentScore >= bestScore:
+                    bestScore= currentScore
+                    bestDf= df.copy()
+                    bestIter= i
+                wf.write( "iteration i= %d, currentScore: %f, bestScore: %f" % (i, currentScore, bestScore))
         print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
             
-                
-                
-            
-            
+
     
     elif simAnealFlag == True:
         print "Simulated Anealing starts now"
