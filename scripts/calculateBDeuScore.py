@@ -898,7 +898,7 @@ def main(argv):
                     bestScore= currentScore
                     bestDf= df.copy()
                     bestIter= i
-                wf.write( "iteration i= %d, currentScore: %f, bestScore: %f" % (i, currentScore, bestScore))
+                wf.write( "iteration i= %d, bestScore: %f, currentScore: %f \n" % (i, bestScore, currentScore))
         print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
             
 
