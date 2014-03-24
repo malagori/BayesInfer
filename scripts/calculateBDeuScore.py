@@ -806,8 +806,7 @@ def main(argv):
     if hiddenConf == None :
         #df=percentageHiddenCoutsSplit(h,df)
         df= binaryHiddenCountSplit(h, df)
-        if bruteForceFlag == False:
-            print df
+        print df
         
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
@@ -845,13 +844,13 @@ def main(argv):
     
     
     if bruteForceFlag == True:
-        print dfCopy
+        
         print "Brute Force starts now"
+        print dfCopy
         bestIter =0
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
         numberOfVariables = df.shape[1]-2
-        print "numberOfVariables: %d" % (numberOfVariables)
         
         variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
         
