@@ -660,7 +660,7 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     This function will add the missing records with count equal to zero
     '''    
     dfList=list(df.values.tolist())
-    newCounts= [0]*df.shape[0]
+    newCounts= [0]*df.variableConfigurations
     for i in dfList:
         sr=[str(j) for j in i[:-1]]
         sb=''.join(sr)
