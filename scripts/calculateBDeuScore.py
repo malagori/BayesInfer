@@ -665,7 +665,8 @@ def fillMissingRecordsToDf(df, variableConfigurations):
         sr=[str(j) for j in i[:-1]]
         sb=''.join(sr)
         integeray= int(''.join(sb), 2)
-        newCounts[integeray]= i[-1]
+        print integeray
+        newCounts[integeray-1]= i[-1]
     print newCounts
     
     int2binary= '{0:0'+str(variableConfigurations)+'b}'
