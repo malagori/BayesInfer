@@ -777,9 +777,10 @@ def main(argv):
     numberOfVariables = df.shape[1]-1
     variableConfigurations= 2**(numberOfVariables)
     
-    df=fillMissingRecordsToDf(df, variableConfigurations)
+    dfCopy=fillMissingRecordsToDf(df, variableConfigurations)
+    del df
     
-    dfCopy= df.copy()
+    df= dfCopy.copy()
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
