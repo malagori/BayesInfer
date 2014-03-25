@@ -48,6 +48,7 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     newDf.columns= list(df.columns.values)
     
     df= newDf.copy()
+    return df
 
 # total parent configurations
 def getUpdatedQi(node):
@@ -776,7 +777,7 @@ def main(argv):
     numberOfVariables = df.shape[1]-1
     variableConfigurations= 2**(numberOfVariables)
     
-    fillMissingRecordsToDf(df, variableConfigurations)
+    df=fillMissingRecordsToDf(df, variableConfigurations)
     
     dfCopy= df.copy()
     
