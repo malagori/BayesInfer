@@ -26,6 +26,31 @@ from bayesInfer.readDataFile import readDataFrame, readInitialHiddenConfig
 from bayesInfer.storeRetriveSeed import RandomSeed
 
 
+def fillMissingRecordsToDf(df, variableConfigurations):
+    '''
+    This function will add the missing records with count equal to zero
+    '''    
+    print df
+    dfList=list(df.values.tolist())
+    newCounts= [0]*variableConfigurations
+    for i in dfList:
+        sr=[str(j) for j in i[:-1]]
+        sb=''.join(sr)
+        integeray= int(''.join(sb), 2)
+        print integeray
+        newCounts[integeray-1]= i[-1]
+    print newCounts
+    
+    int2binary= '{0:0'+str(variableConfigurations)+'b}'
+    records=[]
+    for i in xrange(0,variableConfigurations):
+        row=[int(j) for j in int2binary.format(i)]
+        row.append(newCounts[i])
+        records.append(row)
+    newDf= pd.DataFrame(records)
+    #newDf.columns= df.columns
+    
+    print newDf
 
 # total parent configurations
 def getUpdatedQi(node):
@@ -655,30 +680,7 @@ def probAcceptance( e, enew, T):
         #print "e : %f  enew: %f" % (e, enew)
     return prob        
             
-def fillMissingRecordsToDf(df, variableConfigurations):
-    '''
-    This function will add the missing records with count equal to zero
-    '''    
-    dfList=list(df.values.tolist())
-    newCounts= [0]*variableConfigurations
-    for i in dfList:
-        sr=[str(j) for j in i[:-1]]
-        sb=''.join(sr)
-        integeray= int(''.join(sb), 2)
-        print integeray
-        newCounts[integeray-1]= i[-1]
-    print newCounts
-    
-    int2binary= '{0:0'+str(variableConfigurations)+'b}'
-    records=[]
-    for i in xrange(0,variableConfigurations):
-        row=[int(j) for j in int2binary.format(i)]
-        row.append(newCounts[i])
-        records.append(row)
-    newDf= pd.DataFrame(records)
-    newDf.columns= df.columns
-    
-    print newDf
+
         
     
     
