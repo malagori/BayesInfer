@@ -655,8 +655,35 @@ def probAcceptance( e, enew, T):
         #print "e : %f  enew: %f" % (e, enew)
     return prob        
             
-            
-
+def fillMissingRecordsToDf(df, variableConfigurations):
+    '''
+    This function will add the missing records with count equal to zero
+    '''    
+    dfList=list(df.values.tolist())
+    newCounts= [0]*df.shape[0]
+    for i in dfList:
+        sr=[str(i) for i in dfList[i][:-1]]
+        sb=''.join(sr)
+        integeray= int(''.join(sb), 2)
+        newCounts[integeray]= dfList[i][-1]
+    print newCounts
+    
+    int2binary= '{0:0'+str(variableConfigurations)+'b}'
+    records=[]
+    for i in xrange(0,variableConfigurations):
+        row=[int(j) for j in int2binary.format(i)]
+        row.append(newCounts[i])
+        records.append(row)
+    newDf= pd.DataFrame(records)
+    newDf.columns= df.columns
+    
+    print newDf
+        
+    
+    
+        
+    
+    
 def main(argv):
     # global variables 
     global df, dfCopy, allNodeObjects, totalUniqueObservations
@@ -745,6 +772,12 @@ def main(argv):
             print "Error: Wrong input data file"
             sys.exit()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
+    
+    numberOfVariables = df.shape[1]-2
+    variableConfigurations= 2**(numberOfVariables)
+    
+    fillMissingRecordsToDf(df, variableConfigurations)
+    
     dfCopy= df.copy()
     
     # update the parent configurations for all variables
@@ -813,9 +846,7 @@ def main(argv):
         bestIter =0
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
-        numberOfVariables = df.shape[1]-2
-        
-        variableConfigurations= 2**(numberOfVariables) # plus 1 beacuse of hidden variable
+         
 #        if variableConfigurations != df.shape[1]:
             # fill the missing record as zeros
         
