@@ -47,8 +47,7 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     newDf= pd.DataFrame(records)
     newDf.columns= list(df.columns.values)
     
-    df= newDf.copy()
-    return df
+    return newDf
 
 # total parent configurations
 def getUpdatedQi(node):
@@ -772,15 +771,14 @@ def main(argv):
         if len(df.columns)-1 != len(allNodeObjects):
             print "Error: Wrong input data file"
             sys.exit()
+        numberOfVariables = df.shape[1]-1
+        variableConfigurations= 2**(numberOfVariables)
+        dfCopy=fillMissingRecordsToDf(df, variableConfigurations)
+        del df
+        df= dfCopy.copy()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
     
-    numberOfVariables = df.shape[1]-1
-    variableConfigurations= 2**(numberOfVariables)
-    
-    dfCopy=fillMissingRecordsToDf(df, variableConfigurations)
-    del df
-    
-    df= dfCopy.copy()
+   
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
