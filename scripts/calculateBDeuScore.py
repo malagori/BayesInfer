@@ -38,10 +38,10 @@ def fillMissingRecordsToDf(df, variableConfigurations):
         sb=''.join(sr)
         integeray= int(''.join(sb), 2)
         print integeray
-        newCounts[integeray-1]= i[-1]
+        newCounts[integeray]= i[-1]
     print newCounts
     
-    int2binary= '{0:0'+str(variableConfigurations)+'b}'
+    int2binary= '{0:0'+str(df.shape[1]-1)+'b}'
     records=[]
     for i in xrange(0,variableConfigurations):
         row=[int(j) for j in int2binary.format(i)]
@@ -51,6 +51,7 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     #newDf.columns= df.columns
     
     print newDf
+    sys.exit()
 
 # total parent configurations
 def getUpdatedQi(node):
