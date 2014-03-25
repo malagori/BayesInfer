@@ -660,7 +660,7 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     This function will add the missing records with count equal to zero
     '''    
     dfList=list(df.values.tolist())
-    newCounts= [0]*df.variableConfigurations
+    newCounts= [0]*variableConfigurations
     for i in dfList:
         sr=[str(j) for j in i[:-1]]
         sb=''.join(sr)
@@ -774,7 +774,7 @@ def main(argv):
             sys.exit()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
     
-    numberOfVariables = df.shape[1]-2
+    numberOfVariables = df.shape[1]-1
     variableConfigurations= 2**(numberOfVariables)
     
     fillMissingRecordsToDf(df, variableConfigurations)
@@ -847,7 +847,8 @@ def main(argv):
         bestIter =0
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
-         
+        numberOfVariables = df.shape[1]-2
+        variableConfigurations= 2**(numberOfVariables)
 #        if variableConfigurations != df.shape[1]:
             # fill the missing record as zeros
         
