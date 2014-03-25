@@ -247,33 +247,18 @@ def binaryHiddenCountSplit(h, df):
     #  the new counts for will be randomly split
     # A B C Counts H
     # 0 1 1 10     0     
-    # 0 0 1 4      0     
+    # 0 0 1 0      0     
     # 0 1 0 4      0
     # 0 1 1 0      1    
-    # 0 0 1 0      1     
-    # 0 1 0 0      1 
-    
-    Or 
-    #  the new counts for will be randomly split
-    # A B C Counts H
-    # 0 1 1 0      0     
-    # 0 0 1 0      0     
-    # 0 1 0 0      0
-    # 0 1 1 10     1    
     # 0 0 1 4      1     
-    # 0 1 0 4      1
+    # 0 1 0 0      1 
      
     '''
     hiddenName=h.name
     hiddenColumn=Series(np.zeros(df.shape[0]), index=df.index)
     df[hiddenName]=hiddenColumn
     df_temp= df.copy()
-    
-    
-    #df_temp.Counts=np.zeros(df_temp.shape[0]) # rows with hidden value zero is add here
-    #i = rNumber.sample(h.getKvalues().keys(),1)
-    
-    #if i[0] == 1: # rows with hidden value not equal to zero are add here
+
     col=[1]*df_temp.shape[0]  # fastest way to create list ;)
     df_temp[hiddenName]=col
     df.Counts[0:totalUniqueObservations]= df.Counts[0:totalUniqueObservations]-df_temp.Counts
@@ -296,13 +281,6 @@ def binaryHiddenCountSplit(h, df):
                 df.Counts[idx + totalUniqueObservations] = df.Counts[idx]
                 df.Counts[idx] = 0
 
-#    elif i[0] == 0:
-#        col=[1]*df_temp.shape[0]  # generate list containing all 1's
-#        df_temp[hiddenName]=col
-#        df_temp.Counts[0:totalUniqueObservations]= df_temp.Counts[0:totalUniqueObservations]-df.Counts
-#        df= df.append(df_temp, ignore_index=True)
-#    randomCounts= rNumber.sample(df.Counts, (df.shape[0])
-#    df.Counts= df.Counts-randomCounts
     return df  # delete the temporary data frame to save memory
     
 
@@ -468,21 +446,6 @@ def binaryPurterbation(h, firstRIndex):
     else:
         df.Counts[secondRIndex]= df.Counts[firstRIndex]
         df.Counts[firstRIndex]= 0
-
-#    else:
-#        # increment the record by decrementValue
-#        if rIndex < totalUniqueObservations:
-#            decrementedDfIndex  = rIndex  + totalUniqueObservations
-#            dfCopyIndex         = rIndex
-#        else:
-#            decrementedDfIndex  = rIndex - totalUniqueObservations
-#            dfCopyIndex         = rIndex - totalUniqueObservations
-#        
-#        tmp= df.Counts[decrementedDfIndex]
-#        #print "rIndex: %d, decrementedDfIndex: %d, totalUniqueObservations: %d" % (rIndex, decrementedDfIndex, totalUniqueObservations)
-#        if (df.Counts[rIndex] + tmp) <= dfCopy.Counts[dfCopyIndex] and (df.Counts[decrementedDfIndex] - tmp) >= 0:
-#            df.Counts[decrementedDfIndex]   -= tmp
-#            df.Counts[rIndex]               += tmp
 
     
 def countPerturbation( h, rIndex,decrementValue, incrementFlag):
@@ -852,7 +815,9 @@ def main(argv):
         rs.storeSate(stateOutFile)
         numberOfVariables = df.shape[1]-2
         
-        variableConfigurations= 2**(numberOfVariables+1) # plus 1 beacuse of hidden variable
+        variableConfigurations= 2**(numberOfVariables) # plus 1 beacuse of hidden variable
+#        if variableConfigurations != df.shape[1]:
+            # fill the missing record as zeros
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
         with open(outputFile+".bruteforce", 'w') as wf:
