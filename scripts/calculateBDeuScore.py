@@ -862,7 +862,7 @@ def main(argv):
                 #print "i: %d, binary: %s" % (i,strIter)
                 newCounts = [-1]*df.shape[0]
                 k=0
-                for j in xrange( len(strIter)-1, 0, -1):
+                for j in xrange( len(strIter)-1, -1, -1):
                     if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
                         newCounts[k]= 0
                         newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
