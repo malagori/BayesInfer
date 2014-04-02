@@ -843,7 +843,9 @@ def main(argv):
         
         print "Brute Force starts now"
         print dfCopy
+        objCBDeuBestState= copy.deepcopy(allNodeObjects)
         bestIter =0
+        bestDf= df.copy()
         bestScore       = float('-inf')
         rs.storeSate(stateOutFile)
         numberOfVariables = df.shape[1]-2
@@ -852,6 +854,7 @@ def main(argv):
             # fill the missing record as zeros
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
+        
         with open(outputFile+".bruteforce", 'w') as wf:
             for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
             #for i in xrange(0,10):
@@ -893,10 +896,16 @@ def main(argv):
                 if currentScore >= bestScore:
                     bestScore= currentScore
                     bestDf= df.copy()
+                    objCBDeuBestState= copy.deepcopy(allNodeObjects)
                     bestIter= i
                 wf.write( "iteration i= %d, bestScore: %f, currentScore: %f \n" % (i, bestScore, currentScore))
+        bestDf.to_csv(outputFile+'.bestCounts', sep=',', index=False)
         print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
-            
+        bestScore=[]
+        for i in objCBDeuBestState:
+            print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
+            bestScore.append(objCBDeuBestState[i].getLocalBDeu())
+        print "Best Score agian: %f" % (sum(bestScore))
 
     
     elif simAnealFlag == True:
