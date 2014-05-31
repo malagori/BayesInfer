@@ -198,7 +198,7 @@ class MainAlgo(object):
             objCBDeuOldState = objCBDeu
             #j               = sIndex
             firstRowIndex   = sIndex
-            bestDf          = None
+            bestDf          = objCBDeu.df.copy()
             
             with open(outFile+'.'+str(numSim), 'w') as wf:
                 
@@ -275,8 +275,8 @@ class MainAlgo(object):
                     #print "--->iteration  %d " % k                                     # One more evaluation done
                     #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
                     #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob)) 
-                if bestDf != None: 
-                    bestDf.to_csv(self.outputFile+'.bestCounts.'+str(numSim), sep=',', index=False)
+                 
+                bestDf.to_csv(self.outputFile+'.bestCounts.'+str(numSim), sep=',', index=False)
                 #print "Current score (%f) count configurations:" % e
                 #print dfCurrent
                 objCBDeu.df.to_csv(self.outputFile+'.currentCounts.'+str(numSim), sep=',', index=False)
