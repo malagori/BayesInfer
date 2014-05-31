@@ -187,7 +187,7 @@ class MainAlgo(object):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
-        for numSim in xrange(1, self.simRepeats):
+        for numSim in xrange(0, self.simRepeats):
             e               = previousScore                               # Initial state, energy.
             emax            = float('-inf') 
             ebest           = e                                     # Initial "best" solution
