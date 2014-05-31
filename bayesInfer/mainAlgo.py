@@ -481,7 +481,7 @@ class MainAlgo(object):
                         # creating key for cachedBDeuDict dictionary
                         key=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
                         
-                        print "edge: %d ---> %d" % (edge[0], edge[1]) 
+                        print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
                         if edge in edgesDict.keys():
                             if key == edgesDict[edge]: # if true do not add hidden variable 

@@ -119,7 +119,10 @@ class BDeuClass(object):
                 decrementedDfIndex  = firstRowIndex - self.totalUniqueObservations
                 dfCopyIndex         = firstRowIndex - self.totalUniqueObservations
             #print "firstRowIndex: %d, secondRowIndex: %d" % (firstRowIndex, secondRowIndex)
-            #print "(df.Counts[firstRowIndex] + decrementValue): %d <= dfCopy.Counts[dfCopyIndex]: %d and (df.Counts[decrementedDfIndex] - decrementValue) >= 0 %d" % ((df.Counts[firstRowIndex] + decrementValue), dfCopy.Counts[dfCopyIndex], (df.Counts[decrementedDfIndex] - decrementValue))
+            #print "(df.Counts[firstRowIndex] + decrementValue): %d <= dfCopy.Counts[dfCopyIndex]: %d and (df.Counts[decrementedDfIndex] - decrementValue) >= 0 %d" % ((self.df.Counts[firstRowIndex] + decrementValue), self.dfCopy.Counts[dfCopyIndex], (self.df.Counts[decrementedDfIndex] - decrementValue))
+            print "(df.Counts[firstRowIndex] + decrementValue): %d " % ((self.df.Counts[firstRowIndex] + decrementValue))
+            print "<= dfCopy.Counts[dfCopyIndex]: %d " % (self.dfCopy.Counts[dfCopyIndex])
+            print "and (df.Counts[decrementedDfIndex] - decrementValue) >= 0 %d" % (  (self.df.Counts[decrementedDfIndex] - decrementValue))
             if (self.df.Counts[firstRowIndex] + decrementValue) <= self.dfOriginal.Counts[dfCopyIndex] and (self.df.Counts[decrementedDfIndex] - decrementValue) >= 0:
                 self.df.Counts[decrementedDfIndex]   -= decrementValue
                 self.df.Counts[firstRowIndex]        += decrementValue
