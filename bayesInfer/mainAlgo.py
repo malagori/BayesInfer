@@ -18,7 +18,7 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, exHiddenBdeuFlag, pertTowRecFlag, mlabPath  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, exHiddenBdeuFlag, pertTowRecFlag, simRepeats, mlabPath  ):
         '''
         Constructor
         '''
@@ -38,6 +38,7 @@ class MainAlgo(object):
         self.dfOriginal     = pd.DataFrame(index=None, columns=None)
         self.pertTowRecFlag = pertTowRecFlag
         self.exHiddenBdeuFlag= exHiddenBdeuFlag
+        self.simRepeats     = simRepeats
         
     def printDag(self,iterations, allNodesObjects):
         '''
@@ -186,106 +187,111 @@ class MainAlgo(object):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
-        
-        e               = previousScore                               # Initial state, energy.
-        emax            = float('-inf') 
-        ebest           = e                                     # Initial "best" solution
-        k               = 1                                     # Energy evaluation count.
-        kmax            = iterations
-        objCBDeuBestState= objCBDeu
-        objCBDeuOldState = objCBDeu
-        #j               = sIndex
-        firstRowIndex    = sIndex
-        
-        with open(outFile, 'w') as wf:
+        for numSim in xrange(1, self.simRepeats):
+            e               = previousScore                               # Initial state, energy.
+            emax            = float('-inf') 
+            ebest           = e                                     # Initial "best" solution
+            k               = 1                                     # Energy evaluation count.
+            kmax            = iterations
+            objCBDeuBestState= objCBDeu
+            objCBDeuOldState = objCBDeu
+            #j               = sIndex
+            firstRowIndex    = sIndex
             
-            while k < kmax and e > emax:                    # While time left & not good enough
-                T =    self.temperature(k, kmax)              # Temperature calculation.
+            with open(outFile+'.'+str(numSim), 'w') as wf:
                 
-                # randomly choose hidden state zero or one
-                num= rNumber.randint(0,1) 
-                if num == 0:
-                    flag = False
-                else:
-                    flag = True
-                
-                if self.pertTowRecFlag == True:
-                    secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
-                    while(True):
-                        # loop untill first row and second row are different
-                        if secondRowIndex != firstRowIndex:
-                            break
+                while k < kmax and e > emax:                    # While time left & not good enough
+                    T =    self.temperature(k, kmax)              # Temperature calculation.
+                    
+                    # randomly choose hidden state zero or one
+                    num= rNumber.randint(0,1) 
+                    if num == 0:
+                        flag = False
+                    else:
+                        flag = True
+                    
+                    if self.pertTowRecFlag == True:
                         secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+                        while(True):
+                            # loop untill first row and second row are different
+                            if secondRowIndex != firstRowIndex:
+                                break
+                            secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+                        
+                        objCBDeu.twoRowsCountPerturbation( firstRowIndex, secondRowIndex, self.decrementValue, flag)
+                    else:
+                        objCBDeu.binaryPurterbation(hiddenVar, firstRowIndex)
                     
-                    objCBDeu.twoRowsCountPerturbation( firstRowIndex, secondRowIndex, self.decrementValue, flag)
+    #                secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+    #                while(True):
+    #                    # loop untill first row and second row are different
+    #                    if secondRowIndex != firstRowIndex:
+    #                        break
+    #                    secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+    #                
+    #                objCBDeu.twoRowsCountPerturbation( hiddenVar, firstRowIndex, secondRowIndex, decrementValue, flag)
+    #             
+                    
+                    firstRowIndex=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+                    
+                    #objCBDeu.countPerturbation(hiddenVar, j, self.decrementValue, incrementFlag=flag)     
+                    
+                    #j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+                    
+                    nodesBDeuScore= []
+                    # compute the BDeu score again after perturbations
+                    for n in objCBDeu.allNodeObjects:
+                        if n == hiddenVar.getName() and self.exHiddenBdeuFlag == True:
+                            continue
+                        node=objCBDeu.allNodeObjects[n]
+                        if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                            objCBDeu.populateCounts(node)
+                            node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                            objCBDeu.allNodeObjects[n]= node
+                        nodesBDeuScore.append(node.getLocalBDeu())
+    
+                    objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
+                    
+                    enew = objCBDeu.dagBDeuScore                              # Compute its energy.
+                    #NOTE Inverse logic here using  '<' instead of '>' as in org algo
+                    acceptprob= self.probAcceptance(e, enew, T)
+                    rnum= rNumber.random()
+                    if acceptprob < rnum:# reject the current state 
+                        objCBDeu= copy.deepcopy(objCBDeuOldState)          # go back to the old state
+                        wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+                    else:  # accept the new state
+                        objCBDeuOldState= copy.deepcopy(objCBDeu)
+                        e               = enew
+                        wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+                        
+                                                            
+                    if enew > ebest:                              # Is this a new best?
+                        objCBDeuBestState= copy.deepcopy(objCBDeu)
+                        bestDf = objCBDeu.df.copy()
+                        ebest = enew                              # Save 'new neighbour' to 'best found'.
+                    k = k + 1
+                    #print "--->iteration  %d " % k                                     # One more evaluation done
+                    #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
+                    #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))  
+                bestDf.to_csv(self.outputFile+'.bestCounts.'+str(numSim), sep=',', index=False)
+                #print "Current score (%f) count configurations:" % e
+                #print dfCurrent
+                objCBDeu.df.to_csv(self.outputFile+'.currentCounts.'+str(numSim), sep=',', index=False)
+                if self.exHiddenBdeuFlag == True:
+                    print "Best BDeu Score without penalty: %f" % ( ebest)
                 else:
-                    objCBDeu.binaryPurterbation(hiddenVar, firstRowIndex)
-                
-#                secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
-#                while(True):
-#                    # loop untill first row and second row are different
-#                    if secondRowIndex != firstRowIndex:
-#                        break
-#                    secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
-#                
-#                objCBDeu.twoRowsCountPerturbation( hiddenVar, firstRowIndex, secondRowIndex, decrementValue, flag)
-#             
-                
-                firstRowIndex=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
-                
-                #objCBDeu.countPerturbation(hiddenVar, j, self.decrementValue, incrementFlag=flag)     
-                
-                #j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
-                
-                nodesBDeuScore= []
-                # compute the BDeu score again after perturbations
-                for n in objCBDeu.allNodeObjects:
-                    if n == hiddenVar.getName() and self.exHiddenBdeuFlag == True:
-                        continue
-                    node=objCBDeu.allNodeObjects[n]
-                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                        objCBDeu.populateCounts(node)
-                        node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
-                        objCBDeu.allNodeObjects[n]= node
-                    nodesBDeuScore.append(node.getLocalBDeu())
-
-                objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
-                
-                enew = objCBDeu.dagBDeuScore                              # Compute its energy.
-                #NOTE Inverse logic here using  '<' instead of '>' as in org algo
-                acceptprob= self.probAcceptance(e, enew, T)
-                rnum= rNumber.random()
-                if acceptprob < rnum:# reject the current state 
-                    objCBDeu= copy.deepcopy(objCBDeuOldState)          # go back to the old state
-                    wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
-                else:  # accept the new state
-                    objCBDeuOldState= copy.deepcopy(objCBDeu)
-                    e               = enew
-                    wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
-                    
-                                                        
-                if enew > ebest:                              # Is this a new best?
-                    objCBDeuBestState= copy.deepcopy(objCBDeu)
-                    bestDf = objCBDeu.df.copy()
-                    ebest = enew                              # Save 'new neighbour' to 'best found'.
-                k = k + 1
-                #print "--->iteration  %d " % k                                     # One more evaluation done
-                #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-                #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))  
-            bestDf.to_csv(self.outputFile+'.bestCounts', sep=',', index=False)
-            #print "Current score (%f) count configurations:" % e
-            #print dfCurrent
-            objCBDeu.df.to_csv(self.outputFile+'.currentCounts', sep=',', index=False)
-            if self.exHiddenBdeuFlag == True:
-                print "Best BDeu Score without penalty: %f" % ( ebest)
-            else:
-                print "Best BDeu Score: %f" % ( ebest)
-            bestScore=[]
-            for i in objCBDeuBestState.allNodeObjects:
-                print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
-                bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
-            print "Best Score agian: %f" % (sum(bestScore))
-            print "Simulated Anealing Done.."
+                    print "Best BDeu Score: %f" % ( ebest)
+                bestScore=[]
+                for i in objCBDeuBestState.allNodeObjects:
+                    print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
+                    bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
+                print "Best Score agian: %f" % (sum(bestScore))
+                print "Simulated Anealing number: %d Done.." % (numSim)
+            
+            previousScore   = objCBDeuBestState.dagBDeuScore
+            objCBDeu        = objCBDeuBestState
+            
+            
         return objCBDeuBestState                           # Return the best solution found.
 
     def fillMissingRecordsToDf(self, df, variableConfigurations):

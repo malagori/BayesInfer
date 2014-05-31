@@ -13,9 +13,9 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, mlabPath ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, mlabPath)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath)
     objMainAlgo.runAlgo()
 
 
@@ -48,7 +48,8 @@ def main(argv):
     parser.add_argument('-a', metavar='alpha',type=float , help='Specify alpha parameter ', default=1.0)
     parser.add_argument('-sa', dest='SteepestAsent',action="store_true", help='Steepest Asent is used if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated Annealing is used if set to True ')
-    parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
+    parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100)
+    parser.add_argument('-r', metavar='simRepeat',type=int , help='Specify number of time simulated process is repeated', default=10)
     parser.add_argument('-dc', metavar='decrementValue',type=int , help='Specify the decrement value ', default=1)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
     parser.add_argument('-l', metavar='loadSeed',type=str , help='Specify path to a file containing previous state', default=None)
@@ -73,13 +74,14 @@ def main(argv):
     decrementValue  = args.dc
     pertTowRecFlag  = args.perturbTwoRecods
     exHiddenBdeuFlag= args.excludeHidBDeu
-
+    simRepeats      = args.simRepeat
     
     
     print "vdfile:             %s"  % vdFile
     print "Directory:          %s"  % outdir
     print "dataFile:           %s"  % dataFile
     print "alpha:              %f"  % alpha 
+    print "simRepeats:         %d"  % simRepeats
     if pertTowRecFlag == True:
         print "pertTowRecFlag %s" % (pertTowRecFlag)
     if exHiddenBdeuFlag == True:
@@ -100,7 +102,7 @@ def main(argv):
         sys.exit()
     
     if mlabPath != None:
-        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, pertTowRecFlag, mlabPath)
+        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath)
     else:
         print "Error: Path to matlab_lib folder is not set"
         sys.exit()
