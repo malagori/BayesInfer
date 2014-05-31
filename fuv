@@ -13,9 +13,9 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, mlabPath ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, mlabPath)
     objMainAlgo.runAlgo()
 
 
@@ -54,6 +54,10 @@ def main(argv):
     parser.add_argument('-l', metavar='loadSeed',type=str , help='Specify path to a file containing previous state', default=None)
     parser.add_argument('-o', metavar='outFile', type=str, help='Specify the file to output the results. ', default= 'fuv_results.txt')
     parser.add_argument('-od', metavar='outDir', type=str, help='Specify Path to the directory to write the results. ', default= 'fuv_dir_results')
+    parser.add_argument('-p', dest='perturbTwoRecods',action="store_true", help='Uses two-record- perturbation function if set to True')
+    parser.add_argument('-hx', dest='excludeHidBDeu',action="store_true", help='BDeu score for hidden variable will be excluded from total bnt score if set to True ')
+    
+    
     args = parser.parse_args()
     
     vdFile          = args.vd
@@ -67,6 +71,8 @@ def main(argv):
     iterations      = args.i
     simAnealFlag    = args.SimAnnealing
     decrementValue  = args.dc
+    pertTowRecFlag  = args.perturbTwoRecods
+    exHiddenBdeuFlag= args.excludeHidBDeu
 
     
     
@@ -74,6 +80,10 @@ def main(argv):
     print "Directory:          %s"  % outdir
     print "dataFile:           %s"  % dataFile
     print "alpha:              %f"  % alpha 
+    if pertTowRecFlag == True:
+        print "pertTowRecFlag %s" % (pertTowRecFlag)
+    if exHiddenBdeuFlag == True:
+        print "exHiddenBdeuFlag %s" % (exHiddenBdeuFlag)
     if seed != None:
         print "seed:                %d" % seed
     print "outPutFile:                %s" % outPutFile
@@ -90,7 +100,7 @@ def main(argv):
         sys.exit()
     
     if mlabPath != None:
-        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, mlabPath)
+        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, pertTowRecFlag, mlabPath)
     else:
         print "Error: Path to matlab_lib folder is not set"
         sys.exit()

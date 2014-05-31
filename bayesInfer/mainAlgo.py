@@ -4,6 +4,7 @@ import time
 import random as rNumber
 import pandas as pd
 import cProfile
+import copy
 
 from math import exp
 from storeRetriveSeed import RandomSeed
@@ -17,7 +18,7 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, mlabPath  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, exHiddenBdeuFlag, pertTowRecFlag, mlabPath  ):
         '''
         Constructor
         '''
@@ -35,6 +36,8 @@ class MainAlgo(object):
         self.decrementValue = decrementValue
         self.df             = pd.DataFrame(index=None, columns=None)
         self.dfOriginal     = pd.DataFrame(index=None, columns=None)
+        self.pertTowRecFlag = pertTowRecFlag
+        self.exHiddenBdeuFlag= exHiddenBdeuFlag
         
     def printDag(self,iterations, allNodesObjects):
         '''
@@ -127,7 +130,7 @@ class MainAlgo(object):
         objCBDeuCopy        = objCBDeu
         currentBDeuScore    = float("-inf")
         maxObjCBDeu         = objCBDeu
-        
+        print "I am in removeEdgefromBnt() function"
         for edge in edges:
             
             childNode= Node()
@@ -191,7 +194,8 @@ class MainAlgo(object):
         kmax            = iterations
         objCBDeuBestState= objCBDeu
         objCBDeuOldState = objCBDeu
-        j               = sIndex
+        #j               = sIndex
+        firstRowIndex    = sIndex
         
         with open(outFile, 'w') as wf:
             
@@ -204,51 +208,107 @@ class MainAlgo(object):
                     flag = False
                 else:
                     flag = True
-
-                objCBDeu.countPerturbation(hiddenVar, j, self.decrementValue, incrementFlag=flag)     
                 
-                j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+                if self.pertTowRecFlag == True:
+                    secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+                    while(True):
+                        # loop untill first row and second row are different
+                        if secondRowIndex != firstRowIndex:
+                            break
+                        secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+                    
+                    objCBDeu.twoRowsCountPerturbation( firstRowIndex, secondRowIndex, self.decrementValue, flag)
+                else:
+                    objCBDeu.binaryPurterbation(hiddenVar, firstRowIndex)
+                
+#                secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+#                while(True):
+#                    # loop untill first row and second row are different
+#                    if secondRowIndex != firstRowIndex:
+#                        break
+#                    secondRowIndex = rNumber.randint(0, objCBDeu.df.shape[0]-1)
+#                
+#                objCBDeu.twoRowsCountPerturbation( hiddenVar, firstRowIndex, secondRowIndex, decrementValue, flag)
+#             
+                
+                firstRowIndex=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
+                
+                #objCBDeu.countPerturbation(hiddenVar, j, self.decrementValue, incrementFlag=flag)     
+                
+                #j=rNumber.randint(0, objCBDeu.df.shape[0]-1) # randomly select another record for next iteration
                 
                 nodesBDeuScore= []
                 # compute the BDeu score again after perturbations
                 for n in objCBDeu.allNodeObjects:
+                    if n == hiddenVar.getName() and self.exHiddenBdeuFlag == True:
+                        continue
                     node=objCBDeu.allNodeObjects[n]
                     if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
                         objCBDeu.populateCounts(node)
                         node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
                         objCBDeu.allNodeObjects[n]= node
                     nodesBDeuScore.append(node.getLocalBDeu())
-#                for n in objCBDeu.allNodeObjects:               # populate the counts for each node
-#                    tempNode    = Node()
-#                    tempNode    = objCBDeu.allNodeObjects[n]
-#                    objCBDeu.getUpdatedQi(tempNode)
-#                    objCBDeu.populateCounts(tempNode)
-#                
-#                for n in objCBDeu.allNodeObjects:
-#                    tempNode    = Node()
-#                    tempNode    = objCBDeu.allNodeObjects[n]
-#                    tempScore   = objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha)
-#                    nodesBDeuScore.append(tempScore)
+
                 objCBDeu.dagBDeuScore= sum(nodesBDeuScore)
                 
                 enew = objCBDeu.dagBDeuScore                              # Compute its energy.
                 #NOTE Inverse logic here using  '<' instead of '>' as in org algo
                 acceptprob= self.probAcceptance(e, enew, T)
-                if acceptprob < rNumber.random():# reject the current state 
-                    objCBDeu= objCBDeuOldState          # go back to the old state
+                rnum= rNumber.random()
+                if acceptprob < rnum:# reject the current state 
+                    objCBDeu= copy.deepcopy(objCBDeuOldState)          # go back to the old state
+                    wf.write("Rejected: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
                 else:  # accept the new state
-                    objCBDeuOldState= objCBDeu
+                    objCBDeuOldState= copy.deepcopy(objCBDeu)
                     e               = enew
+                    wf.write("Accepted: Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f, coin: %d , temp: %f, prob: %f rNumber: %f\n" % (ebest, e, enew, num, T, acceptprob, rnum))
+                    
                                                         
                 if enew > ebest:                              # Is this a new best?
-                    objCBDeuBestState= objCBDeu
+                    objCBDeuBestState= copy.deepcopy(objCBDeu)
+                    bestDf = objCBDeu.df.copy()
                     ebest = enew                              # Save 'new neighbour' to 'best found'.
                 k = k + 1
                 #print "--->iteration  %d " % k                                     # One more evaluation done
                 #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
-                wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))  
+                #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob))  
+            bestDf.to_csv(self.outputFile+'.bestCounts', sep=',', index=False)
+            #print "Current score (%f) count configurations:" % e
+            #print dfCurrent
+            objCBDeu.df.to_csv(self.outputFile+'.currentCounts', sep=',', index=False)
+            if self.exHiddenBdeuFlag == True:
+                print "Best BDeu Score without penalty: %f" % ( ebest)
+            else:
+                print "Best BDeu Score: %f" % ( ebest)
+            bestScore=[]
+            for i in objCBDeuBestState.allNodeObjects:
+                print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
+                bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
+            print "Best Score agian: %f" % (sum(bestScore))
+            print "Simulated Anealing Done.."
         return objCBDeuBestState                           # Return the best solution found.
 
+    def fillMissingRecordsToDf(self, df, variableConfigurations):
+        '''
+        This function will add the missing records with count equal to zero
+        '''    
+        dfList=list(df.values.tolist())
+        newCounts= [0]*variableConfigurations
+        for i in dfList:
+            sr=[str(j) for j in i[:-1]]
+            sb=''.join(sr)
+            integeray= int(''.join(sb), 2)
+            newCounts[integeray]= i[-1]
+        int2binary= '{0:0'+str(df.shape[1]-1)+'b}'
+        records=[]
+        for i in xrange(0,variableConfigurations):
+            row=[int(j) for j in int2binary.format(i)]
+            row.append(newCounts[i])
+            records.append(row)
+        newDf= pd.DataFrame(records)
+        newDf.columns= list(df.columns.values)
+        
+        return newDf
     
     def runAlgo(self):
         '''
@@ -273,14 +333,17 @@ class MainAlgo(object):
         # read vdFile
         variableNames, cardinality= readVdFile(self.vdFile)
 
-
+        numberOfVariables=len(variableNames)
         # read data file
         self.df=convertBeneDataFile(self.dataFile, len(variableNames))
+        variableConfigurations= 2**(numberOfVariables)
+        self.df=self.fillMissingRecordsToDf(self.df, variableConfigurations)
         self.dfOriginal = self.df.copy()
+        
         # create object of EquivalenceClass
         objEC= EquivalenceClass(self.mlabPath)
         # get the opt bnt from bene
-        optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, len(variableNames), cardinality)
+        optDag, allNodesObj= objEC.getOptDag(self.vdFile, self.dataFile, self.alpha, self.outdir, numberOfVariables, cardinality)
         
         #print "optDag inside class MainAlgo and function runAlgo()"
         #print optDag
@@ -350,7 +413,7 @@ class MainAlgo(object):
                 for id, dag in dagsDict.iteritems():
                     
                     nodesBDeuScore=[]
-                    allNodeObjects=allDagsNetworkDict[id]
+                    allNodeObjects=copy.deepcopy(allDagsNetworkDict[id])
                     tdf= self.df.copy()
                     print tdf
                     # instantiate CalculateBDeuClass's object 
@@ -417,7 +480,7 @@ class MainAlgo(object):
                                     print "bdeu diff score is not greater then current BDeuScore "
                         else:
                             # copy allnodes
-                            tmpAllNodesObj      = objCBDeu.allNodeObjects
+                            tmpAllNodesObj      = copy.deepcopy(objCBDeu.allNodeObjects)
                             tmpDF               = objCBDeu.df.copy()
                             tmpDagBDeuScore     = objCBDeu.dagBDeuScore
                             
@@ -427,13 +490,18 @@ class MainAlgo(object):
                             # split the dataframe counts
                             #print "data frame before adding hidden variable"
                             #print objCBDeu.df
-                            objCBDeu.percentageHiddenCoutsSplit(h)
+                            #objCBDeu.percentageHiddenCoutsSplit(h)
+                            objCBDeu.binaryHiddenCountSplit(h)
                             #print "data frame after adding hidden variable"
                             #print objCBDeu.df
+                            
+                            objCBDeu.df.to_csv(self.outputFile+'.initialHiddenCount', sep=',', index=False)
                             
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
                             #newDF.to_csv(outName+'.csv', sep=',')
+                            
+                            objCBDeu.populateCounts(h)
                             
                             # populate hidden value counts
                             hiddenBDeuScore=[]
@@ -450,6 +518,7 @@ class MainAlgo(object):
                     
                             initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
                             
+                            print "Initial BDeu Score with Hidden variable: %f" % ( initialBDeuScoreAfterAddingHidden)
                             
                             if self.steepestAsent == True:
                                 print "Steepest Asent Algorithm started ...." 
@@ -500,9 +569,9 @@ class MainAlgo(object):
                                 
                                 
                             else: # adding hidden variable didn't improve score, so go back to old state                              
-                                objCBDeu.allNodeObjects= tmpAllNodesObj
-                                objCBDeu.df= tmpDF.copy()
-                                objCBDeu.dagBDeuScore=tmpDagBDeuScore
+                                objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
+                                objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
+                                objCBDeu.setDagBDeuScore(tmpDagBDeuScore)
                                 print "BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
@@ -512,7 +581,7 @@ class MainAlgo(object):
                 for obj in arrayListBDeuClassObjs:
                     if currentMaxBDeu < obj.dagBDeuScore:
                         currentMaxBDeu                 = obj.dagBDeuScore
-                        currentMaxAllNodesObjects      = obj.allNodeObjects
+                        currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
                         currentMaxDF                   = obj.df.copy()
                         currentMaxVariables            = obj.variableNames
                 
