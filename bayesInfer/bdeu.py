@@ -358,10 +358,9 @@ class BDeuClass(object):
         hiddenColumn=Series(np.zeros(self.df.shape[0]), index=self.df.index)
         self.df[hiddenName]=hiddenColumn
         df_temp= self.df.copy()
-    
         col=[1]*df_temp.shape[0]  # fastest way to create list ;)
         df_temp[hiddenName]=col
-        self.df.Counts[0:totalUniqueObservations]= self.df.Counts[0:totalUniqueObservations]-df_temp.Counts
+        self.df.Counts[0:self.totalUniqueObservations]= self.df.Counts[0:self.totalUniqueObservations]-df_temp.Counts
         self.df= self.df.append(df_temp, ignore_index=True)
         
         for i in xrange(2*self.df.shape[0], 0, -1):
@@ -380,7 +379,7 @@ class BDeuClass(object):
                 else:
                     self.df.Counts[idx + self.totalUniqueObservations] = self.df.Counts[idx]
                     self.df.Counts[idx] = 0
-
+    
     
     def addHiddenNodeToDf(self, h):
         # old dataframe was:
