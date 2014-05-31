@@ -296,12 +296,12 @@ class MainAlgo(object):
             if previousScore < objCBDeuBestState.dagBDeuScore:
                 previousScore   = objCBDeuBestState.dagBDeuScore
                 objCBDeu        = copy.deepcopy(objCBDeuBestState)
-                bestOfAllObjCBDeu[previousScore]=objCBDeuBestState
+                bestOfAllObjCBDeu[previousScore]=copy.deepcopy(objCBDeuBestState)
         bestScore=float('-inf')
         for score, obj in bestOfAllObjCBDeu.iteritems():
             print "bestScore %f score %f" % (bestScore, score)
             if bestScore < score:
-                objCBDeuBestState= obj
+                objCBDeuBestState=copy.deepcopy(obj)
                 print "obj.dagBDeuScore %f" % (obj.dagBDeuScore)
                 bestScore= obj.dagBDeuScore
         print "best score among the list: %f" % (bestScore)
