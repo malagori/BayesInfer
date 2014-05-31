@@ -278,10 +278,10 @@ class MainAlgo(object):
                     #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
                     #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob)) 
                  
-                bestDf.to_csv(outFile[-4]+'.bestCounts.'+str(numSim), sep=',', index=False)
+                bestDf.to_csv(outFile[:-4]+'.bestCounts.'+str(numSim), sep=',', index=False)
                 #print "Current score (%f) count configurations:" % e
                 #print dfCurrent
-                objCBDeu.df.to_csv(outFile[-4]+'.currentCounts.'+str(numSim), sep=',', index=False)
+                objCBDeu.df.to_csv(outFile[:-4]+'.currentCounts.'+str(numSim), sep=',', index=False)
                 if self.exHiddenBdeuFlag == True:
                     print "Best BDeu Score without penalty: %f" % ( ebest)
                 else:
