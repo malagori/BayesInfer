@@ -539,7 +539,7 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
                                 output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
-                                if initialBDeuScoreAfterAddingHidden < totalCurrentBDeuScore:
+                                if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
                                     totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 else:
                                     totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
@@ -551,7 +551,7 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
                                 output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
-                                if initialBDeuScoreAfterAddingHidden < totalCurrentBDeuScore:
+                                if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
                                     totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 else:
                                     totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
