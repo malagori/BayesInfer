@@ -294,14 +294,14 @@ class MainAlgo(object):
             if previousScore < objCBDeuBestState.dagBDeuScore:
                 previousScore   = objCBDeuBestState.dagBDeuScore
                 objCBDeu        = copy.deepcopy(objCBDeuBestState)
-                bestOfAllObjCBDeu.append(objCBDeuBestState)
+            bestOfAllObjCBDeu.append(objCBDeuBestState)
         
         bestScore=float('-inf')
         for obj in bestOfAllObjCBDeu:
             if bestScore < obj.dagBDeuScore:
                 objCBDeuBestState= obj
-                print "best score among the list: %f" % (obj.dagBDeuScore)
                 bestScore= obj.dagBDeuScore
+        print "best score among the list: %f" % (bestScore)
         return objCBDeuBestState                           # Return the best solution found.
 
     def fillMissingRecordsToDf(self, df, variableConfigurations):
