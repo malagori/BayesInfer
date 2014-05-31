@@ -290,7 +290,7 @@ class MainAlgo(object):
                 for i in objCBDeuBestState.allNodeObjects:
                     print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                     bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
-                print "Best Score with hidden agian: %f" % (sum(bestScore))
+                print "Current Best Score with hidden: %f" % (sum(bestScore))
                 print "Finish Simulated Anealing number: %d .." % (numSim)
             
             if previousScore < objCBDeuBestState.dagBDeuScore:
@@ -299,10 +299,8 @@ class MainAlgo(object):
                 bestOfAllObjCBDeu[previousScore]=copy.deepcopy(objCBDeuBestState)
         bestScore=float('-inf')
         for score, obj in bestOfAllObjCBDeu.iteritems():
-            print "bestScore %f score %f" % (bestScore, score)
             if bestScore < score:
                 objCBDeuBestState=copy.deepcopy(obj)
-                print "obj.dagBDeuScore %f" % (obj.dagBDeuScore)
                 bestScore= obj.dagBDeuScore
         print "best score among the list: %f" % (bestScore)
         return objCBDeuBestState                           # Return the best solution found.

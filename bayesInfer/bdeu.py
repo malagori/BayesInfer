@@ -29,7 +29,7 @@ class BDeuClass(object):
     def setTotalUniqueObservations(self,totalUniqueObservations):
         self.totalUniqueObservations= totalUniqueObservations
     def setAllNodeObjects(self, allNodeObjects):
-        self.allNodeObjects= allNodeObjects
+        self.allNodeObjects= copy.deepcopy(allNodeObjects)
     def setDagBDeuScore(self, BDeuScore):
         self.dagBDeuScore= BDeuScore 
     def setDF(self,df):
