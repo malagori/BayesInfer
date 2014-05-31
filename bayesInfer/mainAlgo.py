@@ -586,6 +586,7 @@ class MainAlgo(object):
                                 # remove edges and see if we get increase in bdeu score
                                 objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
                                 objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
+                                objCBDeu.setOriginalDF(objCBDeu.df)
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
                                 objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
