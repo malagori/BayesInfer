@@ -188,7 +188,7 @@ class MainAlgo(object):
             This function implements the simulated Anealing algorithm (wiki) 
         """
         bestOfAllObjCBDeu={}
-        bestOfAllObjCBDeu[previousScore]= objCBDeu
+        bestOfAllObjCBDeu[str(previousScore)]= copy.deepcopy(objCBDeu)
         for numSim in xrange(0, self.simRepeats):
             print "Started Simulated Anealing number: %d ..." % (numSim)
             e               = previousScore                               # Initial state, energy.
@@ -296,10 +296,10 @@ class MainAlgo(object):
             if previousScore < objCBDeuBestState.dagBDeuScore:
                 previousScore   = objCBDeuBestState.dagBDeuScore
                 objCBDeu        = copy.deepcopy(objCBDeuBestState)
-                bestOfAllObjCBDeu[previousScore]=copy.deepcopy(objCBDeuBestState)
+                bestOfAllObjCBDeu[str(previousScore)]=copy.deepcopy(objCBDeuBestState)
         bestScore=float('-inf')
         for score, obj in bestOfAllObjCBDeu.iteritems():
-            if bestScore < score:
+            if bestScore < float(score):
                 objCBDeuBestState=copy.deepcopy(obj)
                 bestScore= obj.dagBDeuScore
         print "best score among the list: %f" % (bestScore)
