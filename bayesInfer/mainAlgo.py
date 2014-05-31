@@ -278,10 +278,10 @@ class MainAlgo(object):
                     #print "Best bdeuscore: %f and Current bdeuscore %f :" % (ebest, enew)
                     #wf.write("Best bdeuscore: %f, Current bdeuscore: %f, proposal bdeuscore: %f  , temp: %f, prob: %f\n" % (ebest, e, enew,T, acceptprob)) 
                  
-                bestDf.to_csv(self.outputFile+'.bestCounts.'+str(numSim), sep=',', index=False)
+                bestDf.to_csv(outFile[-4]+'.bestCounts.'+str(numSim), sep=',', index=False)
                 #print "Current score (%f) count configurations:" % e
                 #print dfCurrent
-                objCBDeu.df.to_csv(self.outputFile+'.currentCounts.'+str(numSim), sep=',', index=False)
+                objCBDeu.df.to_csv(outFile[-4]+'.currentCounts.'+str(numSim), sep=',', index=False)
                 if self.exHiddenBdeuFlag == True:
                     print "Best BDeu Score without penalty: %f" % ( ebest)
                 else:
@@ -514,7 +514,7 @@ class MainAlgo(object):
                             print "data frame after adding hidden variable"
                             print objCBDeu.df
                             
-                            objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount.'+str(self.simRepeats), sep=',', index=False)
+                            objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount', sep=',', index=False)
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
                             #newDF.to_csv(outName+'.csv', sep=',')
