@@ -290,13 +290,14 @@ class MainAlgo(object):
                 print "Simulated Anealing number: %d Done.." % (numSim)
             
             previousScore   = objCBDeuBestState.dagBDeuScore
-            objCBDeu        = objCBDeuBestState
+            objCBDeu        = copy.deepcopy(objCBDeuBestState)
             bestOfAllObjCBDeu.append(objCBDeuBestState)
         
         bestScore=float('-inf')
         for obj in bestOfAllObjCBDeu:
             if bestScore < obj.dagBDeuScore:
                 objCBDeuBestState= obj
+                print "best score among the list: %f" % (obj.dagBDeuScore)
                 bestScore= obj.dagBDeuScore
         return objCBDeuBestState                           # Return the best solution found.
 
