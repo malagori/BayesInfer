@@ -613,7 +613,7 @@ class MainAlgo(object):
                     # update optdag 
                     # update cardinality 
                     #print optdag
-                    optDag, cardinality = self.printDag(currentMaxAllNodesObjects)
+                    optDag, cardinality = self.printDag(algoIteratios, currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
                     print "Iteration: %d , BDeu Score: %f" % (algoIteratios, currentMaxBDeu)
                     hValues= h.getKvalues().keys()
