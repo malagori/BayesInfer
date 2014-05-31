@@ -190,6 +190,7 @@ class MainAlgo(object):
         bestOfAllObjCBDeu={}
         bestOfAllObjCBDeu[previousScore]= objCBDeu
         for numSim in xrange(0, self.simRepeats):
+            print "Started Simulated Anealing number: %d ..." % (numSim)
             e               = previousScore                               # Initial state, energy.
             emax            = float('-inf') 
             ebest           = e                                     # Initial "best" solution
@@ -290,16 +291,18 @@ class MainAlgo(object):
                     print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                     bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                 print "Best Score with hidden agian: %f" % (sum(bestScore))
-                print "Simulated Anealing number: %d Done.." % (numSim)
+                print "Finish Simulated Anealing number: %d .." % (numSim)
             
             if previousScore < objCBDeuBestState.dagBDeuScore:
                 previousScore   = objCBDeuBestState.dagBDeuScore
                 objCBDeu        = copy.deepcopy(objCBDeuBestState)
-            bestOfAllObjCBDeu[previousScore]=objCBDeuBestState
+                bestOfAllObjCBDeu[previousScore]=objCBDeuBestState
         bestScore=float('-inf')
         for score, obj in bestOfAllObjCBDeu.iteritems():
+            print "bestScore %f score %f" % (bestScore, score)
             if bestScore < score:
                 objCBDeuBestState= obj
+                print "obj.dagBDeuScore %f" % (obj.dagBDeuScore)
                 bestScore= obj.dagBDeuScore
         print "best score among the list: %f" % (bestScore)
         return objCBDeuBestState                           # Return the best solution found.
@@ -536,7 +539,10 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
                                 output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
                                 objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
-                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                if initialBDeuScoreAfterAddingHidden < totalCurrentBDeuScore:
+                                    totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                else:
+                                    totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Steepest Asent Algorithm finished ...." 
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
@@ -545,7 +551,10 @@ class MainAlgo(object):
                                 sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
                                 output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
                                 objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
-                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                if initialBDeuScoreAfterAddingHidden < totalCurrentBDeuScore:
+                                    totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                                else:
+                                    totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Simulated Annealing Algorithm finished ...." 
                             if initialBDeuScore < totalCurrentBDeuScore:
