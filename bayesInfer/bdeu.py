@@ -334,7 +334,7 @@ class BDeuClass(object):
                 self.df= self.df.append(df_temp, ignore_index=True)
         #return self.df  # delete the temporary data frame to save memory
     
-    def binaryHiddenCountSplit(h):
+    def binaryHiddenCountSplit(self, h):
         '''
         This funciton will split the counts of dataframe in a binary fashion when we introduce hidden variable
         # old dataframe was:

@@ -73,7 +73,7 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     decrementValue  = args.dc
     pertTowRecFlag  = args.perturbTwoRecods
-    exHiddenBdeuFlag= args.hx
+    exHiddenBdeuFlag= args.excludeHidBDeu
     simRepeats      = args.r
     
     
