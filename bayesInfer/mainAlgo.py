@@ -291,9 +291,10 @@ class MainAlgo(object):
                 print "Best Score with hidden agian: %f" % (sum(bestScore))
                 print "Simulated Anealing number: %d Done.." % (numSim)
             
-            previousScore   = objCBDeuBestState.dagBDeuScore
-            objCBDeu        = copy.deepcopy(objCBDeuBestState)
-            bestOfAllObjCBDeu.append(objCBDeuBestState)
+            if previousScore < objCBDeuBestState.dagBDeuScore:
+                previousScore   = objCBDeuBestState.dagBDeuScore
+                objCBDeu        = copy.deepcopy(objCBDeuBestState)
+                bestOfAllObjCBDeu.append(objCBDeuBestState)
         
         bestScore=float('-inf')
         for obj in bestOfAllObjCBDeu:
