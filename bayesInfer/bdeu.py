@@ -26,6 +26,8 @@ class BDeuClass(object):
         self.dagBDeuScore               = float("-inf")
         self.variableNames              = variableNames
         
+    def setTotalUniqueObservations(self,totalUniqueObservations):
+        self.totalUniqueObservations= totalUniqueObservations
     def setAllNodeObjects(self, allNodeObjects):
         self.allNodeObjects= allNodeObjects
     def setDagBDeuScore(self, BDeuScore):

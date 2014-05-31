@@ -285,7 +285,7 @@ class MainAlgo(object):
                 for i in objCBDeuBestState.allNodeObjects:
                     print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                     bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
-                print "Best Score agian: %f" % (sum(bestScore))
+                print "Best Score with hidden agian: %f" % (sum(bestScore))
                 print "Simulated Anealing number: %d Done.." % (numSim)
             
             previousScore   = objCBDeuBestState.dagBDeuScore
@@ -468,8 +468,6 @@ class MainAlgo(object):
                         
                         print "edge: %d ---> %d" % (edge[0], edge[1]) 
                         
-                        
-
                         if edge in edgesDict.keys():
                             if key == edgesDict[edge]: # if true do not add hidden variable 
                                 # get the score from the cachedBDeu score for this edge after being h is added to the network
@@ -494,21 +492,18 @@ class MainAlgo(object):
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
                             # split the dataframe counts
-                            #print "data frame before adding hidden variable"
-                            #print objCBDeu.df
+                            print "data frame before adding hidden variable"
+                            print objCBDeu.df
                             #objCBDeu.percentageHiddenCoutsSplit(h)
                             objCBDeu.binaryHiddenCountSplit(h)
-                            #print "data frame after adding hidden variable"
-                            #print objCBDeu.df
+                            print "data frame after adding hidden variable"
+                            print objCBDeu.df
                             
-                            objCBDeu.df.to_csv(self.outputFile+'.initialHiddenCount', sep=',', index=False)
-                            
+                            objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount.'+str(self.simRepeats), sep=',', index=False)
                             # write df to file called initialCountSplit.txt
                             #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
                             #newDF.to_csv(outName+'.csv', sep=',')
-                            
                             objCBDeu.populateCounts(h)
-                            
                             # populate hidden value counts
                             hiddenBDeuScore=[]
                             for n in objCBDeu.allNodeObjects:
@@ -521,7 +516,7 @@ class MainAlgo(object):
                             
                             ##for n in objCBDeu.allNodeObjects:
                             ##    hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
-                    
+                            
                             initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
                             
                             print "Initial BDeu Score with Hidden variable: %f" % ( initialBDeuScoreAfterAddingHidden)
@@ -546,34 +541,27 @@ class MainAlgo(object):
                             if initialBDeuScore < totalCurrentBDeuScore:
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[edge]=h
-                                
                                 hiddenCount+=1 # count the number of hidden variable added
                                 print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
                                 print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[edge]= key
-                                
                                 # update the variable names after adding hidden variable
                                 objCBDeu.setVariableNames(h.getName())
-                                
 #                                # update the edges list after adding hidden variable
 #                                hChildren= h.getChildren()
 #                                
 #                                # update edges by adding edges of hidden variable to its children
 #                                edges.append((h.getName(), hChildren[0]))
 #                                edges.append((h.getName(), hChildren[1]))
-                                
                                 # generate new name for hidden variable
                                 HIDDEN_NAME += 1
-                                objCBDeu.dagBDeuScore= totalCurrentBDeuScore
+                                #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                                 initialBDeuScore = totalCurrentBDeuScore
-                                
                                 # remove edges and see if we get increase in bdeu score
-                                
                                 objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
-                                
-                                
+                                objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
                                 objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
@@ -590,7 +578,6 @@ class MainAlgo(object):
                         currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
                         currentMaxDF                   = obj.df.copy()
                         currentMaxVariables            = obj.variableNames
-                
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
@@ -598,7 +585,6 @@ class MainAlgo(object):
                     self.df = currentMaxDF.copy()
                     # update variable set if hidden is added
                     variableNames= currentMaxVariables
-                    
                     # update optdag 
                     # update cardinality 
                     #print optdag
