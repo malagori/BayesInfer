@@ -46,7 +46,7 @@ class MainAlgo(object):
         '''
         optDag=[]
         cardinality=[]
-        with open(str("bestDag_"+iterations), 'w') as wdag:
+        with open(str("bestDag_"+str(iterations)), 'w') as wdag:
             for key, node in allNodesObjects.iteritems():
                 cardinality.append(node.getR())
                 p=[0]*len(allNodesObjects)
