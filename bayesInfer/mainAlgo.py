@@ -187,6 +187,7 @@ class MainAlgo(object):
         """
             This function implements the simulated Anealing algorithm (wiki) 
         """
+        bestOfAllObjCBDeu=[]
         for numSim in xrange(0, self.simRepeats):
             e               = previousScore                               # Initial state, energy.
             emax            = float('-inf') 
@@ -290,8 +291,13 @@ class MainAlgo(object):
             
             previousScore   = objCBDeuBestState.dagBDeuScore
             objCBDeu        = objCBDeuBestState
-            
-            
+            bestOfAllObjCBDeu.append(objCBDeuBestState)
+        
+        bestScore=float('-inf')
+        for obj in bestOfAllObjCBDeu:
+            if bestScore < obj.dagBDeuScore:
+                objCBDeuBestState= obj
+                bestScore= obj.dagBDeuScore
         return objCBDeuBestState                           # Return the best solution found.
 
     def fillMissingRecordsToDf(self, df, variableConfigurations):
@@ -415,7 +421,7 @@ class MainAlgo(object):
                 totalUniqueObservations= self.df.shape[0] # if we introduce next hidden variable, this variable would be updated
         
                 arrayListBDeuClassObjs=[]
-         
+                
                 for id, dag in dagsDict.iteritems():
                     
                     nodesBDeuScore=[]
