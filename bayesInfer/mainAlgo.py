@@ -190,7 +190,7 @@ class MainAlgo(object):
         bestOfAllObjCBDeu={}
         bestOfAllObjCBDeu[str(previousScore)]= copy.deepcopy(objCBDeu)
         for numSim in xrange(0, self.simRepeats):
-            print "Started Simulated Anealing number: %d ..." % (numSim)
+            print "---> Started Simulated Anealing number: %d" % (numSim)
             e               = previousScore                               # Initial state, energy.
             emax            = float('-inf') 
             ebest           = e                                     # Initial "best" solution
@@ -291,7 +291,7 @@ class MainAlgo(object):
                     print "Node: %s best score: %f" %( i, objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                     bestScore.append(objCBDeuBestState.allNodeObjects[i].getLocalBDeu())
                 print "Current Best Score with hidden: %f" % (sum(bestScore))
-                print "Finish Simulated Anealing number: %d .." % (numSim)
+                print "---> Finish Simulated Anealing number: %d" % (numSim)
             
             if previousScore < objCBDeuBestState.dagBDeuScore:
                 previousScore   = objCBDeuBestState.dagBDeuScore
@@ -455,7 +455,7 @@ class MainAlgo(object):
                     totalPreviousBDeuScore=sum(nodesBDeuScore)
                     initialBDeuScore= totalPreviousBDeuScore
                     
-                    print "BDeu Score for a dag %d in Equivalence class before adding hidden variable: %f" % (id, totalPreviousBDeuScore)
+                    print "---> BDeu Score for a dag %d in Equivalence class before adding hidden variable: %f" % (id, totalPreviousBDeuScore)
                     print dag
                     
                     # find all the edges in the dag
@@ -590,7 +590,7 @@ class MainAlgo(object):
                                 objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
                                 objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
                                 objCBDeu.setDagBDeuScore(tmpDagBDeuScore)
-                                print "BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
+                                print "---> BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
