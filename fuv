@@ -13,9 +13,9 @@ import argparse
 from bayesInfer.mainAlgo import MainAlgo
 
 
-def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath ):
+def runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, exHiddenBdeuFlag, simRepeats, mlabPath ):
     
-    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath)
+    objMainAlgo = MainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue,exHiddenBdeuFlag, pertTowRecFlag, simRepeats, mlabPath)
     objMainAlgo.runAlgo()
 
 
@@ -73,8 +73,8 @@ def main(argv):
     simAnealFlag    = args.SimAnnealing
     decrementValue  = args.dc
     pertTowRecFlag  = args.perturbTwoRecods
-    exHiddenBdeuFlag= args.excludeHidBDeu
-    simRepeats      = args.simRepeat
+    exHiddenBdeuFlag= args.hx
+    simRepeats      = args.r
     
     
     print "vdfile:             %s"  % vdFile
@@ -102,7 +102,7 @@ def main(argv):
         sys.exit()
     
     if mlabPath != None:
-        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, pertTowRecFlag, simRepeats, mlabPath)
+        runMainAlgo(vdFile, dataFile, outdir, alpha, seed, steepestAsent, iterations, seedFile, outPutFile, simAnealFlag, decrementValue, pertTowRecFlag, exHiddenBdeuFlag, simRepeats, mlabPath)
     else:
         print "Error: Path to matlab_lib folder is not set"
         sys.exit()

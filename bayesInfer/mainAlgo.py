@@ -18,7 +18,7 @@ class MainAlgo(object):
     '''
     This class contains the main workflow of our algorithm
     '''
-    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, exHiddenBdeuFlag, pertTowRecFlag, simRepeats, mlabPath  ):
+    def __init__(self, vdFile, dataFile, outdir, alpha, seed, steepestAsent,iterations, seedFile, outPutFile, simulatedAnealingFlag, decrementValue, exHiddenBdeuFlag, pertTowRecFlag, simRepeats, mlabPath):
         '''
         Constructor
         '''
