@@ -533,6 +533,7 @@ class MainAlgo(object):
                             ##    hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
                             
                             initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
+                            initialObjCBDeuAfterAddingHidden= copy.deepcopy(objCBDeu)
                             
                             print "Initial BDeu Score with Hidden variable: %f" % ( initialBDeuScoreAfterAddingHidden)
                             
@@ -545,6 +546,7 @@ class MainAlgo(object):
                                     totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 else:
                                     totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
+                                    objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Steepest Asent Algorithm finished ...." 
                                 #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
@@ -557,6 +559,7 @@ class MainAlgo(object):
                                     totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
                                 else:
                                     totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
+                                    objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
                                 h                       = objCBDeu.allNodeObjects[h.getName()]
                                 print "Simulated Annealing Algorithm finished ...." 
                             if initialBDeuScore < totalCurrentBDeuScore:
