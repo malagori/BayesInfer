@@ -487,6 +487,8 @@ class MainAlgo(object):
                             print "Outside This edge is same as previously replaced with hidden variable"
                             print "key: "
                             print key
+                            print "edge:"
+                            print edge
                             print "edgesDict[edge]:"
                             print edgesDict[edge]
                             
@@ -630,7 +632,7 @@ class MainAlgo(object):
 #                        for j in count:
 #                            wf.write(str(j)+',')
 #                        del count
-                    currentMaxDF.to_csv(self.outFile[:-4]+'.optimal.df.Iter.'+str(algoIteratios), sep=',', index=False)
+                    currentMaxDF.to_csv(self.outputFile[:-4]+'.optimal.df.Iter.'+str(algoIteratios), sep=',', index=False)
                     wf.write(str(currentMaxBDeu) + "\n")
                     # print the state for the random number generator
                     stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
