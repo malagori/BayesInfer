@@ -622,8 +622,9 @@ class MainAlgo(object):
                     allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
                     # update variable set if hidden is added
                     print "variableNames"
-                    print list(currentMaxDF.columns.values)
-                    trailingNames=[m for m in xrange(len(variableNames)+1, len(list(currentMaxDF.columns.values))+1 )]
+                    variableNames=list(currentMaxDF.columns.values)
+                    print variableNames
+                    trailingNames=[m for m in xrange(len(variableNames)+1, len(list(currentMaxDF.columns.values)) )]
                     variableNames.extend(trailingNames)
                     print "variableNames"
                     print variableNames
