@@ -510,12 +510,12 @@ class MainAlgo(object):
                             h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
                             
                             # split the dataframe counts
-                            print "data frame before adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame before adding hidden variable"
+                            #print objCBDeu.df
                             #objCBDeu.percentageHiddenCoutsSplit(h)
                             objCBDeu.binaryHiddenCountSplit(h)
-                            print "data frame after adding hidden variable"
-                            print objCBDeu.df
+                            #print "data frame after adding hidden variable"
+                            #print objCBDeu.df
                             
                             objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount', sep=',', index=False)
                             # write df to file called initialCountSplit.txt
@@ -570,7 +570,7 @@ class MainAlgo(object):
                                 hiddenNodesDict[edge]=h
                                 hiddenCount+=1 # count the number of hidden variable added
                                 print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                print objCBDeu.df
+                                #print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[edge]= key
