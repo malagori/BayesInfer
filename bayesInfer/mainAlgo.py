@@ -625,7 +625,6 @@ class MainAlgo(object):
                     variableNames=list(currentMaxDF.columns.values)
                     print variableNames
                     key= variableNames.index('Counts')
-                    variableNames=variableNames[:-key]
                     key= key+1
                     variableNames=variableNames[0:key]
                     trailingNames=[m for m in xrange(key, len(list(currentMaxDF.columns.values)) )]
