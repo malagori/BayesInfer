@@ -413,7 +413,7 @@ class MainAlgo(object):
             if self.seed != None:
                 stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
                 rs.storeSate(stateOutFile)
-            wf.write("BDeuScore for optimal dag from Bene, %f" % sum(nodesBDeuScore))
+            wf.write("BDeuScore for optimal dag from Bene, %f\n" % sum(nodesBDeuScore))
             
             # Repeat until adding a hidden variable does not increase the score
             while True:
@@ -625,7 +625,7 @@ class MainAlgo(object):
                     #print optdag
                     optDag, cardinality = self.printDag(algoIteratios, currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
-                    print "Iteration: %d , BDeu Score: %f" % (algoIteratios, currentMaxBDeu)
+                    print "Iteration: %d , BDeu Score: %f\n" % (algoIteratios, currentMaxBDeu)
 #                    hValues= h.getKvalues().keys()
 #                    for i in xrange(0,len(hValues)-1):
 #                        count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
@@ -633,7 +633,7 @@ class MainAlgo(object):
 #                            wf.write(str(j)+',')
 #                        del count
                     currentMaxDF.to_csv(self.outputFile[:-4]+'.optimal.df.Iter.'+str(algoIteratios), sep=',', index=False)
-                    wf.write(str(currentMaxBDeu) + "\n")
+                    wf.write("BDeuScore for optimal dag from fuv, %f\n" % (currentMaxBDeu))
                     # print the state for the random number generator
                     stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
                     rs.storeSate(stateOutFile)
