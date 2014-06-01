@@ -498,6 +498,23 @@ class MainAlgo(object):
                                     totalPreviousBDeuScore= totalPreviousBDeuScore + bdeuDiffScore
                                     objCBDeu.dagBDeuScore= totalPreviousBDeuScore
                                     print "hidden variable %s added from cache" % hiddenNodesDict[edge].getName()
+                                    print objCBDeu.df
+                                    h=hiddenNodesDict[edge]
+                                    objCBDeu.setVariableNames(h.getName())
+    #                                # update the edges list after adding hidden variable
+                                    hChildren= h.getChildren()
+    #                                
+    #                                # update edges by adding edges of hidden variable to its children
+                                    edges.append((h.getName(), hChildren[0]))
+                                    edges.append((h.getName(), hChildren[1]))
+                                    # generate new name for hidden variable
+                                    HIDDEN_NAME += 1
+                                    #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
+                                    initialBDeuScore = totalCurrentBDeuScore
+                                    # remove edges and see if we get increase in bdeu score
+                                    objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
+                                    objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
+                                    objCBDeu.setOriginalDF(objCBDeu.df)
                                 else:
                                     print "bdeu diff score is not greater then current BDeuScore "
                         else:
@@ -570,7 +587,7 @@ class MainAlgo(object):
                                 hiddenNodesDict[edge]=h
                                 hiddenCount+=1 # count the number of hidden variable added
                                 print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                #print objCBDeu.df
+                                print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[edge]= key
