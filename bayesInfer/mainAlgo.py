@@ -138,7 +138,10 @@ class MainAlgo(object):
             
             childNode= objCBDeu.allNodeObjects[edge[1]]
             newParents= childNode.getParents()
-            newParents.remove(edge[0]) # remove the parent from the parent set of child node
+            if len(edge[0]) == 0:
+                newParents.remove(edge[1]) # remove the parent from the parent set of child node
+            else:
+                newParents.remove(edge[0]) # remove the parent from the parent set of child node
             childNode.setParents(newParents)
             objCBDeu.getUpdatedQi(childNode)
             objCBDeu.populateCounts(childNode)
@@ -506,13 +509,6 @@ class MainAlgo(object):
     #                                # update edges by adding edges of hidden variable to its children
                                     edges.append((h.getName(), hChildren[0]))
                                     edges.append((h.getName(), hChildren[1]))
-
-                                    #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
-                                    initialBDeuScore = totalCurrentBDeuScore
-                                    # remove edges and see if we get increase in bdeu score
-                                    objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
-                                    objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
-                                    objCBDeu.setOriginalDF(objCBDeu.df)
                                 else:
                                     print "bdeu diff score is not greater then current BDeuScore "
                         else:
