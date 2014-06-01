@@ -38,7 +38,8 @@ class BDeuClass(object):
         self.df= df
         
     def setVariableNames(self, name):
-        self.variableNames.append(name)
+        if name not in self.variableNames:
+            self.variableNames.append(name)
       
     def getUpdatedQi(self,node):
         # total parent configurations

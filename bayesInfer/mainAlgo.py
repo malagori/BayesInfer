@@ -503,12 +503,10 @@ class MainAlgo(object):
                                     objCBDeu.setVariableNames(h.getName())
     #                                # update the edges list after adding hidden variable
                                     hChildren= h.getChildren()
-    #                                
     #                                # update edges by adding edges of hidden variable to its children
                                     edges.append((h.getName(), hChildren[0]))
                                     edges.append((h.getName(), hChildren[1]))
-                                    # generate new name for hidden variable
-                                    HIDDEN_NAME += 1
+
                                     #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                                     initialBDeuScore = totalCurrentBDeuScore
                                     # remove edges and see if we get increase in bdeu score
