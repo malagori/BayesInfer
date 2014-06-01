@@ -616,10 +616,6 @@ class MainAlgo(object):
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
-                    # update the orginal df for next iteration
-                    self.df = currentMaxDF.copy()
-                    self.dfOriginal= currentMaxDF.copy()
-                    allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
                     # update variable set if hidden is added
                     print "variableNames"
                     variableNames=list(currentMaxDF.columns.values)
@@ -631,7 +627,13 @@ class MainAlgo(object):
                     variableNames.extend(trailingNames)
                     print "variableNames"
                     print variableNames
-                    print "Hidden name: %d" % (HIDDEN_NAME)
+                    currentMaxDF.columns= variableNames
+                    # update the orginal df for next iteration
+                    self.df = currentMaxDF.copy()
+                    self.dfOriginal= currentMaxDF.copy()
+                    allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
+                    for i in allNodeObjects:
+                        print "node Name: %s" % (i.getName())
                     #objCBDeu=copy.deepcopy(currentObjBDeu)
                     # update optdag 
                     # update cardinality 
