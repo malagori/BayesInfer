@@ -501,7 +501,7 @@ class MainAlgo(object):
                                 print "totalPreviousBDeuScore: %f, bdeuDiffScore: %f, totalPreviousBDeuScore+bdeuDiffScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
                                 if (totalPreviousBDeuScore + bdeuDiffScore) > totalPreviousBDeuScore:
                                     # add hidden variable to the network
-                                    objCBDeu.allNodeObjects.append( hiddenNodesDict[edge] )
+                                    objCBDeu.allNodeObjects[hiddenNodesDict[edge].getName()]= hiddenNodesDict[edge] 
                                     totalPreviousBDeuScore= totalPreviousBDeuScore + bdeuDiffScore
                                     objCBDeu.dagBDeuScore= totalPreviousBDeuScore
                                     print "hidden variable %s added from cache" % hiddenNodesDict[edge].getName()
@@ -631,9 +631,6 @@ class MainAlgo(object):
                     # update the orginal df for next iteration
                     self.df = currentMaxDF.copy()
                     self.dfOriginal= currentMaxDF.copy()
-                    allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
-                    for i in allNodeObjects:
-                        print "node Name: %s" % (i.getName())
                     #objCBDeu=copy.deepcopy(currentObjBDeu)
                     # update optdag 
                     # update cardinality 
