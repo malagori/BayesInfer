@@ -612,14 +612,15 @@ class MainAlgo(object):
                         currentMaxBDeu                 = obj.dagBDeuScore
                         currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
                         currentMaxDF                   = obj.df.copy()
-                        currentMaxVariables            = obj.variableNames
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
                     # update the orginal df for next iteration
                     self.df = currentMaxDF.copy()
+                    self.dfOriginal= currentMaxDF.copy()
+                    allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
                     # update variable set if hidden is added
-                    variableNames= currentMaxVariables
+                    variableNames= list(currentMaxDF.columns.values)
                     # update optdag 
                     # update cardinality 
                     #print optdag

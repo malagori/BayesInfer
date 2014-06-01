@@ -154,7 +154,7 @@ class BDeuClass(object):
             #print "paValueDict:"
             #print paValueDict
             node.setParentValueCounts(paValueDict)
-            self.allNodeObjects[node.getName()]=node
+            self.allNodeObjects[node.getName()]=copy.deepcopy(node)
             #print node.getParentValueCount()
         else:
             for k in kValueDict.keys():
@@ -166,7 +166,7 @@ class BDeuClass(object):
                 kValueDict[k]=pConfigDict
                 
             node.setKvalues(kValueDict)
-            self.allNodeObjects[node.getName()]=node
+            self.allNodeObjects[node.getName()]=copy.deepcopy(node)
         
     def getDataCount(self,k, j, node):
         # remember: j here is a list not tuple
@@ -184,14 +184,14 @@ class BDeuClass(object):
             print "self.df:"
             print self.df
             print "node.getName(): %s" % (node.getName())
-            localDframe=self.df[self.df[node.getName()]==k]
+            localDframe=self.df[self.df[node.getName()]==k].copy()
         else:
             # All records with var value = k
-            localDframe=self.df[self.df[node.getName()]==k]
+            localDframe=self.df[self.df[node.getName()]==k].copy()
             # for each parent value
             idx=0
             for pa in node.getParents():
-                localDframe=localDframe[localDframe[pa]==j[idx]]
+                localDframe=localDframe[localDframe[pa]==j[idx]].copy()
                 idx+=1
         # return the row count satisfiying the conditions
         return sum(localDframe.Counts)
