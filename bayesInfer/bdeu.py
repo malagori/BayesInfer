@@ -180,6 +180,10 @@ class BDeuClass(object):
         # check if parent configuration is zero
         if len(j)==0:
             # compute the counts for parent variable for kth value
+            print "k %d" %(k)
+            print "self.df:"
+            print self.df
+            print "node.getName(): %s" % (node.getName())
             localDframe=self.df[self.df[node.getName()]==k]
         else:
             # All records with var value = k
