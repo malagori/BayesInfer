@@ -625,8 +625,11 @@ class MainAlgo(object):
                     variableNames.remove('Counts')
                     print "variableNames"
                     print variableNames
+                    variableNames=[m for m in xrange(1,len(variableNames)+1)]
+                    print "variableNames"
+                    print variableNames
                     print "Hidden name: %d" % (HIDDEN_NAME)
-                    objCBDeu=copy.deepcopy(currentObjBDeu)
+                    #objCBDeu=copy.deepcopy(currentObjBDeu)
                     # update optdag 
                     # update cardinality 
                     #print optdag
