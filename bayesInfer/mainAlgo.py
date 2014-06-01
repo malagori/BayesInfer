@@ -618,7 +618,7 @@ class MainAlgo(object):
                     variableNames.extend(trailingNames)
                     
                     currentMaxDF.columns= variableNames
-                    HIDDEN_NAME= len(variableNames) +1
+                    HIDDEN_NAME= len(variableNames)
                     # update the orginal df for next iteration
                     self.df = currentMaxDF.copy()
                     self.dfOriginal= currentMaxDF.copy()
