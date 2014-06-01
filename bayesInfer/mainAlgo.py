@@ -621,6 +621,10 @@ class MainAlgo(object):
                     allNodeObjects= copy.deepcopy(currentMaxAllNodesObjects)
                     # update variable set if hidden is added
                     variableNames= list(currentMaxDF.columns.values)
+                    variableNames.remove('Counts')
+                    print "variableNames"
+                    print variableNames
+                    print "Hidden name: %d" % (HIDDEN_NAME)
                     # update optdag 
                     # update cardinality 
                     #print optdag
