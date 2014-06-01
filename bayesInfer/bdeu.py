@@ -186,11 +186,16 @@ class BDeuClass(object):
             print "node.getName(): %s" % (node.getName())
             localDframe=self.df[self.df[node.getName()]==k].copy()
         else:
+            
             # All records with var value = k
             localDframe=self.df[self.df[node.getName()]==k].copy()
             # for each parent value
             idx=0
             for pa in node.getParents():
+                print "pa %d" %(pa)
+                print "j[idx] %d, idx: %d" % (j[idx], idx)
+                print "localDframe:"
+                print localDframe
                 localDframe=localDframe[localDframe[pa]==j[idx]].copy()
                 idx+=1
         # return the row count satisfiying the conditions

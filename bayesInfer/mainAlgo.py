@@ -413,7 +413,8 @@ class MainAlgo(object):
             if self.seed != None:
                 stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
                 rs.storeSate(stateOutFile)
-            wf.write("BDeuScore for optimal dag from Bene, %f\n" % sum(nodesBDeuScore))
+            currentMaxBDeu= sum(nodesBDeuScore)
+            wf.write("BDeuScore for optimal dag from Bene, %f\n" % currentMaxBDeu)
             
             # Repeat until adding a hidden variable does not increase the score
             while True:
