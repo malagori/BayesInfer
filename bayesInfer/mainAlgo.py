@@ -612,6 +612,7 @@ class MainAlgo(object):
                         currentMaxBDeu                 = obj.dagBDeuScore
                         currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
                         currentMaxDF                   = obj.df.copy()
+                        currentObjBDeu                 = copy.deepcopy(obj)
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
@@ -625,6 +626,7 @@ class MainAlgo(object):
                     print "variableNames"
                     print variableNames
                     print "Hidden name: %d" % (HIDDEN_NAME)
+                    objCBDeu=copy.deepcopy(currentObjBDeu)
                     # update optdag 
                     # update cardinality 
                     #print optdag
