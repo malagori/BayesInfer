@@ -484,21 +484,13 @@ class MainAlgo(object):
                         print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
                         if edge in edgesDict.keys():
-                            print "Outside This edge is same as previously replaced with hidden variable"
-                            print "key: "
-                            print key
-                            print "edge:"
-                            print edge
-                            print "edgesDict[edge]:"
-                            print edgesDict[edge]
-                            
                             if key == edgesDict[edge]: # if true do not add hidden variable 
                                 # get the score from the cachedBDeu score for this edge after being h is added to the network
                                 # check if the difference is positive add the hidden variable and add the difference to the netowork bdeu score
                                 # else donot add hidden variable
                                 print "This edge is same as previously replaced with hidden variable"
                                 bdeuDiffScore= cachedBDeuDict[key]
-                                print "totalPreviousBDeuScore: %f, bdeuDiffScore: %f, totalPreviousBDeuScore+bdeuDiffScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
+                                print "currentBDeuScore: %f, bdeuDiffScore: %f, newBDeuScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
                                 if (totalPreviousBDeuScore + bdeuDiffScore) > totalPreviousBDeuScore:
                                     # add hidden variable to the network
                                     objCBDeu.allNodeObjects[hiddenNodesDict[edge].getName()]= hiddenNodesDict[edge] 
@@ -617,17 +609,15 @@ class MainAlgo(object):
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
                     # update variable set if hidden is added
-                    print "variableNames"
                     variableNames=list(currentMaxDF.columns.values)
-                    print variableNames
                     key= variableNames.index('Counts')
                     key= key+1
                     variableNames=variableNames[0:key]
                     trailingNames=[m for m in xrange(key, len(list(currentMaxDF.columns.values)) )]
                     variableNames.extend(trailingNames)
-                    print "variableNames"
-                    print variableNames
+                    
                     currentMaxDF.columns= variableNames
+                    HIDDEN_NAME= len(variableNames) +1
                     # update the orginal df for next iteration
                     self.df = currentMaxDF.copy()
                     self.dfOriginal= currentMaxDF.copy()
