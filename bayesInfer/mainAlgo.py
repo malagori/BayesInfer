@@ -484,11 +484,19 @@ class MainAlgo(object):
                         print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
                         if edge in edgesDict.keys():
+                            print "Outside This edge is same as previously replaced with hidden variable"
+                            print "key: "
+                            print key
+                            print "edgesDict[edge]:"
+                            print edgesDict[edge]
+                            
                             if key == edgesDict[edge]: # if true do not add hidden variable 
                                 # get the score from the cachedBDeu score for this edge after being h is added to the network
                                 # check if the difference is positive add the hidden variable and add the difference to the netowork bdeu score
                                 # else donot add hidden variable
+                                print "This edge is same as previously replaced with hidden variable"
                                 bdeuDiffScore= cachedBDeuDict[key]
+                                print "totalPreviousBDeuScore: %f, bdeuDiffScore: %f, totalPreviousBDeuScore+bdeuDiffScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
                                 if (totalPreviousBDeuScore + bdeuDiffScore) > totalPreviousBDeuScore:
                                     # add hidden variable to the network
                                     objCBDeu.allNodeObjects.append( hiddenNodesDict[edge] )
@@ -574,11 +582,11 @@ class MainAlgo(object):
                                 # update the variable names after adding hidden variable
                                 objCBDeu.setVariableNames(h.getName())
 #                                # update the edges list after adding hidden variable
-#                                hChildren= h.getChildren()
+                                hChildren= h.getChildren()
 #                                
 #                                # update edges by adding edges of hidden variable to its children
-#                                edges.append((h.getName(), hChildren[0]))
-#                                edges.append((h.getName(), hChildren[1]))
+                                edges.append((h.getName(), hChildren[0]))
+                                edges.append((h.getName(), hChildren[1]))
                                 # generate new name for hidden variable
                                 HIDDEN_NAME += 1
                                 #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
@@ -616,12 +624,13 @@ class MainAlgo(object):
                     optDag, cardinality = self.printDag(algoIteratios, currentMaxAllNodesObjects)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
                     print "Iteration: %d , BDeu Score: %f" % (algoIteratios, currentMaxBDeu)
-                    hValues= h.getKvalues().keys()
-                    for i in xrange(0,len(hValues)-1):
-                        count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
-                        for j in count:
-                            wf.write(str(j)+',')
-                        del count
+#                    hValues= h.getKvalues().keys()
+#                    for i in xrange(0,len(hValues)-1):
+#                        count=currentMaxDF[currentMaxDF[h.getName()]==hValues[i]].Counts
+#                        for j in count:
+#                            wf.write(str(j)+',')
+#                        del count
+                    currentMaxDF.to_csv(self.outFile[:-4]+'.optimal.df.Iter.'+str(algoIteratios), sep=',', index=False)
                     wf.write(str(currentMaxBDeu) + "\n")
                     # print the state for the random number generator
                     stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
