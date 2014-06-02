@@ -488,7 +488,7 @@ class MainAlgo(object):
                         
                         # creating key for cachedBDeuDict dictionary
                         key=tuple([tuple(parentNode.getParents()), tuple(childNode.getParents())])
-                        
+                        print dag
                         print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
 #                        if edge in edgesDict.keys():
