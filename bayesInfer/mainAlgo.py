@@ -583,8 +583,8 @@ class MainAlgo(object):
                                 # add hidden node to the dictionary
                                 hiddenNodesDict[edge]=h
                                 hiddenCount+=1 # count the number of hidden variable added
-                                print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                print objCBDeu.df
+                                #print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+                                #print objCBDeu.df
                                 diffBDeu= totalCurrentBDeuScore - initialBDeuScore
                                 cachedBDeuDict[key]= diffBDeu
                                 edgesDict[edge]= key
@@ -604,8 +604,17 @@ class MainAlgo(object):
                                 objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
                                 objCBDeu.setOriginalDF(objCBDeu.df)
                                 
-                                # generate new name for hidden variable
-                                HIDDEN_NAME += 1
+                                #####################
+                                if currentMaxBDeu < objCBDeu.dagBDeuScore:
+                                    currentMaxBDeu                 = objCBDeu.dagBDeuScore
+                                    currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
+                                    currentMaxDF                   = objCBDeu.df.copy()
+                                    currentObjBDeu                 = copy.deepcopy(objCBDeu)
+                                    ####################
+                                    print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+                                    print objCBDeu.df
+                                    # generate new name for hidden variable
+                                    HIDDEN_NAME += 1
                                 
                                 
                             else: # adding hidden variable didn't improve score, so go back to old state                              
@@ -616,14 +625,14 @@ class MainAlgo(object):
                     # store BDeu Class object
                     arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
-                currentMaxAllNodesObjects={}
-                currentMaxDF= pd.DataFrame(index=None, columns=None)
-                for obj in arrayListBDeuClassObjs:
-                    if currentMaxBDeu < obj.dagBDeuScore:
-                        currentMaxBDeu                 = obj.dagBDeuScore
-                        currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
-                        currentMaxDF                   = obj.df.copy()
-                        currentObjBDeu                 = copy.deepcopy(obj)
+#                currentMaxAllNodesObjects={}
+#                currentMaxDF= pd.DataFrame(index=None, columns=None)
+#                for obj in arrayListBDeuClassObjs:
+#                    if currentMaxBDeu < obj.dagBDeuScore:
+#                        currentMaxBDeu                 = obj.dagBDeuScore
+#                        currentMaxAllNodesObjects      = copy.deepcopy(obj.allNodeObjects)
+#                        currentMaxDF                   = obj.df.copy()
+#                        currentObjBDeu                 = copy.deepcopy(obj)
                 # check the looping condition
                 if previousMaxBDeu < currentMaxBDeu:
                     previousMaxBDeu=currentMaxBDeu
@@ -634,8 +643,8 @@ class MainAlgo(object):
                     variableNames=variableNames[0:key]
                     trailingNamesMapping= {}
                     trailingNames=[]
-                    namewatay= list(currentMaxDF.columns.values))
-                    for m in xrange(key, len(namewatay ):
+                    namewatay= list(currentMaxDF.columns.values)
+                    for m in xrange(key, len(namewatay)):
                         trailingNames.append(m)
                         trailingNamesMapping[namewatay[m]]=m
                     variableNames.extend(trailingNames)
