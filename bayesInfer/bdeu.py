@@ -18,13 +18,15 @@ from node import Node
 
 class BDeuClass(object):
     
-    def __init__(self, df, dfOriginal, allNodeObjects, totalUniqueObservations, variableNames):
+    def __init__(self, df, dfOriginal, allNodeObjects, totalUniqueObservations, variableNames, dagID, dag):
         self.df                         = df
         self.dfOriginal                 = dfOriginal
         self.allNodeObjects             = copy.deepcopy(allNodeObjects)
         self.totalUniqueObservations    = totalUniqueObservations
         self.dagBDeuScore               = float("-inf")
         self.variableNames              = variableNames
+        self.dagID                      = str(dagID)
+        self.dag                        = dag
         
     def setOriginalDF(self,dfOriginal):
         self.dfOriginal= copy.deepcopy(dfOriginal.copy())

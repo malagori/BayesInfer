@@ -40,12 +40,13 @@ class MainAlgo(object):
         self.exHiddenBdeuFlag= exHiddenBdeuFlag
         self.simRepeats     = simRepeats
         
-    def printDag(self,iterations, allNodesObjects):
+    def printDag(self,iterations, allNodesObjects, trailingNamesMapping):
         '''
             this function return optDag after improvement in bdeu score either by adding hidden var or removing edges
         '''
         optDag=[]
         cardinality=[]
+        
         with open(str("bestDag_"+str(iterations)), 'w') as wdag:
             for key, node in allNodesObjects.iteritems():
                 cardinality.append(node.getR())
@@ -57,7 +58,12 @@ class MainAlgo(object):
                     optDag.append(p)
                     continue
                 else:
+                    print "pa"
+                    print pa
                     for i in pa:
+                        if i > len(p):
+                            print "i %d, trailingMapping %d" % (i, trailingNamesMapping[i])
+                            i=trailingNamesMapping[i]
                         p[i-1]=1
                     optDag.append(p)
                     p=p[::-1]
@@ -388,7 +394,7 @@ class MainAlgo(object):
             #print "totalUniqueObservations: %d" % totalUniqueObservations
             #print "df:"
             #print self.df
-            objCBDeu= BDeuClass(self.df, self.dfOriginal, allNodesObj, totalUniqueObservations, variableNames)
+            objCBDeu= BDeuClass(self.df, self.dfOriginal, allNodesObj, totalUniqueObservations, variableNames,"beneDag", optDag)
 
             # update the parent configurations for all variables
             # and the counts associated with the each parent configuration for each value of X
@@ -439,7 +445,7 @@ class MainAlgo(object):
                     tdf= self.df.copy()
                     print tdf
                     # instantiate CalculateBDeuClass's object 
-                    objCBDeu= BDeuClass(tdf, self.dfOriginal, allNodeObjects, totalUniqueObservations, variableNames)
+                    objCBDeu= BDeuClass(tdf, self.dfOriginal, allNodeObjects, totalUniqueObservations, variableNames, id, dag)
                     
                     #print objCBDeu.df
                     
@@ -590,14 +596,18 @@ class MainAlgo(object):
 #                                # update edges by adding edges of hidden variable to its children
                                 edges.append((h.getName(), hChildren[0]))
                                 edges.append((h.getName(), hChildren[1]))
-                                # generate new name for hidden variable
-                                HIDDEN_NAME += 1
+                                
                                 #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                                 initialBDeuScore = totalCurrentBDeuScore
                                 # remove edges and see if we get increase in bdeu score
                                 objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
                                 objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
                                 objCBDeu.setOriginalDF(objCBDeu.df)
+                                
+                                # generate new name for hidden variable
+                                HIDDEN_NAME += 1
+                                
+                                
                             else: # adding hidden variable didn't improve score, so go back to old state                              
                                 objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
                                 objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
@@ -622,7 +632,12 @@ class MainAlgo(object):
                     key= variableNames.index('Counts')
                     key= key+1
                     variableNames=variableNames[0:key]
-                    trailingNames=[m for m in xrange(key, len(list(currentMaxDF.columns.values)) )]
+                    trailingNamesMapping= {}
+                    trailingNames=[]
+                    namewatay= list(currentMaxDF.columns.values))
+                    for m in xrange(key, len(namewatay ):
+                        trailingNames.append(m)
+                        trailingNamesMapping[namewatay[m]]=m
                     variableNames.extend(trailingNames)
                     
                     currentMaxDF.columns= variableNames
@@ -634,7 +649,7 @@ class MainAlgo(object):
                     # update optdag 
                     # update cardinality 
                     #print optdag
-                    optDag, cardinality = self.printDag(algoIteratios, currentMaxAllNodesObjects)
+                    optDag, cardinality = self.printDag(algoIteratios, currentMaxAllNodesObjects, trailingNamesMapping)
                     #print hidden counts and bdeu score for the dag with higest bdeu score in equivalance class
                     print "Iteration: %d , BDeu Score: %f\n" % (algoIteratios, currentMaxBDeu)
 #                    hValues= h.getKvalues().keys()
