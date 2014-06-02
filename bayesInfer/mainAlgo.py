@@ -513,6 +513,30 @@ class MainAlgo(object):
     #                                # update edges by adding edges of hidden variable to its children
                                     edges.append((h.getName(), hChildren[0]))
                                     edges.append((h.getName(), hChildren[1]))
+                                    
+                                    
+                                    
+                                    #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
+                                    initialBDeuScore = totalCurrentBDeuScore
+                                    # remove edges and see if we get increase in bdeu score
+                                    objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
+                                    objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
+                                    objCBDeu.setOriginalDF(objCBDeu.df)
+                                    
+                                    #####################
+                                    if currentMaxBDeu < objCBDeu.dagBDeuScore:
+                                        currentMaxBDeu                 = objCBDeu.dagBDeuScore
+                                        currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
+                                        currentMaxDF                   = objCBDeu.df.copy()
+                                        currentObjBDeu                 = copy.deepcopy(objCBDeu)
+                                        ####################
+                                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+                                        print objCBDeu.df
+                                        # generate new name for hidden variable
+                                        HIDDEN_NAME += 1
+                                    
+                                    
+                                    
                                 else:
                                     print "bdeu diff score is not greater then current BDeuScore "
                         else:
