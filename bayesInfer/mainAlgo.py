@@ -539,115 +539,115 @@ class MainAlgo(object):
 #                                    
 #                                else:
 #                                    print "bdeu diff score is not greater then current BDeuScore "
-                            pass
-                        else:
-                            # copy allnodes
-                            tmpAllNodesObj      = copy.deepcopy(objCBDeu.allNodeObjects)
-                            tmpDF               = objCBDeu.df.copy()
-                            tmpDagBDeuScore     = objCBDeu.dagBDeuScore
-                            
-                            # add hidden variable to the network
-                            h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
-                            
-                            # split the dataframe counts
-                            #print "data frame before adding hidden variable"
+#                            
+#                        else:
+                        # copy allnodes
+                        tmpAllNodesObj      = copy.deepcopy(objCBDeu.allNodeObjects)
+                        tmpDF               = objCBDeu.df.copy()
+                        tmpDagBDeuScore     = objCBDeu.dagBDeuScore
+                        
+                        # add hidden variable to the network
+                        h=objCBDeu.addHiddenNode(HIDDEN_NAME, 2 , parentNode.getName(), childNode.getName())
+                        
+                        # split the dataframe counts
+                        #print "data frame before adding hidden variable"
+                        #print objCBDeu.df
+                        #objCBDeu.percentageHiddenCoutsSplit(h)
+                        objCBDeu.binaryHiddenCountSplit(h)
+                        #print "data frame after adding hidden variable"
+                        #print objCBDeu.df
+                        
+                        objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount', sep=',', index=False)
+                        # write df to file called initialCountSplit.txt
+                        #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
+                        #newDF.to_csv(outName+'.csv', sep=',')
+                        objCBDeu.populateCounts(h)
+                        # populate hidden value counts
+                        hiddenBDeuScore=[]
+                        for n in objCBDeu.allNodeObjects:
+                            node= objCBDeu.allNodeObjects[n]
+                            if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True:
+                                objCBDeu.populateCounts(node)
+                                node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
+                            hiddenBDeuScore.append(objCBDeu.getBDeu(node, self.alpha))
+                        #objCBDeu.populateCounts(h)
+                        
+                        ##for n in objCBDeu.allNodeObjects:
+                        ##    hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
+                        
+                        initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
+                        initialObjCBDeuAfterAddingHidden= copy.deepcopy(objCBDeu)
+                        
+                        print "Initial BDeu Score with Hidden variable: %f" % ( initialBDeuScoreAfterAddingHidden)
+                        
+                        if self.steepestAsent == True:
+                            print "Steepest Asent Algorithm started ...." 
+                            sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
+                            output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
+                            objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
+                            if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
+                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                            else:
+                                totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
+                                objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
+                            h                       = objCBDeu.allNodeObjects[h.getName()]
+                            print "Steepest Asent Algorithm finished ...." 
+                            #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
+                        elif self.simAnealFlag == True:
+                            print "Simulated Annealing Algorithm started ...." 
+                            sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
+                            output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
+                            objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
+                            if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
+                                totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
+                            else:
+                                totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
+                                objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
+                            h                       = objCBDeu.allNodeObjects[h.getName()]
+                            print "Simulated Annealing Algorithm finished ...." 
+                        if initialBDeuScore < totalCurrentBDeuScore:
+                            # add hidden node to the dictionary
+                            hiddenNodesDict[edge]=h
+                            hiddenCount+=1 # count the number of hidden variable added
+                            #print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
                             #print objCBDeu.df
-                            #objCBDeu.percentageHiddenCoutsSplit(h)
-                            objCBDeu.binaryHiddenCountSplit(h)
-                            #print "data frame after adding hidden variable"
-                            #print objCBDeu.df
-                            
-                            objCBDeu.df.to_csv(self.outputFile+".dag."+str(id)+".edge."+str(edge[0])+"_"+str(edge[1])+'.initialHiddenCount', sep=',', index=False)
-                            # write df to file called initialCountSplit.txt
-                            #outName= self.outputFile+'_initialCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-                            #newDF.to_csv(outName+'.csv', sep=',')
-                            objCBDeu.populateCounts(h)
-                            # populate hidden value counts
-                            hiddenBDeuScore=[]
-                            for n in objCBDeu.allNodeObjects:
-                                node= objCBDeu.allNodeObjects[n]
-                                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True:
-                                    objCBDeu.populateCounts(node)
-                                    node.setLocalBDeu(objCBDeu.getBDeu(node, self.alpha))
-                                hiddenBDeuScore.append(objCBDeu.getBDeu(node, self.alpha))
-                            #objCBDeu.populateCounts(h)
-                            
-                            ##for n in objCBDeu.allNodeObjects:
-                            ##    hiddenBDeuScore.append(objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], self.alpha))
-                            
-                            initialBDeuScoreAfterAddingHidden=sum(hiddenBDeuScore)
-                            initialObjCBDeuAfterAddingHidden= copy.deepcopy(objCBDeu)
-                            
-                            print "Initial BDeu Score with Hidden variable: %f" % ( initialBDeuScoreAfterAddingHidden)
-                            
-                            if self.steepestAsent == True:
-                                print "Steepest Asent Algorithm started ...." 
-                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-2) 
-                                output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sa" 
-                                objCBDeu                = self.computeBDeuUsingSteepestAsent(h ,objCBDeu, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations, output)
-                                if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
-                                    totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
-                                else:
-                                    totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
-                                    objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
-                                h                       = objCBDeu.allNodeObjects[h.getName()]
-                                print "Steepest Asent Algorithm finished ...." 
-                                #print "BDeu Score previousBDeu: %f; CurrentBDeu: %f" % (totalPreviousBDeuScore, totalCurrentBDeuScore)
-                            elif self.simAnealFlag == True:
-                                print "Simulated Annealing Algorithm started ...." 
-                                sIndex                  = rNumber.randint(0,objCBDeu.df.shape[0]-1)
-                                output= "Iter_"+str(algoIteratios)+"_dag_"+str(id)+"_edge_"+str(edge[0])+"_"+str(edge[1])+".sim" 
-                                objCBDeu                =   self.simulatedAnealing(objCBDeu, h, initialBDeuScoreAfterAddingHidden, sIndex, self.iterations,output)
-                                if initialBDeuScoreAfterAddingHidden < objCBDeu.dagBDeuScore:
-                                    totalCurrentBDeuScore   = objCBDeu.dagBDeuScore
-                                else:
-                                    totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
-                                    objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
-                                h                       = objCBDeu.allNodeObjects[h.getName()]
-                                print "Simulated Annealing Algorithm finished ...." 
-                            if initialBDeuScore < totalCurrentBDeuScore:
-                                # add hidden node to the dictionary
-                                hiddenNodesDict[edge]=h
-                                hiddenCount+=1 # count the number of hidden variable added
-                                #print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                #print objCBDeu.df
-                                diffBDeu= totalCurrentBDeuScore - initialBDeuScore
-                                cachedBDeuDict[key]= diffBDeu
-                                edgesDict[edge]= key
-                                # update the variable names after adding hidden variable
-                                objCBDeu.setVariableNames(h.getName())
+                            diffBDeu= totalCurrentBDeuScore - initialBDeuScore
+                            cachedBDeuDict[key]= diffBDeu
+                            edgesDict[edge]= key
+                            # update the variable names after adding hidden variable
+                            objCBDeu.setVariableNames(h.getName())
 #                                # update the edges list after adding hidden variable
-                                hChildren= h.getChildren()
+                            hChildren= h.getChildren()
 #                                
 #                                # update edges by adding edges of hidden variable to its children
-                                edges.append((h.getName(), hChildren[0]))
-                                edges.append((h.getName(), hChildren[1]))
-                                
-                                #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
-                                initialBDeuScore = totalCurrentBDeuScore
-                                # remove edges and see if we get increase in bdeu score
-                                objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
-                                objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
-                                objCBDeu.setOriginalDF(objCBDeu.df)
-                                
-                                #####################
-                                if currentMaxBDeu < objCBDeu.dagBDeuScore:
-                                    currentMaxBDeu                 = objCBDeu.dagBDeuScore
-                                    currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
-                                    currentMaxDF                   = objCBDeu.df.copy()
-                                    currentObjBDeu                 = copy.deepcopy(objCBDeu)
-                                    ####################
-                                    print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                    print objCBDeu.df
-                                    # generate new name for hidden variable
-                                    HIDDEN_NAME += 1
-                                
-                                
-                            else: # adding hidden variable didn't improve score, so go back to old state                              
-                                objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
-                                objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
-                                objCBDeu.setDagBDeuScore(tmpDagBDeuScore)
-                                print "---> BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
+                            edges.append((h.getName(), hChildren[0]))
+                            edges.append((h.getName(), hChildren[1]))
+                            
+                            #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
+                            initialBDeuScore = totalCurrentBDeuScore
+                            # remove edges and see if we get increase in bdeu score
+                            objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
+                            objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
+                            objCBDeu.setOriginalDF(objCBDeu.df)
+                            
+                            #####################
+                            if currentMaxBDeu < objCBDeu.dagBDeuScore:
+                                currentMaxBDeu                 = objCBDeu.dagBDeuScore
+                                currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
+                                currentMaxDF                   = objCBDeu.df.copy()
+                                currentObjBDeu                 = copy.deepcopy(objCBDeu)
+                                ####################
+                                print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+                                print objCBDeu.df
+                                # generate new name for hidden variable
+                                HIDDEN_NAME += 1
+                            
+                            
+                        else: # adding hidden variable didn't improve score, so go back to old state                              
+                            objCBDeu.setAllNodeObjects( copy.deepcopy(tmpAllNodesObj))
+                            objCBDeu.setDF(copy.deepcopy(tmpDF.copy()))
+                            objCBDeu.setDagBDeuScore(tmpDagBDeuScore)
+                            print "---> BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
 #                    arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
