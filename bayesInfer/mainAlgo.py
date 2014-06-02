@@ -138,16 +138,13 @@ class MainAlgo(object):
             
             childNode= objCBDeu.allNodeObjects[edge[1]]
             newParents= childNode.getParents()
-            if len(edge[0]) == 0:
-                newParents.remove(edge[1]) # remove the parent from the parent set of child node
-            else:
+            if not edge[0] and edge[0] in newParents:
                 newParents.remove(edge[0]) # remove the parent from the parent set of child node
-            childNode.setParents(newParents)
-            objCBDeu.getUpdatedQi(childNode)
-            objCBDeu.populateCounts(childNode)
-            childNode.setLocalBDeu(objCBDeu.getBDeu(childNode, self.alpha))
-            
-            objCBDeu.allNodeObjects[edge[1]]= childNode
+                childNode.setParents(newParents)
+                objCBDeu.getUpdatedQi(childNode)
+                objCBDeu.populateCounts(childNode)
+                childNode.setLocalBDeu(objCBDeu.getBDeu(childNode, self.alpha))
+                objCBDeu.allNodeObjects[edge[1]]= childNode
             
             for n in objCBDeu.allNodeObjects:
                 node= Node()
