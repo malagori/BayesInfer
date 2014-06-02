@@ -492,53 +492,54 @@ class MainAlgo(object):
                         print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
                         if edge in edgesDict.keys():
-                            if key == edgesDict[edge]: # if true do not add hidden variable 
-                                # get the score from the cachedBDeu score for this edge after being h is added to the network
-                                # check if the difference is positive add the hidden variable and add the difference to the netowork bdeu score
-                                # else donot add hidden variable
-                                print "This edge is same as previously replaced with hidden variable"
-                                bdeuDiffScore= cachedBDeuDict[key]
-                                print "currentBDeuScore: %f, bdeuDiffScore: %f, newBDeuScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
-                                if (totalPreviousBDeuScore + bdeuDiffScore) > totalPreviousBDeuScore:
-                                    # add hidden variable to the network
-                                    objCBDeu.allNodeObjects[hiddenNodesDict[edge].getName()]= hiddenNodesDict[edge] 
-                                    totalPreviousBDeuScore= totalPreviousBDeuScore + bdeuDiffScore
-                                    objCBDeu.dagBDeuScore= totalPreviousBDeuScore
-                                    print "hidden variable %s added from cache" % hiddenNodesDict[edge].getName()
-                                    print objCBDeu.df
-                                    h=hiddenNodesDict[edge]
-                                    objCBDeu.setVariableNames(h.getName())
-    #                                # update the edges list after adding hidden variable
-                                    hChildren= h.getChildren()
-    #                                # update edges by adding edges of hidden variable to its children
-                                    edges.append((h.getName(), hChildren[0]))
-                                    edges.append((h.getName(), hChildren[1]))
-                                    
-                                    
-                                    
-                                    #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
-                                    initialBDeuScore = totalCurrentBDeuScore
-                                    # remove edges and see if we get increase in bdeu score
-                                    objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
-                                    objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
-                                    objCBDeu.setOriginalDF(objCBDeu.df)
-                                    
-                                    #####################
-                                    if currentMaxBDeu < objCBDeu.dagBDeuScore:
-                                        currentMaxBDeu                 = objCBDeu.dagBDeuScore
-                                        currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
-                                        currentMaxDF                   = objCBDeu.df.copy()
-                                        currentObjBDeu                 = copy.deepcopy(objCBDeu)
-                                        ####################
-                                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
-                                        print objCBDeu.df
-                                        # generate new name for hidden variable
-                                        HIDDEN_NAME += 1
-                                    
-                                    
-                                    
-                                else:
-                                    print "bdeu diff score is not greater then current BDeuScore "
+#                            if key == edgesDict[edge]: # if true do not add hidden variable 
+#                                # get the score from the cachedBDeu score for this edge after being h is added to the network
+#                                # check if the difference is positive add the hidden variable and add the difference to the netowork bdeu score
+#                                # else donot add hidden variable
+#                                print "This edge is same as previously replaced with hidden variable"
+#                                bdeuDiffScore= cachedBDeuDict[key]
+#                                print "currentBDeuScore: %f, bdeuDiffScore: %f, newBDeuScore: %f" %(totalPreviousBDeuScore, bdeuDiffScore, totalPreviousBDeuScore+bdeuDiffScore)
+#                                if (totalPreviousBDeuScore + bdeuDiffScore) > totalPreviousBDeuScore:
+#                                    # add hidden variable to the network
+#                                    objCBDeu.allNodeObjects[hiddenNodesDict[edge].getName()]= hiddenNodesDict[edge] 
+#                                    totalPreviousBDeuScore= totalPreviousBDeuScore + bdeuDiffScore
+#                                    objCBDeu.dagBDeuScore= totalPreviousBDeuScore
+#                                    print "hidden variable %s added from cache" % hiddenNodesDict[edge].getName()
+#                                    print objCBDeu.df
+#                                    h=hiddenNodesDict[edge]
+#                                    objCBDeu.setVariableNames(h.getName())
+#    #                                # update the edges list after adding hidden variable
+#                                    hChildren= h.getChildren()
+#    #                                # update edges by adding edges of hidden variable to its children
+#                                    edges.append((h.getName(), hChildren[0]))
+#                                    edges.append((h.getName(), hChildren[1]))
+#                                    
+#                                    
+#                                    
+#                                    #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
+#                                    initialBDeuScore = totalCurrentBDeuScore
+#                                    # remove edges and see if we get increase in bdeu score
+#                                    objCBDeu=self.removeEdgesFromBnt(edges, totalCurrentBDeuScore, objCBDeu)
+#                                    objCBDeu.setTotalUniqueObservations(objCBDeu.df.shape[0])
+#                                    objCBDeu.setOriginalDF(objCBDeu.df)
+#                                    
+#                                    #####################
+#                                    if currentMaxBDeu < objCBDeu.dagBDeuScore:
+#                                        currentMaxBDeu                 = objCBDeu.dagBDeuScore
+#                                        currentMaxAllNodesObjects      = copy.deepcopy(objCBDeu.allNodeObjects)
+#                                        currentMaxDF                   = objCBDeu.df.copy()
+#                                        currentObjBDeu                 = copy.deepcopy(objCBDeu)
+#                                        ####################
+#                                        print "BDeu Score for dag %d in Equivalence class after adding hidden variable %d, PreviousBDeu: %f; CurrentBDeu: %f" % (id, h.getName(),initialBDeuScore, totalCurrentBDeuScore)   
+#                                        print objCBDeu.df
+#                                        # generate new name for hidden variable
+#                                        HIDDEN_NAME += 1
+#                                    
+#                                    
+#                                    
+#                                else:
+#                                    print "bdeu diff score is not greater then current BDeuScore "
+                            pass
                         else:
                             # copy allnodes
                             tmpAllNodesObj      = copy.deepcopy(objCBDeu.allNodeObjects)
