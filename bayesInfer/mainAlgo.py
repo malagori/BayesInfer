@@ -617,11 +617,11 @@ class MainAlgo(object):
                             # update the variable names after adding hidden variable
                             objCBDeu.setVariableNames(h.getName())
 #                                # update the edges list after adding hidden variable
-                            hChildren= h.getChildren()
-#                                
-#                                # update edges by adding edges of hidden variable to its children
-                            edges.append((h.getName(), hChildren[0]))
-                            edges.append((h.getName(), hChildren[1]))
+#                            hChildren= h.getChildren()
+##                                
+##                                # update edges by adding edges of hidden variable to its children
+#                            edges.append((h.getName(), hChildren[0]))
+#                            edges.append((h.getName(), hChildren[1]))
                             
                             #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                             initialBDeuScore = totalCurrentBDeuScore
