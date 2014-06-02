@@ -491,7 +491,7 @@ class MainAlgo(object):
                         
                         print "Dag: %d Edge: %d ---> %d" % (id, edge[0], edge[1]) 
                         
-                        if edge in edgesDict.keys():
+#                        if edge in edgesDict.keys():
 #                            if key == edgesDict[edge]: # if true do not add hidden variable 
 #                                # get the score from the cachedBDeu score for this edge after being h is added to the network
 #                                # check if the difference is positive add the hidden variable and add the difference to the netowork bdeu score
