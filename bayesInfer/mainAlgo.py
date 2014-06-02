@@ -420,6 +420,7 @@ class MainAlgo(object):
                 stateOutFile= 'state_iter_'+str(algoIteratios)+'_initialSeed_'+ str(self.seed) +'_'+self.outputFile
                 rs.storeSate(stateOutFile)
             currentMaxBDeu= sum(nodesBDeuScore)
+            previousMaxBDeu= currentMaxBDeu
             wf.write("BDeuScore for optimal dag from Bene, %f\n" % currentMaxBDeu)
             
             # Repeat until adding a hidden variable does not increase the score
@@ -623,7 +624,7 @@ class MainAlgo(object):
                                 objCBDeu.setDagBDeuScore(tmpDagBDeuScore)
                                 print "---> BDeu Score for dag %d is not changed, since no hidden varialbe is added: previousBDeu: %f; CurrentBDeu: %f"    % (id,totalPreviousBDeuScore, totalCurrentBDeuScore)        
                     # store BDeu Class object
-                    arrayListBDeuClassObjs.append(objCBDeu)            
+#                    arrayListBDeuClassObjs.append(objCBDeu)            
                 # find the Dag' with higest bdeu score and input it to find the equivalence dags for it and repeat the whole process
 #                currentMaxAllNodesObjects={}
 #                currentMaxDF= pd.DataFrame(index=None, columns=None)
