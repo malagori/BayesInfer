@@ -5,7 +5,7 @@ import random as rNumber
 import pandas as pd
 import cProfile
 import copy
-
+import sys
 from math import exp
 from storeRetriveSeed import RandomSeed
 from readDataFile import convertBeneDataFile
@@ -377,10 +377,6 @@ class MainAlgo(object):
         
         HIDDEN_NAME= len(variableNames) +1
         
-        # dict of dict
-        cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
-        edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
-        hiddenNodesDict={} # keys: edge tuple (parent, child): values: hidden node objects
         algoIteratios=0
         totalPreviousBDeuScore= float("-inf")
         totalCurrentBDeuScore= float("-inf")
@@ -425,7 +421,11 @@ class MainAlgo(object):
             
             # Repeat until adding a hidden variable does not increase the score
             while True:
-            
+                # dict of dict
+                cachedBDeuDict={} # keys: tuple ((parent's parent),( child's parent)) ; Values: bdeu score for the network
+                edgesDict={} # keys: edge tuple (parent, child); Values: keys of Pa_C_PaPa_CPa dictionary
+                hiddenNodesDict={} # keys: edge tuple (parent, child): values: hidden node objects
+                
                 #increment the iteration number
                 algoIteratios +=1 
                 #print "printing optDag"
@@ -474,6 +474,10 @@ class MainAlgo(object):
                         idx+=1
                     hiddenCount= 0 # hidden variable counter
                     
+                    # print edges
+                    print "edges for dag %d" % id
+                    print edges
+
                     # for each edge. replace it with hidden variable and compute the score
                     while ((not edges)!= True):
                         # check if score for adding hidden variable for this edge is already computed in other equivalence dag
@@ -603,7 +607,7 @@ class MainAlgo(object):
                             else:
                                 totalCurrentBDeuScore = initialBDeuScoreAfterAddingHidden
                                 objCBDeu= copy.deepcopy(initialObjCBDeuAfterAddingHidden)
-                            h                       = objCBDeu.allNodeObjects[h.getName()]
+                            h = objCBDeu.allNodeObjects[h.getName()]
                             print "Simulated Annealing Algorithm finished ...." 
                         if initialBDeuScore < totalCurrentBDeuScore:
                             # add hidden node to the dictionary
@@ -616,12 +620,11 @@ class MainAlgo(object):
                             edgesDict[edge]= key
                             # update the variable names after adding hidden variable
                             objCBDeu.setVariableNames(h.getName())
-#                                # update the edges list after adding hidden variable
-#                            hChildren= h.getChildren()
-##                                
-##                                # update edges by adding edges of hidden variable to its children
-#                            edges.append((h.getName(), hChildren[0]))
-#                            edges.append((h.getName(), hChildren[1]))
+                            # update the edges list after adding hidden variable
+                            hChildren= h.getChildren()
+                            # update edges by adding edges of hidden variable to its children
+                            edges.append((h.getName(), hChildren[0]))
+                            edges.append((h.getName(), hChildren[1]))
                             
                             #objCBDeu.dagBDeuScore= totalCurrentBDeuScore
                             initialBDeuScore = totalCurrentBDeuScore
