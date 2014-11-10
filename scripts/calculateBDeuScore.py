@@ -12,6 +12,7 @@ import itertools
 import math
 import datetime
 import time
+import tempfile
 from math import exp
 import argparse
 import random as rNumber
@@ -19,6 +20,8 @@ import numpy as np
 from pandas import Series
 import pandas as pd
 import copy
+from mlabwrap import mlab
+
 
 from bayesInfer.node import Node
 from bayesInfer.readGraph import readInitialStructure
@@ -678,6 +681,22 @@ def probAcceptance( e, enew, T):
     return prob        
             
 
+def checkFile(filePath):
+        return os.path.isfile(os.path.abspath(filePath)) 
+
+def checkDir(dirPath):
+        return os.path.isdir(dirPath) and os.access(dirPath, os.X_OK)
+    
+def findMatlabLibDir():
+    for p in os.environ["PATH"].split(os.pathsep):
+        #p=os.path.dirname(p)
+        if p:
+            tok=[]
+            tok= p.split('/')
+            if tok[-1] == "matlab_lib":
+                if checkDir(p):
+                    return p   
+    return None
         
     
     
@@ -691,6 +710,10 @@ def main(argv):
      
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
+    parser.add_argument('-n', metavar='sampleSize' ,type=int, help='Specify the sample size for generating data', default=10000)
+    parser.add_argument('-p', metavar='p' ,type=int, help='Specify an integer to controls generation of conditional probability tables', default=1)
+    parser.add_argument('-dd', metavar='dataDir' ,type=int, help='Specify path store to the directory to data files, output from matlab-code')
+    parser.add_argument('-rd', metavar='resultDir' ,type=int, help='Specify path store to the directory to data files, output from matlab-code')
     parser.add_argument('-b', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
     parser.add_argument('-dh', metavar='iniHiddenConfigFile',type=str, help='Specify path to the file containing initial hidden counts configurations.')
@@ -703,7 +726,7 @@ def main(argv):
     parser.add_argument('-Sa', dest='SteepestAsent',action="store_true", help='Steepest Ascent is used if set to True ')
     parser.add_argument('-bf', dest='bruteForce',action="store_true", help='Brute Force is used if set to True ')
     parser.add_argument('-hx', dest='excludeHidBDeu',action="store_true", help='BDeu score for hidden variable will be excluded from total bnt score if set to True ')
-    parser.add_argument('-p', dest='perturbTwoRecods',action="store_true", help='Uses two-record- perturbation function if set to True ')
+    parser.add_argument('-pt', dest='perturbTwoRecods',action="store_true", help='Uses two-record- perturbation function if set to True ')
     parser.add_argument('-sim', dest='SimAnnealing',action="store_true", help='Simulated annealing is used if set to True ')
     parser.add_argument('-i', metavar='iterations',type=int , help='Specify maximum number of iterations ', default=100000)
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
@@ -731,7 +754,10 @@ def main(argv):
     exHiddenBdeuFlag= args.excludeHidBDeu
     pertTowRecFlag  = args.perturbTwoRecods
     bruteForceFlag  = args.bruteForce
-    print "decrementValue %d" % decrementValue
+    sampleSize      = args.n     
+    parameterP      = args.p
+    dataDir         = args.dd
+    midResultDir    = args.rd
     
     # instanciate RandomSeed object
     rs=RandomSeed()
@@ -743,14 +769,56 @@ def main(argv):
     elif seedFile != None and seed == None:
         state= rs.getSateFromFile(seedFile)
         rNumber.setstate(state)
+        
+    if dataDir == None:
+        dataDir=tempfile.mkdtemp()
+    elif os.path.exists(dataDir) == False:
+        os.mkdir(dataDir)
+    if midResultDir == None:
+        midResultDir=tempfile.mkdtemp()
+    elif os.path.exists(midResultDir) == False:
+        os.mkdir(midResultDir)
+    # add path to the matlab libraries
+    mlabPath= findMatlabLibDir()
     
-    print "structure: %s" % structureFile
-    print "outputFile %s" % outputFile
-    print "dataFile %s" % dataFile
-    print "Initial Hidden Configurations %s" % hiddenConf
-    print "alpha %f" % alpha
-    print "maxIter %d" % maxIter 
-    print "seed %d" % seed
+    
+    if mlabPath == None:
+        print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
+        sys.exit()
+    else:
+        mlab.addpath(mlabPath) # set the path to matlab libraries
+    
+    # generate data using matlab code
+    # the output file from the matlab code should be used as input 
+    # i.e, dataFile= path/to/data_n_p_seed.txt 
+    okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
+    
+    with open(outputFile+'.params', 'w') as paramOut:
+        paramOut.write("Sample Size: %s" % sampleSize)
+        paramOut.write("Parameter P: %d" % parameterP)
+        paramOut.write("dataFile: %s" % dataFile)
+        paramOut.write("structure: %s" % structureFile)
+        paramOut.write("outputFile %s" % outputFile)
+        paramOut.write("dataFile %s" % dataFile)
+        paramOut.write("Initial Hidden Configurations %s" % hiddenConf)
+        paramOut.write("alpha %f" % alpha)
+        paramOut.write("maxIter %d" % maxIter)
+        paramOut.write("seed %d" % seed)
+        paramOut.write("decrementValue %d" % decrementValue)
+        paramOut.write("Matlab lib path: %s" % mlabPath)
+        print "Sample Size: %s" % sampleSize
+        print "Parameter P: %d" % parameterP
+        print "dataFile: %s" % dataFile
+        print "structure: %s" % structureFile
+        print "outputFile %s" % outputFile
+        print "dataFile %s" % dataFile
+        print "Initial Hidden Configurations %s" % hiddenConf
+        print "alpha %f" % alpha
+        print "maxIter %d" % maxIter 
+        print "seed %d" % seed
+        print "decrementValue %d" % decrementValue
+        print "Matlab lib path: %s" % mlabPath
+        
     
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
@@ -777,8 +845,6 @@ def main(argv):
         del df
         df= dfCopy.copy()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
-    
-   
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
