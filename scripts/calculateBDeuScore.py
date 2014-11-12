@@ -21,7 +21,7 @@ from pandas import Series
 import pandas as pd
 import copy
 
-from equivalenceClass import EquivalenceClass
+from bayesInfer.equivalenceClass import EquivalenceClass
 
 
 from bayesInfer.node import Node
