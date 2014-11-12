@@ -8,7 +8,7 @@ setup(
     author_email='malagori@kth.se',
     url='https://github.com/malagori/BayesInfer',
     packages=['bayesInfer',],
-    scripts = ['fuv','scripts/dfToBeneFormat.py'],
+    scripts = ['fuv','scripts/dfToBeneFormat.py', 'scripts/calculateBDeuScore.py'],
     license='GPLv3',
     long_description=open('README.md').read(),
     install_requires= ['numpy >=1.6.1'],
