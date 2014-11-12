@@ -5,7 +5,7 @@ function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_di
 % result_directory = where results are stored
 % data_directory = where data is stored
 
-addpath('toolboxes');
+%addpath('toolboxes');
 
 ok = 0;
 

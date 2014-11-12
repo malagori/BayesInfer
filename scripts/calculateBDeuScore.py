@@ -785,9 +785,8 @@ def main(argv):
     if mlabPath == None:
         print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
         sys.exit()
-    else:
-        mlab.addpath(mlabPath) # set the path to matlab libraries
-    
+   
+    mlab.addpath(mlabPath) # set the path to matlab libraries
     # generate data using matlab code
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
