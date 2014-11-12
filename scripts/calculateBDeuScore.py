@@ -20,7 +20,8 @@ import numpy as np
 from pandas import Series
 import pandas as pd
 import copy
-from mlabwrap import mlab
+
+from equivalenceClass import EquivalenceClass
 
 
 from bayesInfer.node import Node
@@ -785,12 +786,13 @@ def main(argv):
     if mlabPath == None:
         print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
         sys.exit()
-   
-    mlab.addpath(mlabPath) # set the path to matlab libraries
+    objEC= EquivalenceClass(mlabPath)
+    dataFile=objEC.generateData(sampleSize, parameterP, seed, midResultDir, dataDir)
+    #mlab.addpath(mlabPath) # set the path to matlab libraries
     # generate data using matlab code
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
-    okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
+    #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
     
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s" % sampleSize)
