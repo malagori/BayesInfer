@@ -107,6 +107,6 @@ class EquivalenceClass(object):
         """
         This function will generate the data 
         """
-        okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
+        okeyFlag, dataFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.intc(parameterP).astype('int'), np.intc(seed).astype('int'), midResultDir, dataDir, nout=2)
         
         return dataFile
