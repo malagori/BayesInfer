@@ -787,7 +787,7 @@ def main(argv):
         print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
         sys.exit()
     objEC= EquivalenceClass(mlabPath)
-    dataFile=objEC.generateData(sampleSize, parameterP, seed, midResultDir, dataDir)
+    dataFile=objEC.generateData(sampleSize, parameterP, seed, midResultDir, dataDir, mlabPath)
     #mlab.addpath(mlabPath) # set the path to matlab libraries
     # generate data using matlab code
     # the output file from the matlab code should be used as input 
