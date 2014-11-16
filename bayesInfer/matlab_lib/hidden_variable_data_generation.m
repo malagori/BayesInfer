@@ -6,6 +6,7 @@ function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_di
 % data_directory = where data is stored
 
 %addpath('toolboxes');
+addpath(genpathKPM(pwd))
 
 ok = 0;
 
