@@ -795,18 +795,17 @@ def main(argv):
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
     
     with open(outputFile+'.params', 'w') as paramOut:
-        paramOut.write("Sample Size: %s" % sampleSize)
-        paramOut.write("Parameter P: %d" % parameterP)
-        paramOut.write("dataFile: %s" % dataFile)
-        paramOut.write("structure: %s" % structureFile)
-        paramOut.write("outputFile %s" % outputFile)
-        paramOut.write("dataFile %s" % dataFile)
-        paramOut.write("Initial Hidden Configurations %s" % hiddenConf)
-        paramOut.write("alpha %f" % alpha)
-        paramOut.write("maxIter %d" % maxIter)
-        paramOut.write("seed %d" % seed)
-        paramOut.write("decrementValue %d" % decrementValue)
-        paramOut.write("Matlab lib path: %s" % mlabPath)
+        paramOut.write("Sample Size: %s\n" % sampleSize)
+        paramOut.write("Parameter P: %d\n" % parameterP)
+        paramOut.write("dataFile: %s\n" % dataFile)
+        paramOut.write("structure: %s\n" % structureFile)
+        paramOut.write("outputFile %s\n" % outputFile)
+        paramOut.write("Initial Hidden Configurations \n%s" % hiddenConf)
+        paramOut.write("alpha %f\n" % alpha)
+        paramOut.write("maxIter %d\n" % maxIter)
+        paramOut.write("seed %d\n" % seed)
+        paramOut.write("decrementValue %d\n" % decrementValue)
+        paramOut.write("Matlab lib path: %s\n" % mlabPath)
         print "Sample Size: %s" % sampleSize
         print "Parameter P: %d" % parameterP
         print "dataFile: %s" % dataFile
