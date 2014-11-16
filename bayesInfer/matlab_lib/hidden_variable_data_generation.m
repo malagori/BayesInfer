@@ -1,4 +1,4 @@
-function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_directory, data_directory)
+function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_directory, data_directory, pathMatlabLib)
 % n = number of samples
 % p = parameter controlling conditional distributions, If p << 1, this encourages "deterministic" CPTs (one entry near 1, the rest near 0). If p = 1, each entry is drawn from U[0,1]. If p >> 1, the entries will all be near 1/k, where k is the arity of this node, i.e., each row will be nearly uniform. 
 % seed = seed for the random nnumber generator
@@ -6,7 +6,7 @@ function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_di
 % data_directory = where data is stored
 
 %addpath('toolboxes');
-pathwatay=genpathKPM('/home/mehmood/glob/projects/bayesian/code/BayesInfer/bayesInfer/matlab_lib')
+pathwatay=genpathKPM(pathMatlabLib)
 addpath(pathwatay)
 
 ok = 0;

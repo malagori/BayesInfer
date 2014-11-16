@@ -103,10 +103,10 @@ class EquivalenceClass(object):
             allDagsNetworkDict[i]= self.generateBnt(dagsDict[i], cardinality)
         
         return dagsDict, allDagsNetworkDict
-    def generateData(self, sampleSize, parameterP, seed, midResultDir, dataDir):
+    def generateData(self, sampleSize, parameterP, seed, midResultDir, dataDir, pathMatlabLib):
         """
         This function will generate the data 
         """
-        okeyFlag, dataFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.intc(parameterP).astype('int'), np.intc(seed).astype('int'), midResultDir, dataDir, nout=2)
+        okeyFlag, dataFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.intc(parameterP).astype('int'), np.intc(seed).astype('int'), midResultDir, dataDir, pathMatlabLib, nout=2)
         
         return dataFile
