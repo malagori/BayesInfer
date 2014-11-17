@@ -38,7 +38,8 @@ def fillMissingRecordsToDf(df, variableConfigurations):
     dfList=list(df.values.tolist())
     newCounts= [0]*variableConfigurations
     for i in dfList:
-        sr=[str(j) for j in i[:-1]]
+        sr=[str(j)-1 for j in i[:-1]] # here -1 to restrict values of var to binary. 
+                                    #this is to cover the compatibility btw matlab and python.
         sb=''.join(sr)
         integeray= int(''.join(sb), 2)
         newCounts[integeray]= i[-1]
