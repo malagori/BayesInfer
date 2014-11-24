@@ -713,7 +713,7 @@ def main(argv):
     # Take care of input
     parser = argparse.ArgumentParser(description="Parse input arguments and print output.")
     parser.add_argument('-n', metavar='sampleSize' ,type=int, help='Specify the sample size for generating data', default=10000)
-    parser.add_argument('-p', metavar='p' ,type=int, help='Specify an integer to controls generation of conditional probability tables', default=1)
+    parser.add_argument('-p', metavar='p' ,type=float, help='Specify an integer to controls generation of conditional probability tables', default=1.0)
     parser.add_argument('-dd', metavar='dataDir' ,type=str, help='Specify path store to the directory to data files, output from matlab-code')
     parser.add_argument('-rd', metavar='resultDir' ,type=str, help='Specify path store to the directory to data files, output from matlab-code')
     parser.add_argument('-b', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
@@ -797,7 +797,7 @@ def main(argv):
     
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
-        paramOut.write("Parameter P: %d\n" % parameterP)
+        paramOut.write("Parameter P: %f\n" % parameterP)
         paramOut.write("dataFile: %s\n" % dataFile)
         paramOut.write("structure: %s\n" % structureFile)
         paramOut.write("outputFile %s\n" % outputFile)
@@ -808,7 +808,7 @@ def main(argv):
         paramOut.write("decrementValue %d\n" % decrementValue)
         paramOut.write("Matlab lib path: %s\n" % mlabPath)
         print "Sample Size: %s" % sampleSize
-        print "Parameter P: %d" % parameterP
+        print "Parameter P: %f" % parameterP
         print "dataFile: %s" % dataFile
         print "structure: %s" % structureFile
         print "outputFile %s" % outputFile
