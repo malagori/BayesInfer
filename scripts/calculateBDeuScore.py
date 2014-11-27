@@ -858,6 +858,7 @@ def main(argv):
         #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
+    outputFile=outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     idx=0
     with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'a') as isf:
         for n in sorted(allNodeObjects):
@@ -911,7 +912,7 @@ def main(argv):
 #            wf.write(str(j)+',')
 #        del count
 #    wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= outputFile+'.state_seed_'+ str(seed)
+    stateOutFile= outputFile+'.seed'
     
     
     if bruteForceFlag == True:
