@@ -858,13 +858,16 @@ def main(argv):
         #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
-    for n in sorted(allNodeObjects):
-        nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
+    idx=0
+    with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'a') as isf:
+        for n in sorted(allNodeObjects):
+            nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
+            isf.write(nodesBDeuScore[idx]+',')
+            idx +=1
+        isf.write(sum(nodesBDeuScore))
     
     print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
-    with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'w') as isf:
-        isfWriter = csv.writer(isf)
-        isfWriter.writerow([nodesBDeuScore, sum(nodesBDeuScore)])
+    
     
     # enter information about hidden variable
     h=addHiddenNode(name, cardinality, child1, child2)
@@ -974,15 +977,15 @@ def main(argv):
         bestDf.to_csv(outputFile+'_best_state_with_hidden_counts.csv', header= False, sep=',', index=False)
         print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
         bestScore=[]
-        for i in sorted(objCBDeuBestState):
-            print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
-            bestScore.append(objCBDeuBestState[i].getLocalBDeu())
-        print "Best Score agian: %f" % (sum(bestScore))
-        # print best state scores to file
+        idx=0
         with open(outputFile+'_best_state_scores_with_hidden.csv', 'w') as bsf:
-            bsfWriter = csv.writer(bsf)
-            bsfWriter.writerow([bestScore, sum(bestScore)])
-
+            for i in sorted(objCBDeuBestState):
+                print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
+                bestScore.append(objCBDeuBestState[i].getLocalBDeu())
+                bsf.write(bestScore[idx]+',')
+                idx+=1
+            bsf.write(sum(bestScore))
+        print "Best Score agian: %f" % (sum(bestScore))
     
     elif simAnealFlag == True:
         print "Simulated Anealing starts now"
@@ -1175,7 +1178,7 @@ def main(argv):
                 wf.write(str(sum(nodesBDeuScore)) + "\n")
                 stateOutFile= 'state_iter_'+str(iterations)+'_initialSeed_'+ str(seed) +'_'+outputFile
                 rs.storeSate(stateOutFile)
-    wf.close()
+    #
        
 if __name__== "__main__":
     main(sys.argv[1:])

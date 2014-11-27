@@ -33,11 +33,11 @@ data_new = data(:, 1:4);
 
 % Store results
 file_suffix = [int2str(n) '_' num2str(p) '_' int2str(seed)];
-result_file = [result_directory 'statistics_' file_suffix '.mat'];
+result_file = [result_directory '/statistics_' file_suffix '.mat'];
 %save(result_file, 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden');
 save(result_file, 'statistics');
 
-data_file = [data_directory 'data_' file_suffix '.txt'];
+data_file = [data_directory '/data_' file_suffix '.txt'];
 %[rows, ia, ic] = unique(data_new, 'rows', 'sorted');
 [rows, ia, ic] = unique(data_new, 'rows');
 
