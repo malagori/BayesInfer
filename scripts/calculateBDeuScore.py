@@ -862,7 +862,7 @@ def main(argv):
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
     
     print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
-    with open(outputFile+'_initial_state_scores_wihtout_hidden.csv') as isf:
+    with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'w') as isf:
         isfWriter = csv.writer(isf)
         isfWriter.writerow([nodesBDeuScore, sum(nodesBDeuScore)])
     
@@ -978,7 +978,7 @@ def main(argv):
             bestScore.append(objCBDeuBestState[i].getLocalBDeu())
         print "Best Score agian: %f" % (sum(bestScore))
         # print best state scores to file
-        with open(outputFile+'_best_state_scores_with_hidden.csv') as bsf:
+        with open(outputFile+'_best_state_scores_with_hidden.csv', 'w') as bsf:
             bsfWriter = csv.writer(bsf)
             bsfWriter.writerow([bestScore, sum(bestScore)])
 
