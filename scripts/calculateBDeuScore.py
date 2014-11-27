@@ -882,7 +882,7 @@ def main(argv):
     populateCounts(h)
     
     # open file to write the results
-    wf= open(outputFile, 'w')
+#    wf= open(outputFile, 'w')
     
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
@@ -900,13 +900,14 @@ def main(argv):
         print "Initial BDeu Score with Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
     else :
         print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
-    hValues=node.getKvalues().keys()
-    for i in xrange(0,len(hValues)-1):
-        count=df[df[h.getName()]==hValues[i]].Counts
-        for j in count:
-            wf.write(str(j)+',')
-        del count
-    wf.write(str(sum(nodesBDeuScore)) + "\n")
+        
+#    hValues=node.getKvalues().keys()
+#    for i in xrange(0,len(hValues)-1):
+#        count=df[df[h.getName()]==hValues[i]].Counts
+#        for j in count:
+#            wf.write(str(j)+',')
+#        del count
+#    wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= outputFile+'.state_seed_'+ str(seed)
     
     
