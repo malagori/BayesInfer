@@ -865,7 +865,7 @@ def main(argv):
             nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
             isf.write(str(nodesBDeuScore[idx])+',')
             idx +=1
-        isf.write(sum(nodesBDeuScore))
+        isf.write(str(sum(nodesBDeuScore)))
     
     print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
     
@@ -985,7 +985,7 @@ def main(argv):
                 bestScore.append(objCBDeuBestState[i].getLocalBDeu())
                 bsf.write(str(bestScore[idx])+',')
                 idx+=1
-            bsf.write(sum(bestScore))
+            bsf.write(str(sum(bestScore)))
         print "Best Score agian: %f" % (sum(bestScore))
     
     elif simAnealFlag == True:
