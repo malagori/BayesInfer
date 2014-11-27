@@ -863,7 +863,7 @@ def main(argv):
     with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'a') as isf:
         for n in sorted(allNodeObjects):
             nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
-            isf.write(nodesBDeuScore[idx]+',')
+            isf.write(str(nodesBDeuScore[idx])+',')
             idx +=1
         isf.write(sum(nodesBDeuScore))
     
@@ -983,7 +983,7 @@ def main(argv):
             for i in sorted(objCBDeuBestState):
                 print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
                 bestScore.append(objCBDeuBestState[i].getLocalBDeu())
-                bsf.write(bestScore[idx]+',')
+                bsf.write(str(bestScore[idx])+',')
                 idx+=1
             bsf.write(sum(bestScore))
         print "Best Score agian: %f" % (sum(bestScore))
