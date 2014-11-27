@@ -795,7 +795,7 @@ def main(argv):
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
-    
+    outputFile=outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
         paramOut.write("Parameter P: %f\n" % parameterP)
@@ -858,7 +858,7 @@ def main(argv):
         #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
-    outputFile=outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
+    
     idx=0
     with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'a') as isf:
         for n in sorted(allNodeObjects):
