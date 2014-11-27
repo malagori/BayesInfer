@@ -12,6 +12,7 @@ import itertools
 import math
 import datetime
 import time
+import csv
 import tempfile
 from math import exp
 import argparse
@@ -857,10 +858,13 @@ def main(argv):
         #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
-    for n in allNodeObjects:
+    for n in sorted(allNodeObjects):
         nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
     
     print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
+    with open(outputFile+'_initial_state_scores_wihtout_hidden.csv') as isf:
+        isfWriter = csv.writer(isf)
+        isfWriter.writerow([nodesBDeuScore, sum(nodesBDeuScore)])
     
     # enter information about hidden variable
     h=addHiddenNode(name, cardinality, child1, child2)
@@ -873,7 +877,7 @@ def main(argv):
         
     # write df to file called initialCountSplit.txt
     #outName= outputFile+'_initialHiddenCountSplit_'+str((datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-h%H-m%M-s%S')))
-    df.to_csv(outputFile+'.initialHiddenCount', sep=',', index=False)
+    df.to_csv(outputFile+'_initial_state_with_hidden_counts.csv', header= False, sep=',', index=False)
     # populate hidden value counts
     populateCounts(h)
     
@@ -903,7 +907,7 @@ def main(argv):
             wf.write(str(j)+',')
         del count
     wf.write(str(sum(nodesBDeuScore)) + "\n")
-    stateOutFile= outputFile+'.stateSeed.'+ str(seed)
+    stateOutFile= outputFile+'.state_seed_'+ str(seed)
     
     
     if bruteForceFlag == True:
@@ -922,57 +926,61 @@ def main(argv):
         
         int2bin= '{0:0'+str(variableConfigurations)+'b}'
         
-        with open(outputFile+".bruteforce", 'w') as wf:
-            for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
-            #for i in xrange(0,10):
-                strIter=int2bin.format(i)
-                #print "i: %d, binary: %s" % (i,strIter)
-                newCounts = [-1]*df.shape[0]
-                k=0
-                for j in xrange( len(strIter)-1, -1, -1):
-                    if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
-                        newCounts[k]= 0
-                        newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
-                    elif int(strIter[j]) == 0 and k < totalUniqueObservations and newCounts[k] == -1:
-                        newCounts[k]= dfCopy.Counts[k]
-                        newCounts[k+totalUniqueObservations]=0
-                    elif int(strIter[j]) == 1 and k >= totalUniqueObservations and newCounts[k] == -1:
-                        newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
-                        newCounts[k-totalUniqueObservations]= 0
-                    elif int(strIter[j]) == 0 and k >= totalUniqueObservations and newCounts[k] == -1:
-                        newCounts[k]=0
-                        newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
-                    k+=1
-                df.Counts= newCounts
-                
-                #print df
-                currentScore=0.0
-                nodesBDeuScore= []  
-                for n in allNodeObjects:
-                    node=allNodeObjects[n]
-                    if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
-                        #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
-                        populateCounts(node)
-                        node.setLocalBDeu(getBDeu(node, alpha))
-                        #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
-                        allNodeObjects[n]= node
-                    nodesBDeuScore.append(node.getLocalBDeu())
-    
-                currentScore= sum(nodesBDeuScore)
-                
-                if currentScore >= bestScore:
-                    bestScore= currentScore
-                    bestDf= df.copy()
-                    objCBDeuBestState= copy.deepcopy(allNodeObjects)
-                    bestIter= i
-                wf.write( "iteration i= %d, bestScore: %f, currentScore: %f \n" % (i, bestScore, currentScore))
-        bestDf.to_csv(outputFile+'.bestCounts', sep=',', index=False)
+        #with open(outputFile+".bruteforce", 'w') as wf:
+        for i in xrange(0, (2**variableConfigurations)-1):                                                                                                                          
+        #for i in xrange(0,10):
+            strIter=int2bin.format(i)
+            #print "i: %d, binary: %s" % (i,strIter)
+            newCounts = [-1]*df.shape[0]
+            k=0
+            for j in xrange( len(strIter)-1, -1, -1):
+                if int(strIter[j]) == 1 and k < totalUniqueObservations and newCounts[k] == -1:
+                    newCounts[k]= 0
+                    newCounts[k+totalUniqueObservations] = dfCopy.Counts[k]
+                elif int(strIter[j]) == 0 and k < totalUniqueObservations and newCounts[k] == -1:
+                    newCounts[k]= dfCopy.Counts[k]
+                    newCounts[k+totalUniqueObservations]=0
+                elif int(strIter[j]) == 1 and k >= totalUniqueObservations and newCounts[k] == -1:
+                    newCounts[k]= dfCopy.Counts[k-totalUniqueObservations]
+                    newCounts[k-totalUniqueObservations]= 0
+                elif int(strIter[j]) == 0 and k >= totalUniqueObservations and newCounts[k] == -1:
+                    newCounts[k]=0
+                    newCounts[k-totalUniqueObservations]= dfCopy.Counts[k-totalUniqueObservations]
+                k+=1
+            df.Counts= newCounts
+            
+            #print df
+            currentScore=0.0
+            nodesBDeuScore= []  
+            for n in allNodeObjects:
+                node=allNodeObjects[n]
+                if node.getParentUpdateFlag() == True or node.getChildrenUpdateFlag() == True: # if true its a child of hidden variable. so, calculate BDeu again
+                    #print "Node Name: %s, score before: %f" % (node.getName(), node.getLocalBDeu())
+                    populateCounts(node)
+                    node.setLocalBDeu(getBDeu(node, alpha))
+                    #print "Node Name: %s, score after: %f" % (node.getName(), node.getLocalBDeu())
+                    allNodeObjects[n]= node
+                nodesBDeuScore.append(node.getLocalBDeu())
+
+            currentScore= sum(nodesBDeuScore)
+            
+            if currentScore >= bestScore:
+                bestScore= currentScore
+                bestDf= df.copy()
+                objCBDeuBestState= copy.deepcopy(allNodeObjects)
+                bestIter= i
+        #        wf.write( "iteration i= %d, bestScore: %f, currentScore: %f \n" % (i, bestScore, currentScore))
+        bestDf.to_csv(outputFile+'_best_state_with_hidden_counts.csv', header= False, sep=',', index=False)
         print "Best iteration i= %d, bestScore: %f" % (bestIter, bestScore)
         bestScore=[]
-        for i in objCBDeuBestState:
+        for i in sorted(objCBDeuBestState):
             print "Node: %s best score: %f" %( i, objCBDeuBestState[i].getLocalBDeu())
             bestScore.append(objCBDeuBestState[i].getLocalBDeu())
         print "Best Score agian: %f" % (sum(bestScore))
+        # print best state scores to file
+        with open(outputFile+'_best_state_scores_with_hidden.csv') as bsf:
+            bsfWriter = csv.writer(bsf)
+            bsfWriter.writerow([bestScore, sum(bestScore)])
 
     
     elif simAnealFlag == True:
