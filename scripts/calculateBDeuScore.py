@@ -796,8 +796,8 @@ def main(argv):
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
-    statsFile= midResultDir+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
-    outputFile=outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
+    statsFile= midResultDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
+    outputFile= dataDir+'/'+outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
         paramOut.write("Parameter P: %f\n" % parameterP)
