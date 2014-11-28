@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+from numpy.numarray import mlab
 __author__ = "Mehmood Alam Khan"
 __email__  = "malagori@kth.se"
 __version__= "0.9"
@@ -795,6 +796,7 @@ def main(argv):
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
+    statsFile= midResultDir+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
     outputFile=outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
@@ -847,7 +849,7 @@ def main(argv):
         del df
         df= dfCopy.copy()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
-    
+        df.to_csv(outputFile+'_initial_state_without_hidden_counts.csv', header= False, sep=',', index=False)
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
@@ -987,6 +989,7 @@ def main(argv):
                 idx+=1
             bsf.write(str(sum(bestScore)))
         print "Best Score agian: %f" % (sum(bestScore))
+        objEC.saveResults('results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat', outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
     
     elif simAnealFlag == True:
         print "Simulated Anealing starts now"
