@@ -14,6 +14,6 @@ bsswh   =dlmread(path_bsswh);
 iswhc   =dlmread(path_iswhc);
 iswohc  =dlmread(path_iswohc);
 bswhc   =dlmread(path_bswhc);
-stats   =load(path_stats);
+load(path_stats);
 
-save(out_file, 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'stats');
+save(out_file, 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'statistics');
