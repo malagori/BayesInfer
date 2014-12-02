@@ -736,7 +736,7 @@ def main(argv):
     parser.add_argument('-t', metavar='thining',type=int , help='Display BDeu Score after iterations ', default=500)
     parser.add_argument('-s', metavar='initialSeed',type=int , help='Specify initial seed. if both initialSeed and loadseed option are not provided then system time will be taken as the default seed  ', default=None)
     parser.add_argument('-l', metavar='loadSeed',type=int , help='Specify path to a file containing previous state', default=None)
-    parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. ', default= 'counts_bdeu_results.txt')
+    parser.add_argument('-o', metavar='outfile', type=str, help='Specify the file to output the results. if not given, then result files will be saved to files with bayes_infer prefix  ', default= 'bayes_infer')
     args = parser.parse_args()
     
     structureFile   = args.b
@@ -778,10 +778,7 @@ def main(argv):
         dataDir=tempfile.mkdtemp()
     elif os.path.exists(dataDir) == False:
         os.mkdir(dataDir)
-    if midResultDir == None:
-        midResultDir=tempfile.mkdtemp()
-    elif os.path.exists(midResultDir) == False:
-        os.mkdir(midResultDir)
+
     # add path to the matlab libraries
     mlabPath= findMatlabLibDir()
     
@@ -790,13 +787,13 @@ def main(argv):
         print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
         sys.exit()
     objEC= EquivalenceClass(mlabPath)
-    dataFile=objEC.generateData(sampleSize, parameterP, seed, midResultDir, dataDir, mlabPath)
+    dataFile=objEC.generateData(sampleSize, parameterP, seed, dataDir, dataDir, mlabPath)
     #mlab.addpath(mlabPath) # set the path to matlab libraries
     # generate data using matlab code
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
-    statsFile= midResultDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
+    statsFile= dataDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
     outputFile= dataDir+'/'+outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
@@ -989,7 +986,15 @@ def main(argv):
                 idx+=1
             bsf.write(str(sum(bestScore)))
         print "Best Score agian: %f" % (sum(bestScore))
-        objEC.saveResults('results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat', outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
+        if midResultDir == None:
+            resultFile= 'results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
+        else:
+            if os.path.exists(midResultDir) == False:
+                os.mkdir(midResultDir)
+            resultFile= midResultDir+'/results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
+        
+        objEC.saveResults(resultFile, outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
+    
     
     elif simAnealFlag == True:
         print "Simulated Anealing starts now"
