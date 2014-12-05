@@ -787,13 +787,13 @@ def main(argv):
         print "Path to matlab_lib is not set. hint: export PATH=/path/to/matlab_lib/folder:$PATH" 
         sys.exit()
     objEC= EquivalenceClass(mlabPath)
-    dataFile=objEC.generateData(sampleSize, parameterP, seed, dataDir, dataDir, mlabPath)
+    dataFile, statsFile=objEC.generateData(sampleSize, parameterP, seed, dataDir, dataDir, mlabPath)
     #mlab.addpath(mlabPath) # set the path to matlab libraries
     # generate data using matlab code
     # the output file from the matlab code should be used as input 
     # i.e, dataFile= path/to/data_n_p_seed.txt 
     #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
-    statsFile= dataDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
+    #statsFile= dataDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
     outputFile= dataDir+'/'+outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
