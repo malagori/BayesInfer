@@ -1,4 +1,4 @@
-function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_directory, data_directory, pathMatlabLib)
+function [ok, data_file] = hidden_variable_data_generation(n, p, seed, result_directory, data_directory,file_suffix, pathMatlabLib)
 % n = number of samples
 % p = parameter controlling conditional distributions, If p << 1, this encourages "deterministic" CPTs (one entry near 1, the rest near 0). If p = 1, each entry is drawn from U[0,1]. If p >> 1, the entries will all be near 1/k, where k is the arity of this node, i.e., each row will be nearly uniform. 
 % seed = seed for the random nnumber generator
@@ -32,7 +32,7 @@ data_new = data(:, 1:4);
 % pdag_with_hidden = learn_struct_pdag_ic_star('cond_indep_chisquare', 5, 4, data');
 
 % Store results
-file_suffix = [int2str(n) '_' num2str(p) '_' int2str(seed)];
+#file_suffix = [int2str(n) '_' num2str(p) '_' int2str(seed)];
 result_file = [result_directory '/statistics_' file_suffix '.mat'];
 %save(result_file, 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden');
 save(result_file, 'statistics');

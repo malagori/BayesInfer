@@ -107,7 +107,9 @@ class EquivalenceClass(object):
         """
         This function will generate the data 
         """
-        okeyFlag, dataFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.float_(parameterP), np.intc(seed).astype('int'), midResultDir, dataDir, pathMatlabLib, nout=2)
+        statsFileSuffix= str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)
+        print statsFileSuffix
+        okeyFlag, dataFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.float_(parameterP), np.intc(seed).astype('int'), midResultDir, dataDir, statsFileSuffix, pathMatlabLib, nout=2)
         
         return dataFile
     def saveResults(self,out_file, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats ):
