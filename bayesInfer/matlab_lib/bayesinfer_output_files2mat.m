@@ -16,4 +16,4 @@ iswohc  =dlmread(path_iswohc);
 bswhc   =dlmread(path_bswhc);
 load(path_stats);
 
-save(out_file, 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'statistics');
+save(out_file, 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden');
