@@ -37,7 +37,7 @@ pdag_with_hidden = [];
 % Store results
 file_suffix = [int2str(n) '_' num2str(p) '_' int2str(seed)];
 result_file = [result_directory '/statistics_' file_suffix '.mat'];
-save(result_file, 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden');
+save(result_file, 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden', 'bnet');
 %save(result_file, 'statistics');
 
 data_file = [data_directory '/data_' file_suffix '.txt'];
