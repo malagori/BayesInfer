@@ -825,6 +825,10 @@ def main(argv):
     # read initial structure
     allNodeObjects=readInitialStructure(structureFile)
     
+    if vdFile == None:
+        print "Please specify path to the vdfile required for bene. Thank you!"
+        sys.exit()
+    
     if hiddenConf != None and dataFile != None:
         print "Error: Specify either data file or initial hidden counts configuration file, not both."
         sys.exit()
