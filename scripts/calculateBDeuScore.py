@@ -864,6 +864,7 @@ def main(argv):
     for n in objCBDeu.allNodeObjects:
         tmpNode= Node()
         tmpNode= objCBDeu.allNodeObjects[n]
+        
         objCBDeu.getUpdatedQi(tmpNode)
         objCBDeu.populateCounts(tmpNode)
     # find the BDeu Score for the whole structure
