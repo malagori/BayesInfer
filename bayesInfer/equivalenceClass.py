@@ -36,6 +36,20 @@ class EquivalenceClass(object):
         optDag= np.array(optDag).astype('int')
         
         return optDag, allNodesObj
+    
+    def getOptDag(self, vdFile, dataFile, score, outDirectory, totalVaiables, cardinality, variableNames):
+        
+        
+        #create obj of BeneWrapper class and initialize the fields
+        bwObj= BeneWrapper(vdFile, dataFile, score, outDirectory, totalVaiables) 
+        
+        bwObj.generateOptBnt()
+        
+        optDag, allNodesObj = bwObj.readBeneBnt(cardinality, variableNames)
+        
+        optDag= np.array(optDag).astype('int')
+        
+        return optDag, allNodesObj
         
     def generateCdag(self,optDag):
         """

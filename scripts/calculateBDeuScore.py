@@ -857,7 +857,7 @@ def main(argv):
     # Generate optimal structure with bene
     # read vdFile
     variableNames, cardi= readVdFile(vdFile)
-    optDag, allNodesObj= objEC.getOptDag(vdFile, dataFile, alpha, dataDir, numberOfVariables, cardi)
+    optDag, allNodesObj= objEC.getOptDag(vdFile, dataFile, alpha, dataDir, numberOfVariables, cardi, variableNames)
     objCBDeu= BDeuClass(df, dfOriginal, allNodesObj, totalUniqueObservations, variableNames,"beneDag", optDag)
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
