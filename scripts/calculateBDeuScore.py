@@ -874,6 +874,7 @@ def main(argv):
         tmpNode=objCBDeu.allNodeObjects[n]
         tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], alpha)
         beneNodesBDeuScore.append(tmpScore)
+        print "Bene bdeu score for node %s is: %f" % (n, tmpScore)
     print "BDeu Score for optimal dag from Bene: %f" % sum(beneNodesBDeuScore)
     
     # update the parent configurations for all variables

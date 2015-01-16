@@ -128,7 +128,7 @@ class EquivalenceClass(object):
         """
         This function write the results to a mat file
         """
-        bene_bnt_score= sum(beneNodesBDeuScore)
-        mlab.bayesinfer_output_files2mat(out_file, np.float_(bene_bnt_score), bene_nodes_bdeu_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
+        bene_bnt_score= sum(bene_nodes_bdeu_score)
+        mlab.bayesinfer_output_files2mat(out_file, np.float_(bene_bnt_score), np.array(bene_nodes_bdeu_score), path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
         
         
