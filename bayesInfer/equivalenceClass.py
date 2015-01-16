@@ -128,4 +128,4 @@ class EquivalenceClass(object):
         """
         This function write the results to a mat file
         """
-        mlab.bayesinfer_output_files2mat(out_file, bene_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
+        mlab.bayesinfer_output_files2mat(out_file, np.float_(bene_score), path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
