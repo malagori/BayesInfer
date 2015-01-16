@@ -129,9 +129,9 @@ class BeneWrapper(object):
                     varName+=1
                     node.setR(int(cardinality[varName-1]))
                     node.setKvalues(dict.fromkeys(list(xrange(0, int(cardinality[varName-1]), 1))))
-                    node.setName(variableNames[varName])
+                    node.setName(variableNames[varName-1])
                     node.setParents(parents)
-                    allNodesObj[variableNames[varName]]=node
+                    allNodesObj[variableNames[varName-1]]=node
             # taking transpose of list of list to get the required dag
             optDag=map(list, zip(*optDag))
         except IOError, e:
