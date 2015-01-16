@@ -868,15 +868,13 @@ def main(argv):
         objCBDeu.getUpdatedQi(tmpNode)
         objCBDeu.populateCounts(tmpNode)
     # find the BDeu Score for the whole structure
-    nodesBDeuScore=[]
+    beneNodesBDeuScore=[]
     for n in objCBDeu.allNodeObjects:
         tmpNode= Node()
         tmpNode=objCBDeu.allNodeObjects[n]
         tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], alpha)
-        nodesBDeuScore.append(tmpScore)
-    beneScore=0.0
-    beneScore=sum(nodesBDeuScore)
-    print "BDeu Score for optimal dag from Bene: %f" % sum(nodesBDeuScore)
+        beneNodesBDeuScore.append(tmpScore)
+    print "BDeu Score for optimal dag from Bene: %f" % sum(beneNodesBDeuScore)
     
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
@@ -1012,7 +1010,7 @@ def main(argv):
                 os.mkdir(midResultDir)
             resultFile= midResultDir+'/results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
         
-        objEC.saveResults(resultFile, beneScore, outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
+        objEC.saveResults(resultFile, beneNodesBDeuScore, outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
     
     
     elif simAnealFlag == True:

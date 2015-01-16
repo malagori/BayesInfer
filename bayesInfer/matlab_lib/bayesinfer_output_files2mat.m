@@ -1,4 +1,4 @@
-function bayesinfer_output_files2mat(out_file, bene_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
+function bayesinfer_output_files2mat(out_file, bene_score, bene_nodes_bdeu_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
 % input:
 % out_file   : string containig result file name,result_results_n_p_a_s.mat
 % path_isswoh : path to file initial_state_scores_wihtout_hidden
@@ -16,4 +16,4 @@ iswohc  =dlmread(path_iswohc);
 bswhc   =dlmread(path_bswhc);
 load(path_stats);
 
-save(out_file, 'bene_score', 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden', 'bnet');
+save(out_file, 'bene_score', 'bene_nodes_bdeu_score', 'isswoh', 'bsswh', 'iswhc', 'iswohc','bswhc', 'statistics', 'hidden_found_fci', 'pdag_tmp', 'pdag_with_hidden', 'bnet');
