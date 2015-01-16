@@ -24,11 +24,10 @@ import pandas as pd
 import copy
 
 from bayesInfer.equivalenceClass import EquivalenceClass
-
-
 from bayesInfer.node import Node
+from bayesInfer.bdeu import BDeuClass
 from bayesInfer.readGraph import readInitialStructure
-from bayesInfer.readDataFile import readDataFrame, readInitialHiddenConfig
+from bayesInfer.readDataFile import readDataFrame, readInitialHiddenConfig, readVdFile
 from bayesInfer.storeRetriveSeed import RandomSeed
 
 
@@ -720,6 +719,7 @@ def main(argv):
     parser.add_argument('-rd', metavar='resultDir' ,type=str, help='Specify path store to the directory to data files, output from matlab-code')
     parser.add_argument('-b', metavar='initialStructureFile' ,type=str, help='Specify path to the file containing initial structure. ')
     parser.add_argument('-d', metavar='dataFile',type=str, help='Specify path to the data file ')
+    parser.add_argument('-vd', metavar='vdFile' ,type=str, help='Specify path to the file containing variable information ')
     parser.add_argument('-dh', metavar='iniHiddenConfigFile',type=str, help='Specify path to the file containing initial hidden counts configurations.')
     parser.add_argument('-x', metavar='hiddenName',type=str, help='Specify Name for hidden variable')
     parser.add_argument('-c', metavar='cardinality',type=int , help='Specify cardinality of hidden variable ', default=2)
@@ -742,6 +742,7 @@ def main(argv):
     structureFile   = args.b
     outputFile      = args.o
     dataFile        = args.d
+    vdFile          = args.vd
     hiddenConf      = args.dh
     alpha           = args.a
     maxIter         = args.i
@@ -847,6 +848,31 @@ def main(argv):
         df= dfCopy.copy()
         totalUniqueObservations= df.shape[0] # if we introduce next hidden variable, this variable would be updated
         df.to_csv(outputFile+'_initial_state_without_hidden_counts.csv', header= False, sep=',', index=False)
+    dfOriginal= df.copy()
+    
+    # Generate optimal structure with bene
+    # read vdFile
+    variableNames, cardi= readVdFile(vdFile)
+    optDag, allNodesObj= objEC.getOptDag(vdFile, dataFile, alpha, dataDir, numberOfVariables, cardi)
+    objCBDeu= BDeuClass(df, dfOriginal, allNodesObj, totalUniqueObservations, variableNames,"beneDag", optDag)
+    # update the parent configurations for all variables
+    # and the counts associated with the each parent configuration for each value of X
+    for n in objCBDeu.allNodeObjects:
+        tmpNode= Node()
+        tmpNode= objCBDeu.allNodeObjects[n]
+        objCBDeu.getUpdatedQi(tmpNode)
+        objCBDeu.populateCounts(tmpNode)
+    # find the BDeu Score for the whole structure
+    nodesBDeuScore=[]
+    for n in objCBDeu.allNodeObjects:
+        tmpNode= Node()
+        tmpNode=objCBDeu.allNodeObjects[n]
+        tmpScore= objCBDeu.getBDeu(objCBDeu.allNodeObjects[n], alpha)
+        nodesBDeuScore.append(tmpScore)
+    beneScore=0.0
+    beneScore=sum(nodesBDeuScore)
+    print "BDeu Score for optimal dag from Bene: %f" % sum(nodesBDeuScore)
+    
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
     for n in allNodeObjects:
@@ -857,8 +883,8 @@ def main(argv):
         #print allNodeObjects[n].getPaConfigurations()
         populateCounts(allNodeObjects[n])
     # find the BDeu Score for the whole structure
-    
     idx=0
+    nodesBDeuScore=[]
     with open(outputFile+'_initial_state_scores_wihtout_hidden.csv', 'a') as isf:
         for n in sorted(allNodeObjects):
             nodesBDeuScore.append(getBDeu(allNodeObjects[n], alpha))
@@ -867,7 +893,6 @@ def main(argv):
         isf.write(str(sum(nodesBDeuScore)))
     
     print "BDeu Score for Initial Structure without hidden variable: %f" % sum(nodesBDeuScore)
-    
     
     # enter information about hidden variable
     h=addHiddenNode(name, cardinality, child1, child2)
@@ -883,10 +908,7 @@ def main(argv):
     df.to_csv(outputFile+'_initial_state_with_hidden_counts.csv', header= False, sep=',', index=False)
     # populate hidden value counts
     populateCounts(h)
-    
-    # open file to write the results
-#    wf= open(outputFile, 'w')
-    
+
     nodesBDeuScore=[]
     # compute the BDeu score again after perturbations
     for n in allNodeObjects:
@@ -903,14 +925,6 @@ def main(argv):
         print "Initial BDeu Score with Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
     else :
         print "Initial BDeu Score after introduction  Hidden Varialbe: %f" % ( totalPreviousBDeuScore)
-        
-#    hValues=node.getKvalues().keys()
-#    for i in xrange(0,len(hValues)-1):
-#        count=df[df[h.getName()]==hValues[i]].Counts
-#        for j in count:
-#            wf.write(str(j)+',')
-#        del count
-#    wf.write(str(sum(nodesBDeuScore)) + "\n")
     stateOutFile= outputFile+'.seed'
     
     
@@ -993,7 +1007,7 @@ def main(argv):
                 os.mkdir(midResultDir)
             resultFile= midResultDir+'/results_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)+'.mat'
         
-        objEC.saveResults(resultFile, outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
+        objEC.saveResults(resultFile, beneScore, outputFile+'_initial_state_scores_wihtout_hidden.csv', outputFile+'_best_state_scores_with_hidden.csv', outputFile+'_initial_state_with_hidden_counts.csv', outputFile+'_initial_state_without_hidden_counts.csv',outputFile+'_best_state_with_hidden_counts.csv', statsFile)
     
     
     elif simAnealFlag == True:

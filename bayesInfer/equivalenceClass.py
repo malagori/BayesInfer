@@ -110,8 +110,8 @@ class EquivalenceClass(object):
         okeyFlag, dataFile, statsFile= mlab.hidden_variable_data_generation(np.intc(sampleSize).astype('int'), np.float_(parameterP), np.intc(seed).astype('int'), midResultDir, dataDir, pathMatlabLib, nout=3)
         
         return dataFile, statsFile
-    def saveResults(self,out_file, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats ):
+    def saveResults(self,out_file, bene_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats ):
         """
         This function write the results to a mat file
         """
-        mlab.bayesinfer_output_files2mat(out_file, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
+        mlab.bayesinfer_output_files2mat(out_file, bene_score, path_isswoh, path_bsswh, path_iswhc, path_iswohc,path_bswhc, path_stats)
