@@ -716,8 +716,8 @@ def convertDfToBene(infile):
                     tokens= line.split(',')
                     record=''
                     for i in xrange(0, len(tokens)-2):
-                        record+=str(tokens[i])+'\t'
-                    record=record+str(tokens[-2])+'\n'
+                        record+=str(int(tokens[i])-1)+'\t'
+                    record=record+str(int(tokens[-2])-1)+'\n'
 
                     for i in xrange(0, int(tokens[-1].strip())):
                         wf.write(record)
@@ -809,13 +809,8 @@ def main(argv):
         sys.exit()
     objEC= EquivalenceClass(mlabPath)
     dataFile, statsFile=objEC.generateData(sampleSize, parameterP, seed, dataDir, dataDir, mlabPath)
-    #mlab.addpath(mlabPath) # set the path to matlab libraries
-    # generate data using matlab code
-    # the output file from the matlab code should be used as input 
-    # i.e, dataFile= path/to/data_n_p_seed.txt 
-    #okeyFlag, dataFile= mlab.hidden_variable_data_generation(sampleSize, parameterP, seed, midResultDir, dataDir)
-    #statsFile= dataDir+'/statistics_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(seed)+'.mat'
     outputFile= dataDir+'/'+outputFile+'_'+str(sampleSize)+'_'+str(parameterP)+'_'+str(alpha)+'_'+str(seed)
+    
     with open(outputFile+'.params', 'w') as paramOut:
         paramOut.write("Sample Size: %s\n" % sampleSize)
         paramOut.write("Parameter P: %f\n" % parameterP)
@@ -880,7 +875,7 @@ def main(argv):
     # Generate optimal structure with bene
     # read vdFile
     variableNames, cardi= readVdFile(vdFile)
-    optDag, allNodesObj= objEC.getOptDag(vdFile, beneDataFile, alpha, dataDir, numberOfVariables, cardi, variableNames)
+    optDag, allNodesObj= objEC.getOptDagBene(vdFile, beneDataFile, alpha, dataDir, numberOfVariables, cardi, variableNames)
     objCBDeu= BDeuClass(df, dfOriginal, allNodesObj, totalUniqueObservations, variableNames,"beneDag", optDag)
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
