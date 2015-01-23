@@ -702,7 +702,27 @@ def findMatlabLibDir():
     return None
         
     
-    
+def convertDfToBene(infile):
+    '''
+    This function convert data frame to bene's data format
+    '''
+    count=1
+    with open(infile, 'r') as rf:
+        with open(str(infile+'.bene'), 'w') as wf:
+            tokens=[]
+            for line in rf:
+                if count != 1:
+                    line.strip()
+                    tokens= line.split(',')
+                    record=''
+                    for i in xrange(0, len(tokens)-2):
+                        record+=str(tokens[i])+'\t'
+                    record=record+str(tokens[-2])+'\n'
+
+                    for i in xrange(0, int(tokens[-1].strip())):
+                        wf.write(record)
+                count+=1    
+    return str(infile+'.bene')
         
     
     
@@ -854,10 +874,13 @@ def main(argv):
         df.to_csv(outputFile+'_initial_state_without_hidden_counts.csv', header= False, sep=',', index=False)
     dfOriginal= df.copy()
     
+    #convert the data file to bene format
+    beneDataFile=convertDfToBene(dataFile)
+    
     # Generate optimal structure with bene
     # read vdFile
     variableNames, cardi= readVdFile(vdFile)
-    optDag, allNodesObj= objEC.getOptDag(vdFile, dataFile, alpha, dataDir, numberOfVariables, cardi, variableNames)
+    optDag, allNodesObj= objEC.getOptDag(vdFile, beneDataFile, alpha, dataDir, numberOfVariables, cardi, variableNames)
     objCBDeu= BDeuClass(df, dfOriginal, allNodesObj, totalUniqueObservations, variableNames,"beneDag", optDag)
     # update the parent configurations for all variables
     # and the counts associated with the each parent configuration for each value of X
