@@ -120,10 +120,10 @@ class BeneWrapper(object):
                     varParentSet=list(decimalToBinary(int(line), int(self.totalVaiables)))
                     p=[i for i in reversed(varParentSet)]
                     optDag.append(p)
-                    idx=1
+                    idx=0
                     for i in reversed(varParentSet):
                         if i == '1':
-                            parents.append(idx)
+                            parents.append(variableNames[idx])
                         idx+=1
                             
                     varName+=1
@@ -132,6 +132,8 @@ class BeneWrapper(object):
                     node.setName(variableNames[varName-1])
                     node.setParents(parents)
                     allNodesObj[variableNames[varName-1]]=node
+
+
             # taking transpose of list of list to get the required dag
             optDag=map(list, zip(*optDag))
         except IOError, e:
